@@ -16,6 +16,8 @@ export default tseslint.config(
       globals: {
         ...globals.node,
         ...globals.jest,
+        ...globals.browser,
+        ...globals.es2025,
       },
       ecmaVersion: 5,
       sourceType: 'module',
@@ -29,7 +31,12 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn'
+      '@typescript-eslint/no-unsafe-argument': 'warn',
+
+      //my addictions
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+
     },
   },
 );
