@@ -11,14 +11,23 @@
     "url": "git+https://github.com/Deepgmc/CORP3.git"
   },
   "license": "ISC",
-  "author": "",
-  "type": "commonjs",
+  "author": "Neeq",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky"
   },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.46.0",
+    "@typescript-eslint/parser": "^8.46.0",
+    "@vue/eslint-config-typescript": "^14.6.0",
+    "eslint": "^9.37.0",
+    "eslint-plugin-vue": "^10.5.0",
+    "lint-staged": "^16.2.3"
+  },
   "lint-staged": {
-    "src/**/*.{js,ts,vue}": "eslint"
+    "{client,server}/**/*.{js,ts,vue}": "eslint"
+
   }
 }

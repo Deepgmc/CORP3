@@ -5,7 +5,7 @@ import ToolingIcon from './icons/IconTooling.vue'
 import EcosystemIcon from './icons/IconEcosystem.vue'
 import CommunityIcon from './icons/IconCommunity.vue'
 import SupportIcon from './icons/IconSupport.vue'
-const a = 2;
+
 const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
 </script>
 
