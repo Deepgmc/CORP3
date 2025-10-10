@@ -14,11 +14,16 @@ import dbConfiguration from './config/db.config';
       isGlobal: true,
       load: [dbConfiguration],
     }),
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname, '..', '../../client/dist'),
+    //   //serveRoot: '/',
+    //   //exclude: ['/users*', '/companies*'],
+    //   //exclude: ['/api/{*test}'],
+    // }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '../client/dist'),
-      // serveRoot: '/',
-      // exclude: ['/users*', '/companies*'],
-      // exclude: ['/api/{*test}'],
+      rootPath: join(__dirname, '../../client/dist'),
+      serveRoot: '/',
+      exclude: ['/api*']
     }),
   ],
   controllers: [AppController],

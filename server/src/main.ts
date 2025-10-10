@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger, ConsoleLogger, RequestMethod } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
+//import { ConsoleLogger } from '@nestjs/common';
+//import { RequestMethod } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
@@ -8,16 +10,17 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     abortOnError: true,
-    logger: new ConsoleLogger({
-      colors: true,
-      prefix: 'Umb',
-    }),
+    // logger: new ConsoleLogger({
+    //   colors: true,
+    //   prefix: 'Umb',
+    // }),
   });
 
-  //app.setGlobalPrefix('api');
-  app.setGlobalPrefix('api', {
-    exclude: [{ path: '/', method: RequestMethod.GET }],
-  });
+  // app.setGlobalPrefix('api');
+  // app.setGlobalPrefix('api', {
+  //   exclude: [{ path: '/', method: RequestMethod.GET }],
+  // });
+
 
   const port = process.env.LISTEN_PORT ?? 0;
   await app.listen(port);

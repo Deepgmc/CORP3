@@ -15,7 +15,10 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cd client && npm run test:unit",
+
+
+
     "prepare": "husky"
   },
   "devDependencies": {
@@ -25,9 +28,6 @@
     "eslint": "^9.37.0",
     "eslint-plugin-vue": "^10.5.0",
     "lint-staged": "^16.2.3"
-  },
-  "lint-staged": {
-    "{client,server}/**/*.{js,ts,vue}": "eslint"
-
   }
 }
+

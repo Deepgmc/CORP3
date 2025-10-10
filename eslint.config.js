@@ -11,7 +11,7 @@ export default typescriptEslint.config(
       ...typescriptEslint.configs.recommended,
       ...eslintPluginVue.configs['flat/recommended'],
     ],
-    files: ['**/*.{ts,vue}'],
+    files: ['{client,server}/**/*.{js,ts,vue}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',

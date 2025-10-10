@@ -1,0 +1,6 @@
+{
+  "{client,server}/**/*.{js,ts,vue}": [
+    "eslint",
+    "npm run test:unit --prefix ./client"
+  ]
+}
