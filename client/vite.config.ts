@@ -4,6 +4,7 @@ import * as nodeUrl from 'node:url';
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 
 
 export default defineConfig(({ mode }) => {
@@ -11,14 +12,15 @@ export default defineConfig(({ mode }) => {
     //console.log('%c process.env.NODE_ENV:', 'color:rgb(182, 86, 158);', process.env.NODE_ENV)
     return {
         plugins: [
-            vue(),
+            vue({
+              template: { transformAssetUrls }
+            }),
             vueDevTools(),
-            //legacy({targets: ['defaults', 'not IE 11'],}),
-            // quasar({
-            //     sassVariables: nodeUrl.fileURLToPath(
-            //         new URL('./src/quasar-variables.sass', import.meta.url)
-            //     )
-            // })
+            quasar({
+                sassVariables: nodeUrl.fileURLToPath(
+                    new URL('./src/quasar-variables.sass', import.meta.url)
+                )
+            }),
         ],
         //root: 'src',
         build: {
