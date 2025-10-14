@@ -1,4 +1,3 @@
-//import './assets/main.css'
 import './assets/main.scss'
 
 import 'quasar/src/css/index.sass'
@@ -18,10 +17,10 @@ app.config.errorHandler = function (err: any) {
     console.log(err)
 }
 
-app.use(createPinia())
-app.use(router)
-
-app.use(Quasar, {
+app
+.use(createPinia())
+.use(router)
+.use(Quasar, {
     plugins: {},
 })
-app.mount('#corp_root_container')
+.mount('#corp_root_container')
