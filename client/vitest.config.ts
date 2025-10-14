@@ -7,6 +7,13 @@ import { quasar } from '@quasar/vite-plugin'
 
 //import vue from '@vitejs/plugin-vue'
 
+
+
+/**
+vitest --coverage.enabled
+
+*/
+
 export default mergeConfig(
   viteConfig({mode: 'development', command: 'serve'}),
   defineConfig({
