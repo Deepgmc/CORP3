@@ -1,39 +1,32 @@
+<!-- <q-icon name="note_add" /> <q-icon name="login" />-->
 <template>
-  <q-layout view="lHh lpR FFF">
-    <q-header reveal class="text-white">
+<q-layout view="HHH lpR lFr">
+    <q-header align="center" class="bg-indigo-10 text-white" height-hint="98">
       <q-toolbar>
         <q-toolbar-title>
+          <q-avatar>
+            <q-icon name="login" />
+          </q-avatar>
           Авторизация
         </q-toolbar-title>
       </q-toolbar>
+
+      <q-tabs align="center">
+        <q-route-tab to="/auth/login" label="Вход"></q-route-tab>
+        <q-route-tab to="/auth/register" label="Регистрация"></q-route-tab>
+      </q-tabs>
     </q-header>
 
-    <q-drawer show-if-above side="left" class="bg-dark">
-      <q-scroll-area class="fit">
-          <q-list padding class="menu-list">
-            <q-item clickable v-ripple to="/auth/login">
-              <q-item-section avatar>
-                <q-icon name="login" />
-              </q-item-section>
-              <q-item-section>
-                Войти
-              </q-item-section>
-            </q-item>
-
-            <q-item clickable v-ripple to="/auth/register">
-              <q-item-section avatar>
-                <q-icon name="note_add" />
-              </q-item-section>
-              <q-item-section>
-                Регистрация
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-scroll-area>
-    </q-drawer>
-
     <q-page-container>
-      <router-view />
+      <q-page>
+        <div class="row">
+          <div class="col-sm-3 col-md-4 col-xl-5 col-xs-12"></div>
+          <div class="col-sm-6 col-md-4 col-xl-2 col-xs-12" align="center">
+            <router-view />
+          </div>
+          <div class="col-sm-3 col-md-4 col-xl-5 col-xs-12"></div>
+        </div>
+      </q-page>
     </q-page-container>
   </q-layout>
 </template>

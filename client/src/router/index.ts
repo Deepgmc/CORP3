@@ -38,13 +38,13 @@ const routes: Array<RouteRecordRaw> = [
         {
             path: 'login',
             name: 'login',
-            component: () => import('@/views/auth/AuthLoginView.vue'),
+            component: () => import('@/components/auth/AuthLogin.vue'),
           },
 
           {
             path: 'register',
             name: 'register',
-            component: () => import('@/views/auth/AuthRegisterView.vue'),
+            component: () => import('@/components/auth/AuthRegister.vue'),
           },
         ]
       }

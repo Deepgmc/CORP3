@@ -9,6 +9,8 @@
 // } else {
 //   router.push({path: '/', replace: true})
 // }
+
+//.lintstagetrc: "npm run test:unit --prefix ./client"
 </script>
 
 <template>
