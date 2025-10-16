@@ -1,95 +1,91 @@
 <template>
-    <h5>Вход в систему</h5>
-    <q-separator inset />
     <div class="q-pa-md">
-    <q-form
-      @submit="onSubmit"
-      @reset="onReset"
-      class="q-gutter-md"
-    >
-      <q-input
-        v-model="loginUser.username"
-        label="Логин *"
-        :error="$v.username.$error"
-        :error-message="usernameErrorMessages"
-      />
-      <!-- <div v-for="error in $v.collection.$each.$response.$errors[index].name" :key="error"></div> -->
-
-      <q-input
-        v-model="loginUser.password"
-        :type="isPwd ? 'password' : 'text'"
-        label="Пароль *"
+      <q-form
+        @submit="onSubmit"
+        @reset="onReset"
       >
-        <template #append>
-          <q-icon
-            :name="isPwd ? 'visibility_off' : 'visibility'"
-            class="cursor-pointer"
-            @click="isPwd = !isPwd"
-          />
-        </template>
-      </q-input>
+        <q-input
+          v-model="loginUser.username"
+          label="Логин *"
+          :error="$v.username.$error"
+          :error-message="usernameErrorMessages"
+        />
 
-      <div>
-        <q-btn label="Войти" type="submit" color="primary" />
-        <q-btn label="Сбросить" type="reset" color="primary" flat class="q-ml-sm" />
-      </div>
-    </q-form>
-  </div>
+        <q-input
+          v-model="loginUser.password"
+          :type="isPwd ? 'password' : 'text'"
+          label="Пароль *"
+          :error="$v.password.$error"
+          :error-message="passwordErrorMessages"
+        >
+          <template #append>
+            <q-icon
+              :name="isPwd ? 'visibility_off' : 'visibility'"
+              class="cursor-pointer"
+              @click="isPwd = !isPwd"
+            />
+          </template>
+        </q-input>
+
+        <div>
+          <q-btn label="Войти" type="submit" color="primary" />
+          <q-btn label="Сбросить" type="reset" color="primary" flat class="q-ml-sm" />
+        </div>
+      </q-form>
+    </div>
 </template>
 
+
+
 <script setup lang="ts">
-/**
-:rules="[
-  emptyRule,
-  tooShortRule,
-  tooLongRule,
-]"
-*/
+
 import {ref, reactive, computed} from 'vue'
-
 import type { ILoginUser } from '../../../../interfaces/User'
+import { requiredNameLength, requiredPasswordLength } from '@/composables/auth/formValidation'
 
-//import {emptyRule, tooShortRule, tooLongRule} from '@/utils/validationRules.ts'
 const $externalResults = reactive({})
-import { useVuelidate, type Validation} from '@vuelidate/core'
+import { useVuelidate, type ErrorObject } from '@vuelidate/core'
 import { required, minLength, helpers } from '@vuelidate/validators'
 
 const isPwd = ref<boolean>(true)
 
 const loginUser = reactive<ILoginUser>({
     username: 'Se',
-    password: '1234567'
+    password: '1234'
 })
 
-const requiredNameLength = ref(3)
 const rules = computed(() => ({
   username: {
     required: helpers.withMessage(`Не может быть пустым`, required),
     minLength: helpers.withMessage(`Минимум ${requiredNameLength.value}`, minLength(requiredNameLength.value))
+  },
+  password: {
+    required: helpers.withMessage(`Не может быть пустым`, required),
+    minLength: helpers.withMessage(`Минимум ${requiredPasswordLength.value}`, minLength(requiredPasswordLength.value))
   },
 }))
 
 const $v = useVuelidate(rules, loginUser, { $externalResults: $externalResults })
 
 const usernameErrorMessages = ref<string>('')
+const passwordErrorMessages = ref<string>('')
 
 async function onSubmit(){
-  // $v.value.$clearExternalResults()
-  // $v.value.$reset()
-  // $v.value.$touch()
+  // $v.value.$clearExternalResults()// $v.value.$reset()// $v.value.$touch()
   const result = await $v.value.$validate()
-  console.log('result:', result)
-  const messages = collectMessages($v.value)
-  usernameErrorMessages.value = messages
+  console.log('Validation result:', result)
+  usernameErrorMessages.value = collectMessages.call($v.value.username)
+  passwordErrorMessages.value = collectMessages.call($v.value.password)
 }
 
-function collectMessages($v: Validation): string {
-  return $v.$errors.map(err => err.$message).join(' <> ')
+function collectMessages(): string {
+  return this.$errors.map((err: ErrorObject) => err.$message).join('. ')
 }
 
 function onReset(){
   loginUser.username = ''
   loginUser.password = ''
+  $v.value.$reset()
 }
 </script>
 
