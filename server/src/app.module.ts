@@ -3,9 +3,13 @@ import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 import dbConfiguration from './config/db.config';
+import { APP_FILTER } from '@nestjs/core';
+import { NotFoundExceptionFilter } from './HttpException.filter';
+import { TestModule } from './test/test.module';
 
 @Module({
   imports: [
@@ -14,19 +18,22 @@ import dbConfiguration from './config/db.config';
       isGlobal: true,
       load: [dbConfiguration],
     }),
-    // ServeStaticModule.forRoot({
-    //   rootPath: join(__dirname, '..', '../../client/dist'),
-    //   //serveRoot: '/',
-    //   //exclude: ['/users*', '/companies*'],
-    //   //exclude: ['/api/{*test}'],
-    // }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../../client/dist'),
       serveRoot: '/',
-      exclude: ['/api*']
+      //exclude: ['/api*']
     }),
+    TestModule,
+    AuthModule,
+    UsersModule,
   ],
+
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    {
+        provide: APP_FILTER,
+        useClass: NotFoundExceptionFilter
+    }
+  ],
 })
 export class AppModule {}

@@ -5,18 +5,25 @@
         @reset="onReset"
       >
         <q-input
-          v-model="loginUser.username"
+          v-model="regUser.username"
           label="Логин *"
           :error="$v.username.$error"
-          :error-message="usernameErrorMessages"
+          :error-message="getErrorForField('username')"
         />
 
         <q-input
-          v-model="loginUser.password"
+          v-model="regUser.email"
+          label="Эл. почта *"
+          :error="$v.email.$error"
+          :error-message="getErrorForField('email')"
+        />
+
+        <q-input
+          v-model="regUser.password"
           :type="isPwd ? 'password' : 'text'"
           label="Пароль *"
           :error="$v.password.$error"
-          :error-message="passwordErrorMessages"
+          :error-message="getErrorForField('password')"
         >
           <template #append>
             <q-icon
@@ -28,11 +35,11 @@
         </q-input>
 
         <q-input
-          v-model="loginUser.passwordConfirm"
+          v-model="regUser.passwordConfirm"
           :type="isPwdConf ? 'password' : 'text'"
           label="Пароль повторно *"
           :error="$v.passwordConfirm.$error"
-          :error-message="passwordConfirmErrorMessages"
+          :error-message="getErrorForField('passwordConfirm')"
         >
           <template #append>
             <q-icon
@@ -44,70 +51,82 @@
         </q-input>
 
         <div>
-          <q-btn label="Войти" type="submit" color="primary" />
+          <div class="row">
+            <div class="col">
+              <q-chip class="q-mb-md" color="red-14" text-color="white">
+                Текст для общей ошибки
+              </q-chip>
+            </div>
+          </div>
+          <q-btn label="Зарегистрироваться" type="submit" color="primary" />
           <q-btn label="Сбросить" type="reset" color="primary" flat class="q-ml-sm" />
         </div>
       </q-form>
     </div>
 </template>
 
+
+
+
 <script setup lang="ts">
-import {ref, reactive, computed} from 'vue'
+import {ref, reactive } from 'vue'
 import type { TRegisterForm } from '../../../../interfaces/User'
-import { requiredNameLength, requiredPasswordLength } from '@/composables/auth/formValidation'
+import { getAuthRules } from '@/composables/auth/formValidation'
 
 const $externalResults = reactive({})
 import { useVuelidate, type ErrorObject } from '@vuelidate/core'
-import { required, minLength, helpers } from '@vuelidate/validators'
+import { AuthManager } from '@/auth/AuthManager'
 
-const isPwd = ref<boolean>(true)
+const isPwd     = ref<boolean>(true)
 const isPwdConf = ref<boolean>(true)
-const usernameErrorMessages = ref<string>('')
-const passwordErrorMessages = ref<string>('')
-const passwordConfirmErrorMessages = ref<string>('')
 
-const loginUser = reactive<TRegisterForm>({
-    username       : 'Se',
-    password       : '1234',
-    passwordConfirm: '1234',
+const regUser = reactive<TRegisterForm>({
+    username       : 'Deepgmc',
+    password       : '1234567',
+    passwordConfirm: '1234567',
     email          : 'test@mail.ru',
-    birth          : '19.04.1988',
+    birth          : 577396800000,
 })
 
-const rules = computed(() => ({
-  username: {
-    required: helpers.withMessage(`Не может быть пустым`, required),
-    minLength: helpers.withMessage(`Минимум ${requiredNameLength.value}`, minLength(requiredNameLength.value))
-  },
-  password: {
-    required: helpers.withMessage(`Не может быть пустым`, required),
-    minLength: helpers.withMessage(`Минимум ${requiredPasswordLength.value}`, minLength(requiredPasswordLength.value))
-  },
-  passwordConfirm: {
-    required: helpers.withMessage(`Не может быть пустым`, required),
-    minLength: helpers.withMessage(`Минимум ${requiredPasswordLength.value}`, minLength(requiredPasswordLength.value))
-  },
-}))
+const rules = getAuthRules(['username', 'password', 'passwordConfirm', 'email', 'passEqual'])
+const $v = useVuelidate(rules, regUser, { $externalResults: $externalResults })
 
-const $v = useVuelidate(rules, loginUser, { $externalResults: $externalResults })
 
-async function onSubmit(){
+
+
+
+
+async function onSubmit(): Promise<boolean> {
+  //валидация на клиенте
   const result = await $v.value.$validate()
-  console.log('Validation result:', result)
-  usernameErrorMessages.value = collectMessages.call($v.value.username)
-  passwordErrorMessages.value = collectMessages.call($v.value.password)
-}
 
-function collectMessages(): string {
-  return this.$errors.map((err: ErrorObject) => err.$message).join('. ')
+  console.log('Register validation result:', result)
+  if(!result){
+    return false
+  }
+
+  //отправка данных на сервер, валидация на сервере, вывод ошибок тут на клиенте
+  const am = AuthManager.getInstance()
+  const res = am.registerRequest(regUser)
+  console.log('res:', res)
+
+  return true
 }
 
 function onReset(){
-  loginUser.username = ''
-  loginUser.password = ''
-  loginUser.passwordConfirm = ''
+  regUser.username = ''
+  regUser.password = ''
+  regUser.passwordConfirm = ''
+  regUser.email = ''
   $v.value.$reset()
 }
+
+function getErrorForField(field: string) {
+  return $v.value[field].$errors.map((err: ErrorObject) => {
+    return err.$message.toString()
+  }).join(' | ')
+}
+
 </script>
 
 <style lang="scss">

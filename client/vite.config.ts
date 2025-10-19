@@ -48,11 +48,7 @@ export default defineConfig(({ mode }) => {
                 usePolling: true
             },
             proxy: {
-                '/auth': {
-                    target: `http://localhost:${env.PROXY_DEV_PORT}`,
-                    changeOrigin: true,//заголовок Origin
-                    //rewrite: (path) => path.replace(/^\/api/, ''),
-                },
+
                 '/api': {
                     target: `http://localhost:${env.PROXY_DEV_PORT}/`,
                     changeOrigin: true,//заголовок Origin
