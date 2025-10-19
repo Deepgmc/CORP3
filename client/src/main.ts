@@ -12,7 +12,7 @@ import router from './router'
 const app = createApp(App)
 
 app.config.errorHandler = function (err: any) {
-    console.log('%c Global erorr handler:', 'background:rgb(85, 0, 0); color: #bada55; padding: 3px; font-size:14px');
+    console.log('%c Global erorr handler:', 'background:rgb(85, 0, 0); color: #bada55; padding: 4px; font-size:11px');
     console.log(err)
 }
 

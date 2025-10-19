@@ -53,8 +53,8 @@
         <div>
           <div class="row">
             <div class="col">
-              <q-chip class="q-mb-md" color="red-14" text-color="white">
-                Текст для общей ошибки
+              <q-chip v-if="errorsText" class="q-mb-md" color="red-14" text-color="white">
+                {{ errorsText }}
               </q-chip>
             </div>
           </div>
@@ -77,10 +77,13 @@ const $externalResults = reactive({})
 import { useVuelidate, type ErrorObject } from '@vuelidate/core'
 import { AuthManager } from '@/auth/AuthManager'
 
-const isPwd     = ref<boolean>(true)
-const isPwdConf = ref<boolean>(true)
+const authManager = AuthManager.getInstance()
 
-const regUser = reactive<TRegisterForm>({
+const isPwd      = ref<boolean>(true)
+const isPwdConf  = ref<boolean>(true)
+const errorsText = ref<string | undefined>('')
+
+const regUser = ref<TRegisterForm>({
     username       : 'Deepgmc',
     password       : '1234567',
     passwordConfirm: '1234567',
@@ -91,34 +94,40 @@ const regUser = reactive<TRegisterForm>({
 const rules = getAuthRules(['username', 'password', 'passwordConfirm', 'email', 'passEqual'])
 const $v = useVuelidate(rules, regUser, { $externalResults: $externalResults })
 
-
-
-
-
-
 async function onSubmit(): Promise<boolean> {
-  //валидация на клиенте
-  const result = await $v.value.$validate()
 
-  console.log('Register validation result:', result)
-  if(!result){
+  resetServerErrText()
+
+  if(!await $v.value.$validate()) return false
+
+  //отправка данных на сервер, валидация на сервере, вывод ошибок
+  try {
+    const registerRes = await authManager.registerRequest(regUser.value)
+    if(registerRes.error){
+      errorsText.value = 'Unhandled error'
+    }
+  } catch (error: any) {
+    if(typeof error.response !== 'undefined') errorsText.value = error.response.data.message[0]
     return false
   }
-
-  //отправка данных на сервер, валидация на сервере, вывод ошибок тут на клиенте
-  const am = AuthManager.getInstance()
-  const res = am.registerRequest(regUser)
-  console.log('res:', res)
-
   return true
 }
 
 function onReset(){
-  regUser.username = ''
-  regUser.password = ''
-  regUser.passwordConfirm = ''
-  regUser.email = ''
+  resetForm()
+}
+
+function resetForm(){
+  regUser.value.username = ''
+  regUser.value.password = ''
+  regUser.value.passwordConfirm = ''
+  regUser.value.email = ''
+  resetServerErrText()
   $v.value.$reset()
+}
+
+function resetServerErrText(){
+  errorsText.value = ''
 }
 
 function getErrorForField(field: string) {

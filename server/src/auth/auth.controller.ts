@@ -1,12 +1,11 @@
 import { Body, Controller, Post, UsePipes } from '@nestjs/common';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { PasswordValidationPipe } from '../pipes/password.pipe';
-// import { AuthService } from './auth.service';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
-    //constructor(private readonly authService: AuthService) { }
-    constructor() { }
+    constructor(private readonly authService: AuthService) { }
 
     /**
     * Регистрация нового пользователя
@@ -20,9 +19,8 @@ export class AuthController {
     async register(
         @Body() createUserDto: CreateUserDto
     ): Promise<any> {
-        const date = new Date(); console.log('Register POST request accepted', `${date.getDate()}.${date.getMonth()}.${date.getFullYear()}`)
         console.log('createUserDto:', createUserDto)
-        //await this.authService.registerNewUser(createUserDto)
+        await this.authService.registerNewUser(createUserDto)
     }
 
     //@UseGuards(AuthGuard('jwt'))

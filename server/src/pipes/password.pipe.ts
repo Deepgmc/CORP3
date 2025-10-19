@@ -6,7 +6,7 @@ import { BadRequestException, Injectable, PipeTransform } from "@nestjs/common";
 @Injectable()
 export class PasswordValidationPipe implements PipeTransform {
   transform(value: any, /*metadata: ArgumentMetadata*/) {
-    if(value.password !== value.passwordConfirm) throw new BadRequestException(['Пароли не совпадают'])
+    if(value.password !== value.passwordConfirm) throw new BadRequestException({error: 'BadRequestException', type: 'password', message: 'Пароли не совпадают'})
     return value
   }
 }

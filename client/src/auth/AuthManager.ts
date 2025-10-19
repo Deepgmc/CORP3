@@ -36,7 +36,6 @@ export class AuthManager implements IAuthManager {
         authStore?: any
     ){
         if(AuthManager.instance) throw new TypeError('Instance creation only with .getInstance()')
-        console.log('%c AuthManager constructor call', 'color:rgb(182, 86, 158);')
         AuthManager.instance = this
         if(strategy) this._strategy = strategy
         this._authStore = authStore
@@ -47,8 +46,8 @@ export class AuthManager implements IAuthManager {
     }
 
     async registerRequest(registerData: TRegisterForm): Promise<any>{
-        if(this.isLogined) return {error: {message: 'You already logined'}}
-        return await this._postData('register')(registerData)
+      if(this.isLogined) return {error: {message: 'You already logined'}}
+      return await this._postData('register')(registerData)
     }
 
     /**

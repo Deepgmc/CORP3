@@ -1,10 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm'
-
 import { UsersEntity } from './entities/user.entity'
 import { CreateUserDto } from './dto/create-user.dto'
-import { TUserId } from '../interfaces/IUser'
 
 @Injectable()
 export class UsersService {
@@ -39,14 +37,6 @@ export class UsersService {
         } catch {
             throw new NotFoundException()
         }
-    }
-
-    async getGameSettings(userId: TUserId): Promise<string> {
-        const user = await this.findOne('userId', userId)
-        if(user !== null){
-            return user.game_settings
-        }
-        return ''
     }
 
     /**

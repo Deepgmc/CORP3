@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsPositive, Min, Length, IsEmail, IsOptional } from 'class-validator'
+import { IsString, IsNotEmpty, IsPositive, Length, IsEmail, IsOptional } from 'class-validator'
 
 import { IUsersCreateDTO } from '../../interfaces/IUser'
 import { dtoValidationMessageHandler } from '../../validation/dtoMsgHandler'
@@ -36,8 +36,8 @@ export class CreateUserDto implements IUsersCreateDTO {
     email: string
 
     @IsPositive({message: dtoMsg.getMessage('positive')})
-    @Min(100000, {message: dtoMsg.getMessage('min')})
-    birth: number
+    @IsString({message: dtoMsg.getMessage('string')})
+    birth: string
 
     @IsString({message: dtoMsg.getMessage('string')})
     @Length(3, 25, {message: dtoMsg.getMessage('length')})

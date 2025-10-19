@@ -1,5 +1,6 @@
 import type { TJwtToken } from '@/interfaces/Auth'
 import axios from 'axios'
+import type {AxiosResponse} from 'axios'
 import type { /*AxiosInstance,*/ Axios, /*AxiosRequestConfig*/ /*AxiosResponse*/ } from 'axios'
 
 export type HttpClientTypes = Axios
@@ -73,8 +74,8 @@ export default class NetworkManager {
   getApiRequestMethod (method: EReqMethods) {
     return (module: string) => {
       return (action: string) => {
-        return async (parameters: object | null) => {
-          this.httpClient[method](`${module}/${action}`, {params: parameters})
+        return async (parameters: object | null): Promise<AxiosResponse> => {
+            return this.httpClient[method](`${module}/${action}`, parameters)
         }
       }
     }

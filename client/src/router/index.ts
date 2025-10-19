@@ -60,7 +60,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, _from, next) => {
-  console.log('%c beforeEach to:', 'color:rgb(182, 86, 158);', to)
+  //console.log('%c beforeEach to:', 'color:rgb(182, 86, 158);', to)
   if (!isLogined && to.name !== 'login' && to.name !== 'register') {
     next('/auth/register')
   } else {

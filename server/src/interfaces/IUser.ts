@@ -1,7 +1,7 @@
 export interface IUser {
     userId  : number,
     username: string,
-    birth   : number, //timestamp of a birth
+    birth   : string, //timestamp of a birth
     password: string,
     email   : string,
 }
