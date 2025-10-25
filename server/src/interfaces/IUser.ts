@@ -8,7 +8,7 @@ export interface IUser {
 
 export type TUserId = IUser['userId'];
 
-export interface ILoginUser extends Pick<IUser, 'username' | 'password'> {}
+export type ILoginUser = Pick<IUser, 'username' | 'password'>
 
 export interface TRegisterForm extends Pick<IUser, 'username' | 'password' | 'email' | 'birth'> {
     passwordConfirm: string,

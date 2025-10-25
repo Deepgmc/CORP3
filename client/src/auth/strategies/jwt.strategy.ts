@@ -1,23 +1,23 @@
 import {type TJwtToken } from '@/interfaces/Auth'
-
-import { Strategy } from './Strategy';
+import { Strategy } from '@/auth/strategies/Strategy';
 import { RESPONSE_STATUS_CODES } from '@/constants';
 import type { ILoginUser } from '../../../../interfaces/User';
-//import NetworkManager from '@/network/NetworkManager';
-import { AuthManager } from '../AuthManager';
+import NetworkManager, { EReqMethods } from '@/network/NetworkManager';
+import type { TAuthRenponse } from '@/interfaces/Error';
 
-//const $networkManager = NetworkManager.getInstance()
 
 export class jwtStrategy extends Strategy {
 
-    private _apiSection: string = 'auth'
-    // private _postData: (authManager: AuthManager) => any
-    // private _getData: (authManager: AuthManager) => any
+    private _apiModule: string = 'auth'
+    private _postData: (action: string) => any
+    private _getData: (action: string) => any
 
-    constructor(){
+    constructor(
+      private networkManager: NetworkManager
+    ){
         super()
-        // this._postData = $networkManager.applyNetworkMethod('post', this._apiSection)
-        // this._getData = $networkManager.applyNetworkMethod('get', this._apiSection)
+        this._postData = this.networkManager.getApiRequestMethod(EReqMethods.post)(this._apiModule)
+        this._getData = this.networkManager.getApiRequestMethod(EReqMethods.get)(this._apiModule)
     }
 
     /**
@@ -26,17 +26,16 @@ export class jwtStrategy extends Strategy {
      * @param password
      * @returns Is user logined success or no
     */
-    async login(loginData: ILoginUser): Promise<any> {
-        const $authManager = AuthManager.getInstance()
+    async login(loginData: ILoginUser): Promise<TAuthRenponse> {
         try{
-            const loginRes = await this._postData($authManager)('login')(loginData)
+            const loginRes = await this._postData('login')(loginData, false)
             if(loginRes.status === RESPONSE_STATUS_CODES.CREATED){
-                this.setAuthStoragedData({access_token: loginRes.data.access_token})
-                return true
+                this.setAuthStoragedData( {access_token: loginRes.data.access_token} )
+                return { error: false, message: 'Успешная авторизация' }
             }
-            return loginRes //axios error
-        } catch(loginError){
-            return loginError
+            return { error: true, message: loginRes.message } //axios error
+        } catch(loginError: any){
+            return { error: true, message: loginError.message }
         }
     }
 
@@ -49,9 +48,7 @@ export class jwtStrategy extends Strategy {
      * @returns boolean
      */
     async isLogined() {
-        let isLogined: boolean = false
-        isLogined = await this.checkServerStrategyStatus()
-        return isLogined
+      return await this.checkServerStrategyStatus()
     }
 
     /**
@@ -59,26 +56,36 @@ export class jwtStrategy extends Strategy {
      * @returns whether token valid or not
      */
     async checkServerStrategyStatus() {
-        let isLogined = false
-        const checkData = await this._getData(AuthManager.getInstance())('check_token')()
-        if(checkData.status === RESPONSE_STATUS_CODES.SUCCESS){
+      let isLogined = false
+      try {
+        const checkData = await this._getData('check_token')()
+        if(checkData.status === RESPONSE_STATUS_CODES.SUCCESS && checkData.data.logined) {
             isLogined = true
         }
-        if(checkData.error && checkData.error.status === RESPONSE_STATUS_CODES.UNAUTHORIZED){
+        if(checkData.error && checkData.error.status === RESPONSE_STATUS_CODES.UNAUTHORIZED) {
             isLogined = false
         }
         return isLogined
+      } catch (e: any) {
+        //в случае любой ошибки - проверка логина проваливается
+        console.log('checkServerStrategyStatus error:', e)
+        return false
+      }
     }
 
-    set token(token: TJwtToken) {
-        throw new ReferenceError('Can not set token directly')
-    }
+    // set token(token: TJwtToken) {
+    //     this.token = token
+    // }
     get token(): TJwtToken {
         const authData = this.getAuthStoragedData()
-        if(!authData) return null
+        if(!authData) return ''
         if(typeof authData.access_token !== 'undefined'){
             return authData.access_token
         }
-        return null
+        return ''
+    }
+
+    isHasToken(){
+      return !!this.token
     }
 }

@@ -1,11 +1,12 @@
-// import { IUser } from 'src/interfaces/IUser';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
 
 
 @Entity('users')
 export class UsersEntity {
-    @PrimaryGeneratedColumn()
-    userId: number;
+    @PrimaryGeneratedColumn('increment', { //uuid для генерации большого ключа
+        comment: 'User autoincrement id'
+    })
+    readonly userId: number;
 
     @Column()
     username: string;

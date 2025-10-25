@@ -34,16 +34,21 @@ export enum EValidations {
   email     = 'email',
   passEqual = 'passEqual'
 }
+export enum msgColors {
+  red   = 'red',
+  green = 'green'
+}
 
 //передаём типы необходимых валидаций, получаем эти валидации в необходиом vuelidate виде
-export function getAuthRules(fields: Array<string>){
+export function getAuthRules(fields: Array<string>, formType: string = 'register'){
   const rules: any = {}
   let thisRules: Array<EValidations>
   fields.forEach((field) => {
     thisRules = []
     switch(field) {
       case 'password':
-        thisRules = [EValidations.minLength, EValidations.maxLength, EValidations.passEqual, EValidations.required]
+        thisRules = [EValidations.minLength, EValidations.maxLength, EValidations.required]
+        if(formType === 'register') thisRules.push(EValidations.passEqual) //проверка совпадения паролей только для формы регистрации, а не логина
         break;
       case 'passwordConfirm':
       case 'username':
@@ -57,18 +62,6 @@ export function getAuthRules(fields: Array<string>){
   })
 
   return computed(() => (rules))
-}
-
-/**
- * Валидатор, правильно ли подтвержден пароль (при регистрации)
- * @param value проверяемое поле пароля
- * @param siblings другие поля, одно из которых подтверждение пароля
- * @returns ValidatorResponse -> type Vuelidate
- */
-const passEqual: ValidatorFn = (value: TRegisterForm['password'], siblings: any): ValidatorResponse => {
-  return {
-    $valid: value === siblings.passwordConfirm as TRegisterForm['passwordConfirm']
-  }
 }
 
 const externalServerValidation = () => true //vuelidate bug: incorrect works with $externalData errors!
@@ -99,4 +92,16 @@ export function getRule(types: Array<EValidations>, fieldName: string){
     }
   })
   return result
+}
+
+/**
+ * Валидатор, правильно ли подтвержден пароль (при регистрации)
+ * @param value проверяемое поле пароля
+ * @param siblings другие поля, одно из которых подтверждение пароля
+ * @returns ValidatorResponse -> type Vuelidate
+ */
+const passEqual: ValidatorFn = (value: TRegisterForm['password'], siblings: any): ValidatorResponse => {
+  return {
+    $valid: value === siblings.passwordConfirm as TRegisterForm['passwordConfirm']
+  }
 }

@@ -8,26 +8,30 @@ import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
 import { jwtConstants } from '../config/auth.config';
 import { JwtStrategy } from './jwt.strategy';
-//import { ServeStaticModule } from '@nestjs/serve-static';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
-    controllers: [AuthController],
-    providers: [
-        { provide: AuthService, useClass: AuthService },
-        LocalStrategy,
-        JwtStrategy
-    ],
-    imports: [
-        UsersModule,
-        PassportModule,
-        JwtModule.register({
-            //global: true,
-            secret: jwtConstants.secret,
-            signOptions: { expiresIn: '6h' }
-        }),
-    ],
-    exports: [
-        AuthService
-    ],
+	controllers: [AuthController],
+	providers: [
+		{ provide: AuthService, useClass: AuthService },
+		LocalStrategy,
+		JwtStrategy
+	],
+	imports: [
+		UsersModule,
+		PassportModule,
+		JwtModule.registerAsync({
+			inject: [ConfigService],
+			useFactory: (configService: ConfigService) => {
+				return {
+					secret: jwtConstants.secret,
+					signOptions: { expiresIn: configService.get('customVars.loginSessionKeepAlive') },
+				}
+			},
+		}),
+	],
+	exports: [
+		AuthService
+	],
 })
 export class AuthModule { }

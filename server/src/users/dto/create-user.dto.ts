@@ -2,6 +2,7 @@ import { IsString, IsNotEmpty, IsPositive, Length, IsEmail, IsOptional } from 'c
 
 import { IUsersCreateDTO } from '../../interfaces/IUser'
 import { dtoValidationMessageHandler } from '../../validation/dtoMsgHandler'
+import { ApiProperty } from '@nestjs/swagger'
 
 const dtoMsg = new dtoValidationMessageHandler('User')
 
@@ -26,11 +27,21 @@ export class CreateUserDto implements IUsersCreateDTO {
     @IsDate()
      */
 
+    @ApiProperty({
+        description: 'Имя пользователя',
+        required: true,
+        type: String
+    })
     @IsNotEmpty({message: dtoMsg.getMessage('notempty')})
     @IsString({message: dtoMsg.getMessage('string')})
     @Length(2, 20, {message: dtoMsg.getMessage('length')})
     username: string
 
+    @ApiProperty({
+        description: 'Почта пользователя',
+        required: true,
+        type: String
+    })
     @IsString()
     @IsEmail({ignore_max_length: true}, {message: dtoMsg.getMessage('email')})
     email: string
@@ -43,8 +54,8 @@ export class CreateUserDto implements IUsersCreateDTO {
     @Length(3, 25, {message: dtoMsg.getMessage('length')})
     password: string
 
-    @IsString({message: ''})
-    passwordConfirm: string
+    // @IsString({message: ''})
+    // passwordConfirm: string
 
     @IsOptional()
     reg_date: Date

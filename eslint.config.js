@@ -6,6 +6,7 @@ import typescriptEslint from 'typescript-eslint';
 export default typescriptEslint.config(
   { ignores: ['*.d.ts', '**/coverage', '**/dist'] },
   {
+
     extends: [
       eslint.configs.recommended,
       ...typescriptEslint.configs.recommended,
@@ -25,6 +26,7 @@ export default typescriptEslint.config(
         parser: typescriptEslint.parser,
       },
     },
+    //root: false,
     rules: {
       '@typescript-eslint/no-explicit-any'        : 'off',
       '@typescript-eslint/no-unsafe-assignment'   : 'off',
@@ -32,10 +34,12 @@ export default typescriptEslint.config(
       '@typescript-eslint/no-unsafe-call'         : 'off',
       '@typescript-eslint/no-unsafe-return'       : 'off',
       '@typescript-eslint/no-unused-vars'         : 'error',
+      '@typescript-eslint/no-unused-expressions'  : 'error',
       '@typescript-eslint/no-empty-object-type'   : 'warn',
       "@typescript-eslint/ban-ts-comment"         : "off",
 
-      'no-debugger'                                : 'off',
+      'no-debugger'                                : 'warn',
+
       'vue/require-prop-types'                     : 'error',
       'vue/prop-name-casing'                       : 'error',
       'vue/no-mutating-props'                      : 'error',

@@ -8,7 +8,7 @@
           v-model="loginUser.username"
           label="Логин *"
           :error="$v.username.$error"
-          :error-message="usernameErrM"
+          :error-message="getErrorForField('username')"
         />
 
         <q-input
@@ -16,7 +16,7 @@
           :type="isPwd ? 'password' : 'text'"
           label="Пароль *"
           :error="$v.password.$error"
-          :error-message="passwordErrM"
+          :error-message="getErrorForField('password')"
         >
           <template #append>
             <q-icon
@@ -28,6 +28,13 @@
         </q-input>
 
         <div>
+          <div class="row">
+            <div class="col">
+              <q-chip v-if="responseMsgText" class="q-mb-md" :color="responseMsgColor" text-color="white">
+                {{ responseMsgText }}
+              </q-chip>
+            </div>
+          </div>
           <q-btn label="Войти" type="submit" color="primary" />
           <q-btn label="Сбросить" type="reset" color="primary" flat class="q-ml-sm" />
         </div>
@@ -39,61 +46,95 @@
 <script setup lang="ts">
 
 import {ref, reactive } from 'vue'
+import { AuthManager } from '@/auth/AuthManager'
 import type { ILoginUser } from '../../../../interfaces/User'
-import { getAuthRules } from '@/composables/auth/formValidation'
+import { getAuthRules, msgColors } from '@/composables/auth/formValidation'
+
+const authManager = AuthManager.getInstance()
 
 const $externalResults = reactive({})
 import { useVuelidate, type ErrorObject } from '@vuelidate/core'
 
 const isPwd = ref<boolean>(true)
 
-const loginUser = reactive<ILoginUser>({
-    username: 'Se',
-    password: '1234'
+const loginUser = ref<ILoginUser>({
+    username: 'Deepgmc',
+    password: '1234567'
 })
+const responseMsgText = ref<string>('')
+const responseMsgColor = ref<msgColors>(msgColors.red)
 
 
 //определяем правила валидации для разных полей
-const rules = getAuthRules(['username', 'password'])
-/**
-
-ПОКА ОСТАВИТЬ ДЛЯ НАГЛЯДНОСТИ
-
-const rules = computed(() => ({
-  username: {
-    required: helpers.withMessage(`Не может быть пустым`, required),
-    minLength: helpers.withMessage(`Минимум ${requiredNameLength.value}`, minLength(requiredNameLength.value))
-  },
-  password: {
-    required: helpers.withMessage(`Не может быть пустым`, required),
-    minLength: helpers.withMessage(`Минимум ${requiredPasswordLength.value}`, minLength(requiredPasswordLength.value))
-  },
-}))
-*/
+const rules = getAuthRules(['username', 'password'], 'login')
 const $v = useVuelidate(rules, loginUser, { $externalResults: $externalResults })
 
-const usernameErrM = ref<string>('')
-const passwordErrM = ref<string>('')
-
 async function onSubmit(){
-  //валидация на клиенте
-  const result = await $v.value.$validate()
-  usernameErrM.value = collectMessages.call($v.value.username)
-  passwordErrM.value = collectMessages.call($v.value.password)
+  //client-side validation
+  //if(!await $v.value.$validate()) return false
 
-  console.log('Auth validation result:', result)
+  //server-side validation
+  try {
+    const loginRes = await authManager.loginRequest(loginUser.value)
+    console.log('loginRes:', loginRes)
+    if(loginRes.error){
+      responseMsgColor.value = msgColors.red
+      responseMsgText.value = loginRes.message ? loginRes.message : ''
+    } else {
+      responseMsgColor.value = msgColors.green
+      responseMsgText.value = 'onSubmit: Вход завершен успешно'
+    }
+  } catch (e: any){
+    console.log('onSubmit error:', e)
+  }
 
-  //отправка данных на сервер, валидация на сервере, вывод ошибок тут на клиенте
+
+
+
+
+
+
+
+
+
+
+  // try {
+  //   const loginRes = await authManager.loginRequest(loginUser.value)
+  //
+  //   if(loginRes.error){
+  //     responseMsgText.value = loginRes.error.message
+  //     return false
+  //   }
+  //   responseMsgColor.value = msgColors.green
+  //   responseMsgText.value = 'Вы успешно вошли в систему'
+  //   return true
+  // } catch (error: any) {
+  //   responseMsgColor.value = msgColors.red
+  //   if(typeof error.response !== 'undefined') responseMsgText.value = error.response.data.message[0]
+  //   return false
+  // }
 }
 
-function collectMessages(): string {
-  return this.$errors.map((err: ErrorObject) => err.$message).join('. ')
-}
 
 function onReset(){
-  loginUser.username = ''
-  loginUser.password = ''
-  $v.value.$reset() // $v.value.$clearExternalResults()// $v.value.$reset()// $v.value.$touch()
+  resetForm()
+}
+
+function resetForm(){
+  loginUser.value.username = ''
+  loginUser.value.password = ''
+  resetServerErrText()
+  $v.value.$reset()
+}
+
+function resetServerErrText(){
+  responseMsgText.value = ''
+}
+
+function getErrorForField(field: string) {
+  return $v.value[field].$errors.map((err: ErrorObject) => {
+    return err.$message.toString()
+  }).join(' | ')
 }
 
 </script>

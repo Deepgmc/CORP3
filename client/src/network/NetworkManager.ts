@@ -1,7 +1,7 @@
-import type { TJwtToken } from '@/interfaces/Auth'
+import { AuthManager } from '@/auth/AuthManager'
 import axios from 'axios'
 import type {AxiosResponse} from 'axios'
-import type { /*AxiosInstance,*/ Axios, /*AxiosRequestConfig*/ /*AxiosResponse*/ } from 'axios'
+import type { /*AxiosInstance,*/ Axios, AxiosRequestConfig /*AxiosResponse*/ } from 'axios'
 
 export type HttpClientTypes = Axios
 
@@ -74,31 +74,31 @@ export default class NetworkManager {
   getApiRequestMethod (method: EReqMethods) {
     return (module: string) => {
       return (action: string) => {
-        return async (parameters: object | null): Promise<AxiosResponse> => {
-            return this.httpClient[method](`${module}/${action}`, parameters)
+        return async (
+          parameters: AxiosRequestConfig,
+          withAuth: boolean = true
+        ): Promise<AxiosResponse> => {
+          if(withAuth){
+            console.log('With auth')
+            if( !this.applyAuthorization(AuthManager.getInstance()) ){
+              console.warn('Apply authorization failed at NetworkManager')
+            }
+          } else {
+            console.log('Without auth')
+          }
+          return this.httpClient[method](`${module}/${action}`, parameters)
         }
       }
     }
   }
 
-
-
-  /**
-  if(unauthorized){
-      this.applyAuthorization('TOKEN')
+  applyAuthorization(authManager: AuthManager) {
+    if(authManager._strategy && authManager._strategy.isHasToken()) {
+      console.log('authManager._strategy.token:', authManager._strategy.token)
+      this.httpClient.defaults.headers.common['Authorization'] = `Bearer ${authManager._strategy.token}`;
+      return true
     }
-    return async () => {
-      try {
-        const res = await this.httpClient[schema.method](path, {params: parameters})
-        return res
-      } catch (e: any){
-        console.log('e:', e)
-      }
-    }
-  */
-
-  applyAuthorization(token: TJwtToken){
-      this.httpClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    return false
   }
 
 }

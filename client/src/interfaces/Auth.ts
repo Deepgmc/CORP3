@@ -1,7 +1,7 @@
 import type { jwtStrategy } from '@/auth/strategies/jwt.strategy'
 import type { ILoginUser, TRegisterForm } from "../../../interfaces/User"
 
-export type TJwtToken = string | null
+export type TJwtToken = string
 
 export type TAuthData = {
     access_token: TJwtToken

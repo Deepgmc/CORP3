@@ -3,7 +3,7 @@ import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
-import { IUser } from '../interfaces/IUser'
+import { IUser, IUsersCreateDTO } from '../interfaces/IUser'
 
 @Injectable()
 export class AuthService {
@@ -17,6 +17,11 @@ export class AuthService {
     user.password = await this.getPasswordHash(user.password)
     const creationResult = await this.usersService.create(user)
     if (!creationResult) throw new BadRequestException(['Невозможно создать с таким логином/почтой'])
+
+    //! ПРИМЕР QueryBuilder
+    // const alias = 'users'
+    // const q = this.usersRepository.createQueryBuilder()
+    // q.andWhere(${alias}.userId in (:...userIds), {userIds: params.userIds})
   }
 
   async getPasswordHash(password: string): Promise<string> {
@@ -57,8 +62,7 @@ export class AuthService {
     }
   }
 
-  //async getAndCheckUser(username: string): Promise<IUsersCreateDTO> {
-  async getAndCheckUser(username: string): Promise<any> {
+  async getAndCheckUser(username: string): Promise<IUsersCreateDTO> {
     const user = await this.usersService.findOne('username', username)
     if (!user) throw new UnauthorizedException('Not found such user')
     return user

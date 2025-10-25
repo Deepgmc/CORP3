@@ -1,6 +1,6 @@
 import { Strategy } from 'passport-local'
 import { PassportStrategy } from '@nestjs/passport'
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { IUser } from '../interfaces/IUser'
 
@@ -26,7 +26,7 @@ export class LocalStrategy extends PassportStrategy(Strategy){
         const user = await this.authService.validateAndGetUser(username, password)
         if(!user){
             console.log('Local strategy have not found user with:', username, password);
-            throw new UnauthorizedException()
+            throw new BadRequestException(['Невозможно войти с таким логином/почтой'])
         }
         //user.additional_data = {role: 'admin'}
 

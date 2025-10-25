@@ -20,6 +20,11 @@ export class UsersService {
             return false
         }
         return await this.usersRepository.save(createUserDto)
+
+        //! ПРИМЕР QueryBuilder
+        // const alias = 'users'
+        // const q = this.usersRepository.createQueryBuilder()
+        // q.andWhere(${alias}.userId in (:...userIds), {userIds: params.userIds})
     }
 
     /**

@@ -53,8 +53,8 @@
         <div>
           <div class="row">
             <div class="col">
-              <q-chip v-if="errorsText" class="q-mb-md" color="red-14" text-color="white">
-                {{ errorsText }}
+              <q-chip v-if="responseMsgText" class="q-mb-md" :color="responseMsgColor" text-color="white">
+                {{ responseMsgText }}
               </q-chip>
             </div>
           </div>
@@ -71,7 +71,7 @@
 <script setup lang="ts">
 import {ref, reactive } from 'vue'
 import type { TRegisterForm } from '../../../../interfaces/User'
-import { getAuthRules } from '@/composables/auth/formValidation'
+import { getAuthRules, msgColors } from '@/composables/auth/formValidation'
 
 const $externalResults = reactive({})
 import { useVuelidate, type ErrorObject } from '@vuelidate/core'
@@ -81,7 +81,8 @@ const authManager = AuthManager.getInstance()
 
 const isPwd      = ref<boolean>(true)
 const isPwdConf  = ref<boolean>(true)
-const errorsText = ref<string | undefined>('')
+const responseMsgText = ref<string>('')
+const responseMsgColor = ref<msgColors>(msgColors.red)
 
 const regUser = ref<TRegisterForm>({
     username       : 'Deepgmc',
@@ -95,21 +96,22 @@ const rules = getAuthRules(['username', 'password', 'passwordConfirm', 'email', 
 const $v = useVuelidate(rules, regUser, { $externalResults: $externalResults })
 
 async function onSubmit(): Promise<boolean> {
-
   resetServerErrText()
-
   if(!await $v.value.$validate()) return false
 
   //отправка данных на сервер, валидация на сервере, вывод ошибок
   try {
     const registerRes = await authManager.registerRequest(regUser.value)
     if(registerRes.error){
-      errorsText.value = 'Unhandled error'
+      responseMsgText.value = 'Unhandled error'
     }
   } catch (error: any) {
-    if(typeof error.response !== 'undefined') errorsText.value = error.response.data.message[0]
+    responseMsgColor.value = msgColors.red
+    if(typeof error.response !== 'undefined') responseMsgText.value = error.response.data.message[0]
     return false
   }
+  responseMsgColor.value = msgColors.green
+  responseMsgText.value = 'Вы успешно зарегистрировались'
   return true
 }
 
@@ -127,7 +129,7 @@ function resetForm(){
 }
 
 function resetServerErrText(){
-  errorsText.value = ''
+  responseMsgText.value = ''
 }
 
 function getErrorForField(field: string) {
