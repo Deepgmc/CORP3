@@ -15,23 +15,24 @@ export enum EReqMethods {
 
 export default class NetworkManager {
 
-  static instance: NetworkManager | null = null
+  static instance: NetworkManager
 
   private httpClient: HttpClientTypes
 
   static getInstance(): NetworkManager {
-    if(NetworkManager.instance) return NetworkManager.instance
-    return new NetworkManager()
+    if(!NetworkManager.instance) new NetworkManager()
+    return NetworkManager.instance
   }
 
   private constructor(){
-    if(NetworkManager.instance) { throw new TypeError('NetworkManager singleton creation only with .getInstance()') }
+    //if(NetworkManager.instance) { throw new TypeError('NetworkManager singleton creation only with .getInstance()') }
 
     NetworkManager.instance = this
 
     this.httpClient = axios.create({
       //baseURL: import.meta.env.DEV ? import.meta.env.VUE_APP_API_URL : 'NEED_PROD_URL',
       baseURL: 'http://localhost:5173/api',
+      timeout: 1000,
       // url: '/user',
       // method: 'get',
       // transformRequest: [function (data, headers) {
@@ -62,7 +63,6 @@ export default class NetworkManager {
       //baseURL: 'http://localhost:3050/api',
       //headers: {'Authorization': 'Bearer XXXXX'},
       //this.httpClient.defaults.headers.common['Authorization'] = AUTH_TOKEN;
-      timeout: 1000,
     })
   };
 
@@ -79,12 +79,12 @@ export default class NetworkManager {
           withAuth: boolean = true
         ): Promise<AxiosResponse> => {
           if(withAuth){
-            console.log('With auth')
+            console.log(`${module}/${action} with auth`)
             if( !this.applyAuthorization(AuthManager.getInstance()) ){
               console.warn('Apply authorization failed at NetworkManager')
             }
           } else {
-            console.log('Without auth')
+            console.log(`${module}/${action} without auth`)
           }
           return this.httpClient[method](`${module}/${action}`, parameters)
         }
@@ -94,7 +94,6 @@ export default class NetworkManager {
 
   applyAuthorization(authManager: AuthManager) {
     if(authManager._strategy && authManager._strategy.isHasToken()) {
-      console.log('authManager._strategy.token:', authManager._strategy.token)
       this.httpClient.defaults.headers.common['Authorization'] = `Bearer ${authManager._strategy.token}`;
       return true
     }

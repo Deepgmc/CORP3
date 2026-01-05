@@ -44,8 +44,16 @@ async function bootstrap() {
     }),
   });
 
+  /**
+  Переносим всё под раздел api
+  Регистрация идёт на /auth без /api потому что там не нужна авторизация
+  Всё что не нужно можно добавить в исключения
+  */
   app.setGlobalPrefix('api', {
-    exclude: [{ path: '/', method: RequestMethod.GET }],
+    exclude: [
+      { path: '/', method: RequestMethod.GET },
+      //{ path: '/company/get_all', method: RequestMethod.GET },
+    ],
   });
 
   const configSwagger = new DocumentBuilder()

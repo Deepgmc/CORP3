@@ -2,7 +2,7 @@
 import { availableStrategies, type IAuthManager } from '@/interfaces/Auth'
 
 import type { TStrategies } from '@/interfaces/Auth'
-import type { ILoginUser, TRegisterForm } from '../../../interfaces/User'
+import type { ILoginUser, TRegisterForm } from '@/interfaces/User'
 import NetworkManager, { EReqMethods } from '@/network/NetworkManager'
 import type { TAuthRenponse } from '@/interfaces/Error'
 
@@ -71,7 +71,7 @@ export class AuthManager implements IAuthManager {
     get isLogined(){
         return this._isLogined
     }
-    set isLogined(someFailParameter){
+    set isLogined(_someFailParameter){
         throw new ReferenceError('Cant set isLogined directly')
     }
 
@@ -84,13 +84,13 @@ export class AuthManager implements IAuthManager {
 
         isLogined = await this._strategy.isLogined()
         this._isLogined = isLogined
-        this._authStore.setIsLogined(this._isLogined)
+        //this._authStore.setIsLogined(this._isLogined)
         if(!this._isLogined) this.logOut()
         return this._isLogined
     }
 
     logOut(): boolean {
-        if(!this._strategy || this._isLogined) return true
+        if(!this._strategy) return true
         this._strategy.logOut()
         this._authStore.setIsLogined(false)
         this._isLogined = false

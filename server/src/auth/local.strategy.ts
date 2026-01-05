@@ -28,7 +28,7 @@ export class LocalStrategy extends PassportStrategy(Strategy){
             console.log('Local strategy have not found user with:', username, password);
             throw new BadRequestException(['Невозможно войти с таким логином/почтой'])
         }
-        //user.additional_data = {role: 'admin'}
+        user.additional_data = {role: 'admin'}
 
         return user
     }

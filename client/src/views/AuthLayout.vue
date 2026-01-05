@@ -22,7 +22,14 @@
         <div class="row">
           <div class="col-sm-3 col-md-4 col-xl-5 col-xs-12"></div>
           <div class="col-sm-6 col-md-4 col-xl-2 col-xs-12" align="center">
-            <router-view />
+            <Suspense>
+              <template #default>
+                <router-view />
+              </template>
+              <template #fallback>
+                <div>Загрузка...</div>
+              </template>
+            </Suspense>
           </div>
           <div class="col-sm-3 col-md-4 col-xl-5 col-xs-12"></div>
         </div>

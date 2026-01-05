@@ -1,87 +1,108 @@
 <template>
-    <div class="q-pa-md">
-      <q-form
-        @submit="onSubmit"
-        @reset="onReset"
+  <div class="q-pa-md">
+    <q-form
+      @submit="onSubmit"
+      @reset="onReset"
+    >
+      <q-input
+        v-model="regUser.username"
+        label="Логин *"
+        :error="$v.username.$error"
+        :error-message="getErrorForField('username')"
+      />
+
+      <q-input
+        v-model="regUser.email"
+        label="Эл. почта *"
+        :error="$v.email.$error"
+        :error-message="getErrorForField('email')"
+      />
+
+      <q-input
+        v-model="regUser.password"
+        :type="isPwd ? 'password' : 'text'"
+        label="Пароль *"
+        :error="$v.password.$error"
+        :error-message="getErrorForField('password')"
       >
-        <q-input
-          v-model="regUser.username"
-          label="Логин *"
-          :error="$v.username.$error"
-          :error-message="getErrorForField('username')"
-        />
+        <template #append>
+          <q-icon
+            :name="isPwd ? 'visibility_off' : 'visibility'"
+            class="cursor-pointer"
+            @click="isPwd = !isPwd"
+          />
+        </template>
+      </q-input>
 
-        <q-input
-          v-model="regUser.email"
-          label="Эл. почта *"
-          :error="$v.email.$error"
-          :error-message="getErrorForField('email')"
-        />
+      <q-input
+        v-model="regUser.passwordConfirm"
+        :type="isPwdConf ? 'password' : 'text'"
+        label="Пароль повторно *"
+        :error="$v.passwordConfirm.$error"
+        :error-message="getErrorForField('passwordConfirm')"
+      >
+        <template #append>
+          <q-icon
+            :name="isPwdConf ? 'visibility_off' : 'visibility'"
+            class="cursor-pointer"
+            @click="isPwdConf = !isPwdConf"
+          />
+        </template>
+      </q-input>
 
-        <q-input
-          v-model="regUser.password"
-          :type="isPwd ? 'password' : 'text'"
-          label="Пароль *"
-          :error="$v.password.$error"
-          :error-message="getErrorForField('password')"
-        >
-          <template #append>
-            <q-icon
-              :name="isPwd ? 'visibility_off' : 'visibility'"
-              class="cursor-pointer"
-              @click="isPwd = !isPwd"
-            />
-          </template>
-        </q-input>
+      <q-select
+        filled
+        v-model="selectRefModel"
+        :options="selectOptions"
+        use-input
+        hide-selected
+        fill-input
+        input-debounce="0"
+        @filter="filterFn"
+      >
+        <template #no-option>
+          <q-item>
+            <q-item-section class="text-grey">
+              Ничего не найдено
+            </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
 
-        <q-input
-          v-model="regUser.passwordConfirm"
-          :type="isPwdConf ? 'password' : 'text'"
-          label="Пароль повторно *"
-          :error="$v.passwordConfirm.$error"
-          :error-message="getErrorForField('passwordConfirm')"
-        >
-          <template #append>
-            <q-icon
-              :name="isPwdConf ? 'visibility_off' : 'visibility'"
-              class="cursor-pointer"
-              @click="isPwdConf = !isPwdConf"
-            />
-          </template>
-        </q-input>
-
-        <div>
-          <div class="row">
-            <div class="col">
-              <q-chip v-if="responseMsgText" class="q-mb-md" :color="responseMsgColor" text-color="white">
-                {{ responseMsgText }}
-              </q-chip>
-            </div>
-          </div>
-          <q-btn label="Зарегистрироваться" type="submit" color="primary" />
-          <q-btn label="Сбросить" type="reset" color="primary" flat class="q-ml-sm" />
-        </div>
-      </q-form>
+    <div class="row q-mt-sm">
+      <div class="col">
+        <q-chip v-if="responseMsgText" class="q-mb-md" :color="responseMsgColor" text-color="white">
+          {{ responseMsgText }}
+        </q-chip>
+      </div>
     </div>
+    <q-btn label="Зарегистрироваться" type="submit" color="primary" />
+    <q-btn label="Сбросить" type="reset" color="primary" flat class="q-ml-sm" />
+    </q-form>
+  </div>
 </template>
 
 
-
-
 <script setup lang="ts">
-import {ref, reactive } from 'vue'
-import type { TRegisterForm } from '../../../../interfaces/User'
+import {ref, reactive, inject } from 'vue'
+import type { TRegisterForm } from '@/interfaces/User'
 import { getAuthRules, msgColors } from '@/composables/auth/formValidation'
 
 const $externalResults = reactive({})
 import { useVuelidate, type ErrorObject } from '@vuelidate/core'
 import { AuthManager } from '@/auth/AuthManager'
+import type NetworkManager from '@/network/NetworkManager'
+import { useCompany } from '@/composables/companySelect'
+const $networkManager: NetworkManager | undefined = inject<NetworkManager>('$networkManager')
 
-const authManager = AuthManager.getInstance()
+if(!$networkManager){
+  throw new Error('Wrong network manager injection!')
+}
+const { selectOptions = [], selectRefModel = ref(null), filterFn = () => {} } = await useCompany($networkManager)
 
-const isPwd      = ref<boolean>(true)
-const isPwdConf  = ref<boolean>(true)
-const responseMsgText = ref<string>('')
+const isPwd            = ref<boolean>(true)
+const isPwdConf        = ref<boolean>(true)
+const responseMsgText  = ref<string>('')
 const responseMsgColor = ref<msgColors>(msgColors.red)
 
 const regUser = ref<TRegisterForm>({
@@ -101,7 +122,7 @@ async function onSubmit(): Promise<boolean> {
 
   //отправка данных на сервер, валидация на сервере, вывод ошибок
   try {
-    const registerRes = await authManager.registerRequest(regUser.value)
+    const registerRes = await AuthManager.getInstance().registerRequest(regUser.value)
     if(registerRes.error){
       responseMsgText.value = 'Unhandled error'
     }
