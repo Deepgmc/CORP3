@@ -10,13 +10,20 @@ import dbConfiguration from './config/db.config';
 import customVariables from './config/custom.config';
 import { APP_FILTER } from '@nestjs/core';
 import { NotFoundExceptionFilter } from './HttpException.filter';
+import { CompanyModule } from './company/company.module';
 
 @Module({
   imports: [
+
+    AuthModule,
+    UsersModule,
+    CompanyModule,
+
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => (Object.assign({...configService.get('database')}, {autoLoadEntities: true})),
     }),
+
     ConfigModule.forRoot({
       envFilePath: '.env.development',
       isGlobal: true,
@@ -27,11 +34,8 @@ import { NotFoundExceptionFilter } from './HttpException.filter';
       serveRoot: '/',
       //exclude: ['/api*']
     }),
-    AuthModule,
-    UsersModule,
   ],
 
-  // controllers: [AppController],
   providers: [
     {
       provide: APP_FILTER,

@@ -1,7 +1,7 @@
 import {type TJwtToken } from '@/interfaces/Auth'
 import { Strategy } from '@/auth/strategies/Strategy';
 import { RESPONSE_STATUS_CODES } from '@/constants';
-import type { ILoginUser } from '../../../../interfaces/User';
+import type { ILoginUser } from '../../interfaces/User';
 import NetworkManager, { EReqMethods } from '@/network/NetworkManager';
 import type { TAuthRenponse } from '@/interfaces/Error';
 

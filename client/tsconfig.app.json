@@ -5,6 +5,12 @@
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "noImplicitThis": false,
+    "strict": true,
+    "strictNullChecks": true,
+    "noUnusedParameters": true,
+    "noEmitOnError": true,
+    //"target": "es5",
+    //"lib": ["dom", "es2020"],
 
     "paths": {
       "@/*": ["./src/*"]
