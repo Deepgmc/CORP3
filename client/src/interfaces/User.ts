@@ -12,6 +12,7 @@ export interface ILoginUser extends Pick<IUser, 'username' | 'password'> {}
 
 export interface TRegisterForm extends Pick<IUser, 'username' | 'password' | 'email' | 'birth'> {
     passwordConfirm: string,
+    companyId      : number | null
 }
 
 export type IUsersCreateDTO = Omit<IUser, 'userId'>

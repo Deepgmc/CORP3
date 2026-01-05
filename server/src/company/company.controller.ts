@@ -13,7 +13,8 @@ export class CompanyController {
 
   @Get('get_all')
   async findAll(): Promise<ICompany[]> {
+    const companies = await this.companyService.findAll();
     this.logger.debug('Find all company call')
-    return await this.companyService.findAll();
+    return companies;
   }
 }

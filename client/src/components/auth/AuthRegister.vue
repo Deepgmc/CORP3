@@ -59,6 +59,12 @@
         fill-input
         input-debounce="0"
         @filter="filterFn"
+        @blur="onCompanySelect"
+        ref="comSelectRef"
+
+        label="Выберите компанию *"
+        :error="$v.companyId.$error"
+        :error-message="getErrorForField('companyId')"
       >
         <template #no-option>
           <q-item>
@@ -84,7 +90,8 @@
 
 
 <script setup lang="ts">
-import {ref, reactive, inject } from 'vue'
+import {ref, reactive, inject, onMounted } from 'vue'
+
 import type { TRegisterForm } from '@/interfaces/User'
 import { getAuthRules, msgColors } from '@/composables/auth/formValidation'
 
@@ -95,10 +102,14 @@ import type NetworkManager from '@/network/NetworkManager'
 import { useCompany } from '@/composables/companySelect'
 const $networkManager: NetworkManager | undefined = inject<NetworkManager>('$networkManager')
 
+//import { useTemplateRef } from 'vue'
+//const comSelectRef = useTemplateRef('comSelectRef')
+
 if(!$networkManager){
   throw new Error('Wrong network manager injection!')
 }
-const { selectOptions = [], selectRefModel = ref(null), filterFn = () => {} } = await useCompany($networkManager)
+
+const { selectOptions, selectRefModel, filterFn, loadAllCompanies, resetCompanySelection } = useCompany($networkManager)
 
 const isPwd            = ref<boolean>(true)
 const isPwdConf        = ref<boolean>(true)
@@ -111,14 +122,21 @@ const regUser = ref<TRegisterForm>({
     passwordConfirm: '1234567',
     email          : 'test@mail.ru',
     birth          : 577396800000,
+    companyId      : null
 })
 
-const rules = getAuthRules(['username', 'password', 'passwordConfirm', 'email', 'passEqual'])
+onMounted(() => {
+  //загружаем список компаний при инициализации
+  loadAllCompanies()
+})
+
+const rules = getAuthRules(['username', 'password', 'passwordConfirm', 'email', 'passEqual', 'companyId'])
 const $v = useVuelidate(rules, regUser, { $externalResults: $externalResults })
 
 async function onSubmit(): Promise<boolean> {
   resetServerErrText()
   if(!await $v.value.$validate()) return false
+  console.log('%c Registering new user:', 'color:rgb(182, 86, 158);', regUser.value)
 
   //отправка данных на сервер, валидация на сервере, вывод ошибок
   try {
@@ -136,16 +154,24 @@ async function onSubmit(): Promise<boolean> {
   return true
 }
 
+function onCompanySelect(): void {
+  if(selectRefModel.value === null) throw new Error('Wrong company selection')
+  regUser.value.companyId = selectRefModel.value.value ?? null
+}
+
+
 function onReset(){
   resetForm()
 }
-
+const comSelectRef = ref(null)
 function resetForm(){
   regUser.value.username = ''
   regUser.value.password = ''
   regUser.value.passwordConfirm = ''
   regUser.value.email = ''
+  regUser.value.companyId = null
   resetServerErrText()
+  resetCompanySelection()
   $v.value.$reset()
 }
 
