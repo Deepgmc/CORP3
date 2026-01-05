@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { required, helpers, minLength, maxLength, email } from '@vuelidate/validators'
 import { type ValidatorFn, type ValidatorResponse } from '@vuelidate/core'
-import type { TRegisterForm } from '../../../../interfaces/User'
+import type { TRegisterForm } from '@/interfaces/User'
 
 const VLengths = {
   username: {
@@ -32,7 +32,8 @@ export enum EValidations {
   minLength = 'minLength',
   maxLength = 'maxLength',
   email     = 'email',
-  passEqual = 'passEqual'
+  passEqual = 'passEqual',
+  companyId = 'companyId'
 }
 export enum msgColors {
   red   = 'red',
@@ -56,6 +57,9 @@ export function getAuthRules(fields: Array<string>, formType: string = 'register
         break;
       case 'email':
         thisRules = [EValidations.email, EValidations.required]
+        break;
+      case 'companyId':
+        thisRules = [EValidations.companyId]
         break;
     }
     rules[field] = getRule(thisRules, field)
@@ -89,6 +93,9 @@ export function getRule(types: Array<EValidations>, fieldName: string){
       case EValidations.passEqual:
         result[type] = helpers.withMessage(`Пароли не совпадают`, passEqual)
       break;
+      case EValidations.companyId:
+        result[type] = helpers.withMessage(`Нужно выбрать компанию`, isSetCompanyId)
+      break;
     }
   })
   return result
@@ -103,5 +110,10 @@ export function getRule(types: Array<EValidations>, fieldName: string){
 const passEqual: ValidatorFn = (value: TRegisterForm['password'], siblings: any): ValidatorResponse => {
   return {
     $valid: value === siblings.passwordConfirm as TRegisterForm['passwordConfirm']
+  }
+}
+const isSetCompanyId: ValidatorFn = (value: TRegisterForm['companyId']): ValidatorResponse => {
+  return {
+    $valid: value !== null && value !== 0
   }
 }

@@ -3,39 +3,47 @@ import type NetworkManager from '@/network/NetworkManager'
 import { EReqMethods } from '@/network/NetworkManager'
 import { ref } from 'vue'
 
-export async function useCompany($networkManager: NetworkManager | null) {
+export function useCompany($networkManager: NetworkManager | null) {
 
-  if(!$networkManager){
-    throw new Error('Wrong network manager injection!')
-  }
+  const isLoaded = false
+  const comOptions = ref([])
+  const emptyDummy = {label: '', value: 0}
+  const selectRefModel = ref<ICompanySelect<ICompany>>(emptyDummy)
 
-  const model = ref(null) //company select model
-
-  const asxiosData = await $networkManager.getApiRequestMethod(EReqMethods.get)('company')('get_all')({}, false)
-
-  const comOptions = asxiosData.data.map((company: ICompany) => {
-    return {
-      value: company.companyId,
-      label: company.name,
+  async function loadAllCompanies(): Promise<void>{
+    if($networkManager === null){
+      throw new Error('Wrong network manager injection!')
     }
-  })
+    if(!isLoaded){ //загружаем только один раз, это статичные данные
+      const asxiosData = await $networkManager.getApiRequestMethod(EReqMethods.get)('company')('get_all')({}, false)
+      comOptions.value = asxiosData.data.map((company: ICompany) => {
+        return {
+          value: company.companyId,
+          label: company.name,
+        }
+      })
+    }
 
-  const selectOptions = ref(comOptions)
+  }
 
   function filterFn (val: string, update: any, /*_abort: any*/) {
     update(() => {
       const needle = val.toLowerCase()
-      selectOptions.value = comOptions.filter((com: ICompanySelect<ICompany>) => {
+      comOptions.value = comOptions.value.filter((com: ICompanySelect<ICompany>) => {
         return com.label.toLowerCase().indexOf(needle) > -1
       })
     })
   }
 
-  return {
-    selectOptions,
-    selectRefModel: model,
+  function resetCompanySelection(){
+    selectRefModel.value = emptyDummy
+  }
 
+  return {
+    selectRefModel,
+    selectOptions: comOptions,
     filterFn,
-    companiesArray: asxiosData
+    loadAllCompanies,
+    resetCompanySelection,
   }
 }
