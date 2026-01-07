@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, JoinTable } from 'typeorm';
 
 
 @Entity('users')
@@ -26,4 +26,10 @@ export class UsersEntity {
         default: () => 'CURRENT_TIMESTAMP'/* onUpdate: 'CURRENT_TIMESTAMP' */
     })
     reg_date: Date;
+
+    @Column()
+    @JoinTable(
+        {name: 'company', joinColumn: {name: 'companyId'}}
+    )
+    companyId: number;
 }

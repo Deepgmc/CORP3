@@ -21,7 +21,9 @@ import { CompanyModule } from './company/company.module';
 
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => (Object.assign({...configService.get('database')}, {autoLoadEntities: true})),
+      useFactory: (configService: ConfigService) => (
+        {...configService.get('database')}
+      ),
     }),
 
     ConfigModule.forRoot({
@@ -29,6 +31,7 @@ import { CompanyModule } from './company/company.module';
       isGlobal: true,
       load: [dbConfiguration, customVariables],
     }),
+
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../../client/dist'),
       serveRoot: '/',

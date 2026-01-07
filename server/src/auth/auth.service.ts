@@ -22,6 +22,12 @@ export class AuthService {
     // const alias = 'users'
     // const q = this.usersRepository.createQueryBuilder()
     // q.andWhere(${alias}.userId in (:...userIds), {userIds: params.userIds})
+
+
+    // return await this.postRepository.createQueryBuilder("post")
+    // .innerJoinAndSelect("post.images", "image")
+    // .where("user_id = :userId", {userId: id})
+    // .getMany();
   }
 
   async getPasswordHash(password: string): Promise<string> {
