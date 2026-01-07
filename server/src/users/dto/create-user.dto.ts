@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsPositive, Length, IsEmail, IsOptional } from 'class-validator'
+import { IsString, IsNotEmpty, IsPositive, Length, IsEmail, IsOptional, IsNumber } from 'class-validator'
 
 import { IUsersCreateDTO } from '../../interfaces/IUser'
 import { dtoValidationMessageHandler } from '../../validation/dtoMsgHandler'
@@ -63,6 +63,18 @@ export class CreateUserDto implements IUsersCreateDTO {
     })
     @IsOptional()
     reg_date: Date
+
+    @ApiProperty({
+        description: 'ID компании',
+        required: true,
+        type: String
+    })
+    @IsNotEmpty({message: dtoMsg.getMessage('notempty')})
+    @IsNumber()
+    companyId: number
+
+
+
 
     constructor() {}
 

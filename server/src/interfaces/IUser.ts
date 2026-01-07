@@ -1,9 +1,10 @@
 export interface IUser {
-    userId  : number,
-    username: string,
-    birth   : string, //timestamp of a birth
-    password: string,
-    email   : string,
+    userId   : number,
+    username : string,
+    birth    : string,   //timestamp of a birth
+    password : string,
+    email    : string,
+    companyId: number
 }
 
 export type TUserId = IUser['userId'];

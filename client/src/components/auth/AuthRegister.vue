@@ -124,7 +124,6 @@ const regUser = ref<TRegisterForm>({
     birth          : 577396800000,
     companyId      : null
 })
-
 onMounted(() => {
   //загружаем список компаний при инициализации
   loadAllCompanies()
@@ -136,13 +135,13 @@ const $v = useVuelidate(rules, regUser, { $externalResults: $externalResults })
 async function onSubmit(): Promise<boolean> {
   resetServerErrText()
   if(!await $v.value.$validate()) return false
-  console.log('%c Registering new user:', 'color:rgb(182, 86, 158);', regUser.value)
 
   //отправка данных на сервер, валидация на сервере, вывод ошибок
   try {
     const registerRes = await AuthManager.getInstance().registerRequest(regUser.value)
     if(registerRes.error){
-      responseMsgText.value = 'Unhandled error'
+      responseMsgText.value = registerRes.message ?? 'unhandled error'
+      return false
     }
   } catch (error: any) {
     responseMsgColor.value = msgColors.red
@@ -159,11 +158,10 @@ function onCompanySelect(): void {
   regUser.value.companyId = selectRefModel.value.value ?? null
 }
 
-
 function onReset(){
   resetForm()
 }
-const comSelectRef = ref(null)
+
 function resetForm(){
   regUser.value.username = ''
   regUser.value.password = ''

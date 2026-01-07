@@ -5,7 +5,7 @@ import { ref } from 'vue'
 
 export function useCompany($networkManager: NetworkManager | null) {
 
-  const isLoaded = false
+  let isLoaded = false
   const comOptions = ref([])
   const emptyDummy = {label: '', value: 0}
   const selectRefModel = ref<ICompanySelect<ICompany>>(emptyDummy)
@@ -16,6 +16,7 @@ export function useCompany($networkManager: NetworkManager | null) {
     }
     if(!isLoaded){ //загружаем только один раз, это статичные данные
       const asxiosData = await $networkManager.getApiRequestMethod(EReqMethods.get)('company')('get_all')({}, false)
+      isLoaded = true
       comOptions.value = asxiosData.data.map((company: ICompany) => {
         return {
           value: company.companyId,
@@ -23,7 +24,6 @@ export function useCompany($networkManager: NetworkManager | null) {
         }
       })
     }
-
   }
 
   function filterFn (val: string, update: any, /*_abort: any*/) {
