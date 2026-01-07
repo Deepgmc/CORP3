@@ -1,5 +1,6 @@
 import type { jwtStrategy } from '@/auth/strategies/jwt.strategy'
-import type { ILoginUser, TRegisterForm } from "../../../interfaces/User"
+import type { ILoginUser, TRegisterForm } from "@/interfaces/User"
+import type { Router } from 'vue-router'
 
 export type TJwtToken = string
 
@@ -53,6 +54,12 @@ export interface IAuthManager {
      * @returns успех разлогирования
      */
     logOut: () => boolean
+
+    /**
+     * Знает что делать с редиректом роута после логина
+     * @returns void
+     */
+    setRouteAfterLogin: (router: Router) => void
 
 
 }

@@ -114,6 +114,6 @@ const passEqual: ValidatorFn = (value: TRegisterForm['password'], siblings: any)
 }
 const isSetCompanyId: ValidatorFn = (value: TRegisterForm['companyId']): ValidatorResponse => {
   return {
-    $valid: value !== null && value !== 0
+    $valid: value !== null && value !== 0 && !!value
   }
 }

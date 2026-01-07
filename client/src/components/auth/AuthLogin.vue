@@ -47,13 +47,14 @@
 
 import {ref, reactive } from 'vue'
 import { AuthManager } from '@/auth/AuthManager'
-import type { ILoginUser } from '../../../../interfaces/User'
+import type { ILoginUser } from '@/interfaces/User'
 import { getAuthRules, msgColors } from '@/composables/auth/formValidation'
 
 const authManager = AuthManager.getInstance()
 
 const $externalResults = reactive({})
 import { useVuelidate, type ErrorObject } from '@vuelidate/core'
+import { useRouter } from 'vue-router'
 
 const isPwd = ref<boolean>(true)
 
@@ -64,26 +65,24 @@ const loginUser = ref<ILoginUser>({
 const responseMsgText = ref<string>('')
 const responseMsgColor = ref<msgColors>(msgColors.red)
 
+const router = useRouter()
 
 //определяем правила валидации для разных полей
 const rules = getAuthRules(['username', 'password'], 'login')
 const $v = useVuelidate(rules, loginUser, { $externalResults: $externalResults })
 
 async function onSubmit(){
-  //client-side validation
-  //if(!await $v.value.$validate()) return false
-
-  //server-side validation
   try {
     const loginRes = await authManager.loginRequest(loginUser.value)
-    console.log('loginRes:', loginRes)
     if(loginRes.error){
       responseMsgColor.value = msgColors.red
       responseMsgText.value = loginRes.message ? loginRes.message : ''
     } else {
       responseMsgColor.value = msgColors.green
-      responseMsgText.value = 'onSubmit: Вход завершен успешно'
+      responseMsgText.value = 'Вход завершен успешно'
+      authManager.setRouteAfterLogin(router)
     }
+
   } catch (e: any){
     console.log('onSubmit error:', e)
   }

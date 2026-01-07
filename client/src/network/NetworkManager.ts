@@ -1,4 +1,5 @@
 import { AuthManager } from '@/auth/AuthManager'
+import { jwtStrategy } from '@/auth/strategies/jwt.strategy'
 import axios from 'axios'
 import type {AxiosResponse} from 'axios'
 import type { /*AxiosInstance,*/ Axios, AxiosRequestConfig /*AxiosResponse*/ } from 'axios'
@@ -94,7 +95,7 @@ export default class NetworkManager {
 
   applyAuthorization(authManager: AuthManager) {
     if(authManager._strategy && authManager._strategy.isHasToken()) {
-      this.httpClient.defaults.headers.common['Authorization'] = `Bearer ${authManager._strategy.token}`;
+      this.httpClient.defaults.headers.common['Authorization'] = `Bearer ${jwtStrategy.token}`;
       return true
     }
     return false

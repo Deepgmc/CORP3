@@ -1,9 +1,10 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import Corp3Layout from '@/views/Corp3Layout.vue'
 
-import AuthView from '@/views/AuthLayout.vue'
+import AuthLayout from '@/views/AuthLayout.vue'
 import AuthLogin from '@/components/auth/AuthLogin.vue'
 import AuthRegister from '@/components/auth/AuthRegister.vue'
+import { AuthManager } from '@/auth/AuthManager'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -33,30 +34,28 @@ const routes: Array<RouteRecordRaw> = [
   },
 
   {
-        path: '/auth',
-        name: 'auth',
-        //component: () => import('@/views/AuthLayout.vue'),
-        component: AuthView,
-        children: [
-        {
-            path: 'login',
-            name: 'login',
-            //component: () => import('@/components/auth/AuthLogin.vue'),
-            component: AuthLogin,
-          },
+    path: '/auth',
+    name: 'auth',
+    //component: () => import('@/views/AuthLayout.vue'),
+    component: AuthLayout,
+    children: [
+    {
+        path: 'login',
+        name: 'login',
+        //component: () => import('@/components/auth/AuthLogin.vue'),
+        component: AuthLogin,
+      },
 
-          {
-            path: 'register',
-            name: 'register',
-            //component: () => import('@/components/auth/AuthRegister.vue'),
-            component: () => AuthRegister,
-          },
-        ]
-      }
-
+      {
+        path: 'register',
+        name: 'register',
+        //component: () => import('@/components/auth/AuthRegister.vue'),
+        component: () => AuthRegister,
+      },
+    ]
+  }
 ];
 
-//const isLogined = false
 
 
 const router = createRouter({
@@ -64,13 +63,18 @@ const router = createRouter({
   routes: routes,
 })
 
-// router.beforeEach((to, _from, next) => {
-//   console.log('%c beforeEach to:', 'color:rgb(182, 86, 158);', to)
-//   if (!isLogined && to.name !== 'login' && to.name !== 'register') {
-//     next('/auth/register')
-//   } else {
-//     next()
-//   }
-// })
+let isLogined = AuthManager.isLoginedByJWTToken()
+console.log('isLogined at router:', isLogined)
+
+
+router.beforeEach((to, _from, next) => {
+  isLogined = AuthManager.isLoginedByJWTToken()
+  console.log('isLogined at befreEach:', isLogined)
+  if (!isLogined && to.name !== 'login' && to.name !== 'register') {
+    next('/auth/login')
+  } else {
+    next()
+  }
+})
 
 export default router

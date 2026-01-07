@@ -73,11 +73,8 @@ export class jwtStrategy extends Strategy {
       }
     }
 
-    // set token(token: TJwtToken) {
-    //     this.token = token
-    // }
-    get token(): TJwtToken {
-        const authData = this.getAuthStoragedData()
+    static get token(): TJwtToken {
+        const authData = jwtStrategy.getAuthStoragedData()
         if(!authData) return ''
         if(typeof authData.access_token !== 'undefined'){
             return authData.access_token
@@ -86,6 +83,6 @@ export class jwtStrategy extends Strategy {
     }
 
     isHasToken(){
-      return !!this.token
+      return !!jwtStrategy.token
     }
 }

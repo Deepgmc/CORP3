@@ -27,8 +27,7 @@ export class AuthController {
     @UseGuards(AuthGuard('jwt'))
     @Get('check_token')
     checkAuth() {
-        console.log('Check_token after guards')
-        return { logined: true }
+        return { error:false, logined: true }
     }
 
     /**

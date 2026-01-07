@@ -5,7 +5,7 @@ import { type TAuthData } from '@/interfaces/Auth'
 
 export abstract class Strategy {
 
-    storageManager = new StorageManager(localStorage)
+    static storageManager = new StorageManager(localStorage)
 
     constructor(){}
 
@@ -14,12 +14,12 @@ export abstract class Strategy {
     abstract isLogined(): Promise<boolean>
 
     setAuthStoragedData(data: TAuthData): boolean{
-        return this.storageManager.saveAuthData(data)
+        return Strategy.storageManager.saveAuthData(data)
     }
-    getAuthStoragedData(): TAuthData{
-        return this.storageManager.getAuthData()
+    static getAuthStoragedData(): TAuthData{
+        return Strategy.storageManager.getAuthData()
     }
     removeAuthStoragedData(): boolean{
-        return this.storageManager.removeAuthData()
+        return Strategy.storageManager.removeAuthData()
     }
 }

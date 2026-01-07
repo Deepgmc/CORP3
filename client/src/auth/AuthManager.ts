@@ -5,6 +5,8 @@ import type { TStrategies } from '@/interfaces/Auth'
 import type { ILoginUser, TRegisterForm } from '@/interfaces/User'
 import NetworkManager, { EReqMethods } from '@/network/NetworkManager'
 import type { TAuthRenponse } from '@/interfaces/Error'
+import { jwtStrategy } from './strategies/jwt.strategy'
+import type { Router } from 'vue-router'
 
 export class AuthManager implements IAuthManager {
 
@@ -45,8 +47,13 @@ export class AuthManager implements IAuthManager {
         void this.updateAndGetIsLogined()
     }
 
+    static isLoginedByJWTToken(): boolean {
+      const token = jwtStrategy.token
+      return !!token
+    }
+
     async registerRequest(registerData: TRegisterForm): Promise<TAuthRenponse>{
-      if(this.isLogined) return {error: true, message: 'Вы уже авторизованы' }
+      if(this.isLogined) return {error: true, message: this.ALREADY_AUTHORISED_MSG }
       return await this._postData('register')(registerData, false)
     }
 
@@ -55,7 +62,7 @@ export class AuthManager implements IAuthManager {
      * @returns saved login status or no
     */
     async loginRequest(loginData: ILoginUser): Promise<TAuthRenponse> {
-        if(this.isLogined) return {error: true, message: 'Вы уже авторизованы в системе' }
+        if(this.isLogined) return {error: true, message: this.ALREADY_AUTHORISED_MSG }
         if(!this._strategy) return {error: true, message: 'Invalid login strategy' }
 
         const loginRes = await this._strategy.login(loginData)
@@ -84,7 +91,6 @@ export class AuthManager implements IAuthManager {
 
         isLogined = await this._strategy.isLogined()
         this._isLogined = isLogined
-        //this._authStore.setIsLogined(this._isLogined)
         if(!this._isLogined) this.logOut()
         return this._isLogined
     }
@@ -96,6 +102,12 @@ export class AuthManager implements IAuthManager {
         this._isLogined = false
         return true
     }
+
+    setRouteAfterLogin(router: Router): void {
+      router.push('/main').catch(() => {});
+    }
+
+    private ALREADY_AUTHORISED_MSG = 'Вы уже авторизованы в системе'
 }
 
 // export default {

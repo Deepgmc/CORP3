@@ -12,8 +12,8 @@
       </q-toolbar>
 
       <q-tabs align="center">
-        <q-route-tab to="/auth/login" label="Вход"></q-route-tab>
-        <q-route-tab to="/auth/register" label="Регистрация"></q-route-tab>
+        <q-route-tab :to="{name: 'login'}" label="Вход"></q-route-tab>
+        <q-route-tab :to="{name: 'register'}" label="Регистрация"></q-route-tab>
       </q-tabs>
     </q-header>
 
