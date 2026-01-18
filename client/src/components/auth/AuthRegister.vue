@@ -77,7 +77,16 @@
           </q-select>
         </div>
         <div v-show="isCompanySelected" :class="{'col-4': isCompanySelected}">
-          <q-checkbox v-show="isCompanySelected" v-model="regUser.isDirector" left-label label="Вы руководитель?" />
+          <div class="row">
+            <div class="col-12">
+              Вы руководитель?
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <q-checkbox v-show="isCompanySelected" v-model="regUser.isDirector" left-label label="" />
+            </div>
+          </div>
         </div>
       </div>
 

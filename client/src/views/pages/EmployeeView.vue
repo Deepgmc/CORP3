@@ -1,5 +1,5 @@
 <template>
-    <h3>Employee route page!</h3>
+    <h3>Employee page</h3>
 </template>
 
 <script setup lang="ts">

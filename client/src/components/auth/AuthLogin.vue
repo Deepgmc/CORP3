@@ -82,7 +82,6 @@ async function onSubmit(){
       responseMsgText.value = 'Вход завершен успешно'
       authManager.setRouteAfterLogin(router)
     }
-
   } catch (e: any){
     console.log('onSubmit error:', e)
   }

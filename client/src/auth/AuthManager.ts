@@ -102,7 +102,10 @@ export class AuthManager implements IAuthManager {
     }
 
     setRouteAfterLogin(router: Router): void {
-      router.push('/main').catch(() => {});
+      router.push({name: 'main'})
+    }
+    setRouterAfterLogOut(router: Router): void {
+      router.push({name: 'login'})
     }
 
     private ALREADY_AUTHORISED_MSG = 'Вы уже авторизованы в системе'

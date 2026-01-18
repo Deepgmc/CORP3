@@ -13,9 +13,9 @@ const routes: Array<RouteRecordRaw> = [
     component: Corp3Layout,
     children: [
     {
-        path: 'main',
+        path: 'main', // страница статистики
         name: 'main',
-        component: () => import('@/views/pages/MainView.vue'),
+        component: () => import('@/views/pages/StatsView.vue'),
       },
 
       {
@@ -30,8 +30,24 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/pages/EmployeeView.vue'),
       },
 
+      {
+        path: 'departments',
+        name: 'departments',
+        component: () => import('@/views/pages/DepartmentsView.vue'),
+      },
+
+      {
+        path: 'profile',
+        name: 'profile',
+        component: () => import('@/views/pages/ProfileView.vue'),
+      },
+
     ]
   },
+
+
+
+
 
   {
     path: '/auth',
