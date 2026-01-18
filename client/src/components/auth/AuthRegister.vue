@@ -50,47 +50,53 @@
         </template>
       </q-input>
 
-      <q-select
-        filled
-        v-model="selectRefModel"
-        :options="selectOptions"
-        use-input
-        hide-selected
-        fill-input
-        input-debounce="0"
-        @filter="filterFn"
-        @blur="onCompanySelect"
-        ref="comSelectRef"
+      <div class="row">
+        <div :class="{'col-8': isCompanySelected, 'col-12': !isCompanySelected}">
+          <q-select
+            filled
+            v-model="selectRefModel"
+            :options="selectOptions"
+            use-input
+            hide-selected
+            fill-input
+            input-debounce="0"
+            @filter="filterFn"
+            @update:model-value="onCompanySelect"
 
-        label="Выберите компанию *"
-        :error="$v.companyId.$error"
-        :error-message="getErrorForField('companyId')"
-      >
-        <template #no-option>
-          <q-item>
-            <q-item-section class="text-grey">
-              Ничего не найдено
-            </q-item-section>
-          </q-item>
-        </template>
-      </q-select>
-
-    <div class="row q-mt-sm">
-      <div class="col">
-        <q-chip v-if="responseMsgText" class="q-mb-md" :color="responseMsgColor" text-color="white">
-          {{ responseMsgText }}
-        </q-chip>
+            label="Выберите компанию *"
+            :error="$v.companyId.$error"
+            :error-message="getErrorForField('companyId')"
+          >
+            <template #no-option>
+              <q-item>
+                <q-item-section class="text-grey">
+                  Ничего не найдено
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+        </div>
+        <div v-show="isCompanySelected" :class="{'col-4': isCompanySelected}">
+          <q-checkbox v-show="isCompanySelected" v-model="regUser.isDirector" left-label label="Вы руководитель?" />
+        </div>
       </div>
-    </div>
-    <q-btn label="Зарегистрироваться" type="submit" color="primary" />
-    <q-btn label="Сбросить" type="reset" color="primary" flat class="q-ml-sm" />
+
+      <div class="row q-mt-sm">
+        <div class="col">
+          <q-chip v-if="responseMsgText" class="q-mb-md" :color="responseMsgColor" text-color="white">
+            {{ responseMsgText }}
+          </q-chip>
+        </div>
+      </div>
+      <q-btn label="Зарегистрироваться" type="submit" color="primary" />
+      <q-btn label="Сбросить" type="reset" color="primary" flat class="q-ml-sm" />
     </q-form>
   </div>
 </template>
 
 
 <script setup lang="ts">
-import {ref, reactive, inject, onMounted } from 'vue'
+import {ref, reactive, inject, onMounted, computed } from 'vue'
 
 import type { TRegisterForm } from '@/interfaces/User'
 import { getAuthRules, msgColors } from '@/composables/auth/formValidation'
@@ -122,7 +128,8 @@ const regUser = ref<TRegisterForm>({
     passwordConfirm: '1234567',
     email          : 'test@mail.ru',
     birth          : 577396800000,
-    companyId      : null
+    companyId      : null,
+    isDirector     : false
 })
 onMounted(() => {
   //загружаем список компаний при инициализации
@@ -157,6 +164,11 @@ function onCompanySelect(): void {
   if(selectRefModel.value === null) throw new Error('Wrong company selection')
   regUser.value.companyId = selectRefModel.value.value ?? null
 }
+
+/* выбрана ли компания в зависимости от состояния */
+const isCompanySelected = computed((): boolean => {
+  return !!regUser.value.companyId
+})
 
 function onReset(){
   resetForm()

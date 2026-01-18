@@ -53,7 +53,7 @@ export class AuthManager implements IAuthManager {
     }
 
     async registerRequest(registerData: TRegisterForm): Promise<TAuthRenponse>{
-      if(this.isLogined) return {error: true, message: this.ALREADY_AUTHORISED_MSG }
+      if(this._isLogined) return {error: true, message: this.ALREADY_AUTHORISED_MSG }
       return await this._postData('register')(registerData, false)
     }
 
@@ -62,7 +62,7 @@ export class AuthManager implements IAuthManager {
      * @returns saved login status or no
     */
     async loginRequest(loginData: ILoginUser): Promise<TAuthRenponse> {
-        if(this.isLogined) return {error: true, message: this.ALREADY_AUTHORISED_MSG }
+        if(this._isLogined) return {error: true, message: this.ALREADY_AUTHORISED_MSG }
         if(!this._strategy) return {error: true, message: 'Invalid login strategy' }
 
         const loginRes = await this._strategy.login(loginData)
@@ -87,10 +87,8 @@ export class AuthManager implements IAuthManager {
             this.logOut()
             return false
         }
-        let isLogined = false
 
-        isLogined = await this._strategy.isLogined()
-        this._isLogined = isLogined
+        this._isLogined = await this._strategy.isLogined()
         if(!this._isLogined) this.logOut()
         return this._isLogined
     }

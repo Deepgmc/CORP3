@@ -73,6 +73,13 @@ export class CreateUserDto implements IUsersCreateDTO {
     @IsNumber()
     companyId: number
 
+    @ApiProperty({
+        description: 'Является ли руководителем компании',
+        required: false,
+        type: Boolean
+    })
+    isDirector: boolean
+
 
 
 
