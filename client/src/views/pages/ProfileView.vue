@@ -1,5 +1,5 @@
 <template>
-    <h3>Main route page!</h3>
+    <h3>Profile page</h3>
 </template>
 
 <script setup lang="ts">

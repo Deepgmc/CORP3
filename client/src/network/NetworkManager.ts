@@ -1,4 +1,5 @@
 import { AuthManager } from '@/auth/AuthManager'
+import { jwtStrategy } from '@/auth/strategies/jwt.strategy'
 import axios from 'axios'
 import type {AxiosResponse} from 'axios'
 import type { /*AxiosInstance,*/ Axios, AxiosRequestConfig /*AxiosResponse*/ } from 'axios'
@@ -77,16 +78,22 @@ export default class NetworkManager {
         return async (
           parameters: AxiosRequestConfig,
           withAuth: boolean = true
-        ): Promise<AxiosResponse> => {
+        ): Promise<AxiosResponse | boolean> => {
           if(withAuth){
             console.log(`${module}/${action} with auth`)
             if( !this.applyAuthorization(AuthManager.getInstance()) ){
               console.warn('Apply authorization failed at NetworkManager')
+              return false
             }
           } else {
-            console.log(`${module}/${action} without auth`)
+            //console.log(`${module}/${action} without auth`)
           }
-          return this.httpClient[method](`${module}/${action}`, parameters)
+          try {
+            return this.httpClient[method](`${module}/${action}`, parameters)
+          } catch {
+            console.warn('NM catch')
+            return false
+          }
         }
       }
     }
@@ -94,7 +101,7 @@ export default class NetworkManager {
 
   applyAuthorization(authManager: AuthManager) {
     if(authManager._strategy && authManager._strategy.isHasToken()) {
-      this.httpClient.defaults.headers.common['Authorization'] = `Bearer ${authManager._strategy.token}`;
+      this.httpClient.defaults.headers.common['Authorization'] = `Bearer ${jwtStrategy.token}`;
       return true
     }
     return false

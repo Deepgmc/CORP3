@@ -19,14 +19,14 @@ export class LocalStrategy extends PassportStrategy(Strategy){
      * @param password
      * @returns IUser
      */
-    async validate(
+    async validate (
         username: string,
         password: string
-    ): Promise<IUser>  {
+    ): Promise<IUser> {
         const user = await this.authService.validateAndGetUser(username, password)
         if(!user){
             console.log('Local strategy have not found user with:', username, password);
-            throw new BadRequestException(['Невозможно войти с таким логином/почтой'])
+            throw new BadRequestException('Невозможно войти с таким логином/почтой')
         }
         user.additional_data = {role: 'admin'}
 

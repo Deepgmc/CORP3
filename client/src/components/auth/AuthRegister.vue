@@ -50,71 +50,78 @@
         </template>
       </q-input>
 
-      <q-select
-        filled
-        v-model="selectRefModel"
-        :options="selectOptions"
-        use-input
-        hide-selected
-        fill-input
-        input-debounce="0"
-        @filter="filterFn"
-        @blur="onCompanySelect"
-        ref="comSelectRef"
+      <div class="row">
+        <div :class="{'col-8': isCompanySelected, 'col-12': !isCompanySelected}">
+          <q-select
+            filled
+            v-model="selectRefModel"
+            :options="selectOptions"
+            use-input
+            hide-selected
+            fill-input
+            input-debounce="0"
+            @filter="filterFn"
+            @update:model-value="onCompanySelect"
 
-        label="Выберите компанию *"
-        :error="$v.companyId.$error"
-        :error-message="getErrorForField('companyId')"
-      >
-        <template #no-option>
-          <q-item>
-            <q-item-section class="text-grey">
-              Ничего не найдено
-            </q-item-section>
-          </q-item>
-        </template>
-      </q-select>
-
-    <div class="row q-mt-sm">
-      <div class="col">
-        <q-chip v-if="responseMsgText" class="q-mb-md" :color="responseMsgColor" text-color="white">
-          {{ responseMsgText }}
-        </q-chip>
+            label="Выберите компанию *"
+            :error="$v.companyId.$error"
+            :error-message="getErrorForField('companyId')"
+          >
+            <template #no-option>
+              <q-item>
+                <q-item-section class="text-grey">
+                  Ничего не найдено
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+        </div>
+        <div v-show="isCompanySelected" :class="{'col-4': isCompanySelected}">
+          <div class="row">
+            <div class="col-12">
+              Вы руководитель?
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <q-checkbox v-show="isCompanySelected" v-model="regUser.isDirector" left-label label="" />
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <q-btn label="Зарегистрироваться" type="submit" color="primary" />
-    <q-btn label="Сбросить" type="reset" color="primary" flat class="q-ml-sm" />
+
+      <q-btn label="Зарегистрироваться" type="submit" color="primary" />
+      <q-btn label="Сбросить" type="reset" color="primary" flat class="q-ml-sm" />
     </q-form>
   </div>
 </template>
 
 
 <script setup lang="ts">
-import {ref, reactive, inject, onMounted } from 'vue'
+import {ref, reactive, inject, onMounted, computed } from 'vue'
 
 import type { TRegisterForm } from '@/interfaces/User'
-import { getAuthRules, msgColors } from '@/composables/auth/formValidation'
+import { getAuthRules } from '@/composables/auth/formValidation'
 
-const $externalResults = reactive({})
 import { useVuelidate, type ErrorObject } from '@vuelidate/core'
 import { AuthManager } from '@/auth/AuthManager'
 import type NetworkManager from '@/network/NetworkManager'
 import { useCompany } from '@/composables/companySelect'
+import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
 const $networkManager: NetworkManager | undefined = inject<NetworkManager>('$networkManager')
-
-//import { useTemplateRef } from 'vue'
-//const comSelectRef = useTemplateRef('comSelectRef')
 
 if(!$networkManager){
   throw new Error('Wrong network manager injection!')
 }
 
+const $externalResults = reactive({})
+
 const { selectOptions, selectRefModel, filterFn, loadAllCompanies, resetCompanySelection } = useCompany($networkManager)
 
-const isPwd            = ref<boolean>(true)
-const isPwdConf        = ref<boolean>(true)
-const responseMsgText  = ref<string>('')
-const responseMsgColor = ref<msgColors>(msgColors.red)
+const isPwd     = ref<boolean>(true)
+const isPwdConf = ref<boolean>(true)
+
+const notify = useNotify()
 
 const regUser = ref<TRegisterForm>({
     username       : 'Deepgmc',
@@ -122,7 +129,8 @@ const regUser = ref<TRegisterForm>({
     passwordConfirm: '1234567',
     email          : 'test@mail.ru',
     birth          : 577396800000,
-    companyId      : null
+    companyId      : null,
+    isDirector     : false
 })
 onMounted(() => {
   //загружаем список компаний при инициализации
@@ -133,23 +141,22 @@ const rules = getAuthRules(['username', 'password', 'passwordConfirm', 'email', 
 const $v = useVuelidate(rules, regUser, { $externalResults: $externalResults })
 
 async function onSubmit(): Promise<boolean> {
-  resetServerErrText()
   if(!await $v.value.$validate()) return false
 
   //отправка данных на сервер, валидация на сервере, вывод ошибок
   try {
     const registerRes = await AuthManager.getInstance().registerRequest(regUser.value)
     if(registerRes.error){
-      responseMsgText.value = registerRes.message ?? 'unhandled error'
+      if(registerRes.message) notify.run(registerRes.message, notifyTypes.err)
       return false
     }
   } catch (error: any) {
-    responseMsgColor.value = msgColors.red
-    if(typeof error.response !== 'undefined') responseMsgText.value = error.response.data.message[0]
+    if(typeof error.response !== 'undefined'){
+      notify.run(error.response.data.message[0], notifyTypes.err)
+    }
     return false
   }
-  responseMsgColor.value = msgColors.green
-  responseMsgText.value = 'Вы успешно зарегистрировались'
+  notify.run('Вы успешно зарегистрировались', notifyTypes.err)
   return true
 }
 
@@ -157,6 +164,11 @@ function onCompanySelect(): void {
   if(selectRefModel.value === null) throw new Error('Wrong company selection')
   regUser.value.companyId = selectRefModel.value.value ?? null
 }
+
+/* выбрана ли компания в зависимости от состояния */
+const isCompanySelected = computed((): boolean => {
+  return !!regUser.value.companyId
+})
 
 function onReset(){
   resetForm()
@@ -168,13 +180,8 @@ function resetForm(){
   regUser.value.passwordConfirm = ''
   regUser.value.email = ''
   regUser.value.companyId = null
-  resetServerErrText()
   resetCompanySelection()
   $v.value.$reset()
-}
-
-function resetServerErrText(){
-  responseMsgText.value = ''
 }
 
 function getErrorForField(field: string) {

@@ -63,8 +63,13 @@ export class AuthService {
       sub: user.userId,
       loginJwtData: 'auth.service.ts -> loginJwt()'
     }
-    return {
-      access_token: this.jwtService.sign(payload)
+    try {
+      const access_token = this.jwtService.sign(payload)
+      return {
+        access_token: access_token
+      }
+    } catch {
+      return 'auth.service loginJwt error'
     }
   }
 

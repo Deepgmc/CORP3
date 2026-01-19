@@ -1,42 +1,64 @@
 <template>
-  <q-layout view="lHh lpR FFF">
-    <q-header reveal class="text-white">
+  <q-layout view="hHh lpR FFF" class="bg-white">
+    <q-header reveal class="text-black bg-orange-6" bordered>
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
         <q-toolbar-title>
-          Corp3 Layout header caption
+          Ваша компания
         </q-toolbar-title>
+        <q-btn @click="logout" class="text-blue-10">Выйти</q-btn>
       </q-toolbar>
 
-      <q-tabs align="left">
+      <!-- <q-tabs align="left">
         <q-route-tab to="/main" label="Main" />
         <q-route-tab to="/company" label="Company" />
         <q-route-tab to="/employee" label="Employee" />
-      </q-tabs>
+      </q-tabs> -->
     </q-header>
 
-    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" class="bg-dark">
+    <!-- mini -->
+    <q-drawer
+      mini-to-overlay
+      show-if-above
+      side="left"
+
+      :mini="miniState"
+      @mouseenter="miniState = false"
+      @mouseleave="miniState = true"
+
+      class="bg-brown-3"
+      v-model="leftDrawerOpen"
+      >
       <q-scroll-area class="fit">
           <q-list padding class="menu-list">
-            <q-item clickable v-ripple to="/main">
+            <q-item v-ripple to="/profile" active-class="text-blue-9">
               <q-item-section avatar>
                 <q-icon name="home" />
+              </q-item-section>
+              <q-item-section>
+                Мой профиль
+              </q-item-section>
+            </q-item>
+
+            <q-item v-ripple to="/main" active-class="text-blue-9">
+              <q-item-section avatar>
+                <q-icon name="assessment" />
               </q-item-section>
               <q-item-section>
                 Статистика
               </q-item-section>
             </q-item>
 
-            <q-item clickable v-ripple to="/company">
+            <q-item v-ripple to="/company" active-class="text-blue-9">
               <q-item-section avatar>
                 <q-icon name="apartment" />
               </q-item-section>
               <q-item-section>
-                Моя компания
+                Компания
               </q-item-section>
             </q-item>
 
-            <q-item clickable v-ripple to="/employee">
+            <q-item v-ripple to="/employee" active-class="text-blue-9">
               <q-item-section avatar>
                 <q-icon name="people" />
               </q-item-section>
@@ -44,24 +66,44 @@
                 Сотрудники
               </q-item-section>
             </q-item>
+
+            <q-item v-ripple to="/departments" active-class="text-blue-9">
+              <q-item-section avatar>
+                <q-icon name="assignment" />
+              </q-item-section>
+              <q-item-section>
+                Департаменты
+              </q-item-section>
+            </q-item>
           </q-list>
         </q-scroll-area>
     </q-drawer>
 
-    <q-page-container>
+    <q-page-container class="bg-white">
       <router-view />
     </q-page-container>
   </q-layout>
 </template>
 
 <script setup lang="ts">
+import { AuthManager } from '@/auth/AuthManager'
+import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 
-  const leftDrawerOpen = ref(true)
+const router = useRouter()
+const $authManager = AuthManager.getInstance()
+const leftDrawerOpen = ref(true)
+const miniState = ref(true)
 
-  function toggleLeftDrawer () {
-    leftDrawerOpen.value = !leftDrawerOpen.value
+function toggleLeftDrawer () {
+  leftDrawerOpen.value = !leftDrawerOpen.value
+}
+
+function logout(){
+  if($authManager.logOut()){
+    $authManager.setRouterAfterLogOut(router)
   }
+}
 </script>
 
 <style lang="scss">

@@ -35,10 +35,6 @@ export enum EValidations {
   passEqual = 'passEqual',
   companyId = 'companyId'
 }
-export enum msgColors {
-  red   = 'red',
-  green = 'green'
-}
 
 //передаём типы необходимых валидаций, получаем эти валидации в необходиом vuelidate виде
 export function getAuthRules(fields: Array<string>, formType: string = 'register'){
@@ -114,6 +110,6 @@ const passEqual: ValidatorFn = (value: TRegisterForm['password'], siblings: any)
 }
 const isSetCompanyId: ValidatorFn = (value: TRegisterForm['companyId']): ValidatorResponse => {
   return {
-    $valid: value !== null && value !== 0
+    $valid: value !== null && value !== 0 && !!value
   }
 }

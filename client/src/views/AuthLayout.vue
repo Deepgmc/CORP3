@@ -1,7 +1,7 @@
 <!-- <q-icon name="note_add" /> <q-icon name="login" />-->
 <template>
 <q-layout view="HHH lpR lFr">
-    <q-header align="center" class="bg-indigo-10 text-white" height-hint="98">
+    <q-header align="center" class="bg-blue-9 text-white" height-hint="98">
       <q-toolbar>
         <q-toolbar-title>
           <q-avatar>
@@ -12,8 +12,8 @@
       </q-toolbar>
 
       <q-tabs align="center">
-        <q-route-tab to="/auth/login" label="Вход"></q-route-tab>
-        <q-route-tab to="/auth/register" label="Регистрация"></q-route-tab>
+        <q-route-tab :to="{name: 'login'}" label="Вход"></q-route-tab>
+        <q-route-tab :to="{name: 'register'}" label="Регистрация"></q-route-tab>
       </q-tabs>
     </q-header>
 

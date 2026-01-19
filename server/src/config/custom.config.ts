@@ -8,6 +8,6 @@ import { registerAs } from '@nestjs/config';
 
 export default registerAs('customVars', (): ConfigProps => {
   return {
-    loginSessionKeepAlive: '10m',
+    loginSessionKeepAlive: '20m',
   };
 });

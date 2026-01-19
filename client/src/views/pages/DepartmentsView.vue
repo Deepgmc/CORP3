@@ -1,5 +1,5 @@
 <template>
-    <h3>Company page</h3>
+    <h3>Departments page</h3>
 </template>
 
 <script setup lang="ts">
