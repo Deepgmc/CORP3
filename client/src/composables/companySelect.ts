@@ -17,12 +17,14 @@ export function useCompany($networkManager: NetworkManager | null) {
     if(!isLoaded){ //загружаем только один раз, это статичные данные
       const asxiosData = await $networkManager.getApiRequestMethod(EReqMethods.get)('company')('get_all')({}, false)
       isLoaded = true
-      comOptions.value = asxiosData.data.map((company: ICompany) => {
-        return {
-          value: company.companyId,
-          label: company.name,
-        }
-      })
+      if(typeof asxiosData !== 'boolean'){
+        comOptions.value = asxiosData.data.map((company: ICompany) => {
+          return {
+            value: company.companyId,
+            label: company.name,
+          }
+        })
+      }
     }
   }
 

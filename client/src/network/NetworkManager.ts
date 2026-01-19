@@ -78,16 +78,22 @@ export default class NetworkManager {
         return async (
           parameters: AxiosRequestConfig,
           withAuth: boolean = true
-        ): Promise<AxiosResponse> => {
+        ): Promise<AxiosResponse | boolean> => {
           if(withAuth){
             console.log(`${module}/${action} with auth`)
             if( !this.applyAuthorization(AuthManager.getInstance()) ){
               console.warn('Apply authorization failed at NetworkManager')
+              return false
             }
           } else {
-            console.log(`${module}/${action} without auth`)
+            //console.log(`${module}/${action} without auth`)
           }
-          return this.httpClient[method](`${module}/${action}`, parameters)
+          try {
+            return this.httpClient[method](`${module}/${action}`, parameters)
+          } catch {
+            console.warn('NM catch')
+            return false
+          }
         }
       }
     }

@@ -35,10 +35,6 @@ export enum EValidations {
   passEqual = 'passEqual',
   companyId = 'companyId'
 }
-export enum msgColors {
-  red   = 'red',
-  green = 'green'
-}
 
 //передаём типы необходимых валидаций, получаем эти валидации в необходиом vuelidate виде
 export function getAuthRules(fields: Array<string>, formType: string = 'register'){

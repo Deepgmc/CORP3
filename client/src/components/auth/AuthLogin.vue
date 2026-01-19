@@ -28,13 +28,6 @@
         </q-input>
 
         <div>
-          <div class="row">
-            <div class="col">
-              <q-chip v-if="responseMsgText" class="q-mb-md" :color="responseMsgColor" text-color="white">
-                {{ responseMsgText }}
-              </q-chip>
-            </div>
-          </div>
           <q-btn label="Войти" type="submit" color="primary" />
           <q-btn label="Сбросить" type="reset" color="primary" flat class="q-ml-sm" />
         </div>
@@ -48,13 +41,16 @@
 import {ref, reactive } from 'vue'
 import { AuthManager } from '@/auth/AuthManager'
 import type { ILoginUser } from '@/interfaces/User'
-import { getAuthRules, msgColors } from '@/composables/auth/formValidation'
+import { getAuthRules } from '@/composables/auth/formValidation'
 
 const authManager = AuthManager.getInstance()
 
 const $externalResults = reactive({})
 import { useVuelidate, type ErrorObject } from '@vuelidate/core'
 import { useRouter } from 'vue-router'
+import { useNotify } from '@/composables/notifyQuasar'
+import { notifyTypes } from '@/composables/notifyQuasar'
+
 
 const isPwd = ref<boolean>(true)
 
@@ -62,10 +58,9 @@ const loginUser = ref<ILoginUser>({
     username: 'Deepgmc',
     password: '1234567'
 })
-const responseMsgText = ref<string>('')
-const responseMsgColor = ref<msgColors>(msgColors.red)
 
 const router = useRouter()
+const notify = useNotify()
 
 //определяем правила валидации для разных полей
 const rules = getAuthRules(['username', 'password'], 'login')
@@ -75,44 +70,15 @@ async function onSubmit(){
   try {
     const loginRes = await authManager.loginRequest(loginUser.value)
     if(loginRes.error){
-      responseMsgColor.value = msgColors.red
-      responseMsgText.value = loginRes.message ? loginRes.message : ''
+      if(loginRes.message) notify.run(loginRes.message, notifyTypes.err)
     } else {
-      responseMsgColor.value = msgColors.green
-      responseMsgText.value = 'Вход завершен успешно'
+      notify.run('Вход завершен успешно', notifyTypes.succ)
       authManager.setRouteAfterLogin(router)
     }
   } catch (e: any){
-    console.log('onSubmit error:', e)
+    notify.run(e.response.data.message[0], notifyTypes.err)
   }
-
-
-
-
-
-
-
-
-
-
-
-  // try {
-  //   const loginRes = await authManager.loginRequest(loginUser.value)
-  //
-  //   if(loginRes.error){
-  //     responseMsgText.value = loginRes.error.message
-  //     return false
-  //   }
-  //   responseMsgColor.value = msgColors.green
-  //   responseMsgText.value = 'Вы успешно вошли в систему'
-  //   return true
-  // } catch (error: any) {
-  //   responseMsgColor.value = msgColors.red
-  //   if(typeof error.response !== 'undefined') responseMsgText.value = error.response.data.message[0]
-  //   return false
-  // }
 }
-
 
 function onReset(){
   resetForm()
@@ -121,12 +87,7 @@ function onReset(){
 function resetForm(){
   loginUser.value.username = ''
   loginUser.value.password = ''
-  resetServerErrText()
   $v.value.$reset()
-}
-
-function resetServerErrText(){
-  responseMsgText.value = ''
 }
 
 function getErrorForField(field: string) {
