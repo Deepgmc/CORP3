@@ -3,6 +3,16 @@ import { StorageManager } from '@/network/LocalStorageManager'
 import { type TAuthData } from '@/interfaces/Auth'
 
 
+type isLoginedResultSuccess = {
+  isLogined: true,
+  userId: number
+}
+type isLoginedResultFail = {
+  isLogined : false
+}
+
+export type isLoginedResult = isLoginedResultSuccess | isLoginedResultFail
+
 export abstract class Strategy {
 
     static storageManager = new StorageManager(localStorage)
@@ -11,15 +21,15 @@ export abstract class Strategy {
 
     abstract login(loginData: ILoginUser): Promise<any>
 
-    abstract isLogined(): Promise<boolean>
+    abstract isLogined(): Promise<isLoginedResult>
 
-    setAuthStoragedData(data: TAuthData): boolean{
+    setAuthStoragedData(data: TAuthData): boolean {
         return Strategy.storageManager.saveAuthData(data)
     }
-    static getAuthStoragedData(): TAuthData{
+    static getAuthStoragedData(): TAuthData {
         return Strategy.storageManager.getAuthData()
     }
-    removeAuthStoragedData(): boolean{
+    removeAuthStoragedData(): boolean {
         return Strategy.storageManager.removeAuthData()
     }
 }

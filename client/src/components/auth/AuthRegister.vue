@@ -156,7 +156,7 @@ async function onSubmit(): Promise<boolean> {
     }
     return false
   }
-  notify.run('Вы успешно зарегистрировались', notifyTypes.err)
+  notify.run('Вы успешно зарегистрировались', notifyTypes.succ)
   return true
 }
 

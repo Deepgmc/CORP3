@@ -1,11 +1,13 @@
 import type { jwtStrategy } from '@/auth/strategies/jwt.strategy'
+import type { isLoginedResult } from '@/auth/strategies/Strategy'
 import type { ILoginUser, TRegisterForm } from "@/interfaces/User"
 import type { Router } from 'vue-router'
 
 export type TJwtToken = string
 
 export type TAuthData = {
-    access_token: TJwtToken
+    access_token: TJwtToken,
+    userId: number
 }
 
 export type TStrategies = jwtStrategy | null
@@ -42,12 +44,12 @@ export interface IAuthManager {
     /**
      * SHORT client-side status logined or not. Unsafe - do not checks the server
      */
-    isLogined: boolean
+    loginedStatus: isLoginedResult
 
     /**
      * checks AND UPDATES isLogin status
      */
-    updateAndGetIsLogined(): Promise<boolean>
+    updateAndGetIsLogined(): Promise<isLoginedResult>
 
     /**
      * Выйти из системы, удалив авторизационные данные из стора

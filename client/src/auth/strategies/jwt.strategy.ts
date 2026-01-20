@@ -1,5 +1,5 @@
 import { type TJwtToken } from '@/interfaces/Auth'
-import { Strategy } from '@/auth/strategies/Strategy';
+import { Strategy, type isLoginedResult } from '@/auth/strategies/Strategy';
 import { RESPONSE_STATUS_CODES } from '@/constants';
 import type { ILoginUser } from '../../interfaces/User';
 import NetworkManager, { EReqMethods } from '@/network/NetworkManager';
@@ -30,8 +30,11 @@ export class jwtStrategy extends Strategy {
     try {
       const loginRes = await this._postData('login')(loginData, false)
       if (loginRes.status === RESPONSE_STATUS_CODES.CREATED) {
-        this.setAuthStoragedData({ access_token: loginRes.data.access_token })
-        return { error: false, message: 'Успешная авторизация' }
+        this.setAuthStoragedData({
+          access_token: loginRes.data.access_token,
+          userId: loginRes.data.user.userId
+        })
+        return { error: false, message: 'Успешная авторизация', data: loginRes.data }
       }
       return { error: true, message: loginRes.message }
     } catch (loginError: any) {
@@ -45,30 +48,21 @@ export class jwtStrategy extends Strategy {
 
   /**
    * Is strategy has an authorisation
-   * @returns boolean
-   */
-  async isLogined() {
-    return await this.checkServerStrategyStatus()
-  }
-
-  /**
-   * Checks the server token
    * @returns whether token valid or not
    */
-  async checkServerStrategyStatus() {
+  async isLogined(): Promise<isLoginedResult> {
     let isLogined = false
     try {
       const checkData = await this._getData('check_token')()
-      if (checkData.status === RESPONSE_STATUS_CODES.SUCCESS && checkData.data.logined) {
+       if (checkData.status === RESPONSE_STATUS_CODES.SUCCESS && checkData.data.logined) {
         isLogined = true
-      }
-      if (checkData.error && checkData.error.status === RESPONSE_STATUS_CODES.UNAUTHORIZED) {
+      } else if (checkData.error && checkData.error.status === RESPONSE_STATUS_CODES.UNAUTHORIZED) {
         isLogined = false
       }
-      return isLogined
+      return {isLogined: isLogined, userId: checkData.userId}
     } catch {
       //в случае любой ошибки - проверка логина проваливается
-      return false
+      return {isLogined: false}
     }
   }
 
@@ -79,6 +73,15 @@ export class jwtStrategy extends Strategy {
       return authData.access_token
     }
     return ''
+  }
+
+  static get userId(): number {
+    const authData = jwtStrategy.getAuthStoragedData()
+    if (authData && !authData.access_token) return 0
+    if (authData && typeof authData.userId !== 'undefined') {
+      return authData.userId
+    }
+    return 0
   }
 
   isHasToken() {

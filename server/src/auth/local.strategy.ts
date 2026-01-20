@@ -19,6 +19,8 @@ export class LocalStrategy extends PassportStrategy(Strategy){
      * @param password
      * @returns IUser
      */
+
+    //ПРИ ЛОГИНЕ
     async validate (
         username: string,
         password: string
@@ -28,7 +30,8 @@ export class LocalStrategy extends PassportStrategy(Strategy){
             console.log('Local strategy have not found user with:', username, password);
             throw new BadRequestException('Невозможно войти с таким логином/почтой')
         }
-        user.additional_data = {role: 'admin'}
+
+        user.additional_data1 = 'in validate() local.strategy.ts'
 
         return user
     }

@@ -1,10 +1,10 @@
 <template>
-  <q-layout view="hHh lpR FFF" class="bg-white">
+  <q-layout view="hHh lpR FFF" class="bg-grey">
     <q-header reveal class="text-black bg-orange-6" bordered>
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
         <q-toolbar-title>
-          Ваша компания
+          Ваша компания: {{ $authManager.user.username }}
         </q-toolbar-title>
         <q-btn @click="logout" class="text-blue-10">Выйти</q-btn>
       </q-toolbar>
@@ -79,7 +79,7 @@
         </q-scroll-area>
     </q-drawer>
 
-    <q-page-container class="bg-white">
+    <q-page-container class="bg-grey">
       <router-view />
     </q-page-container>
   </q-layout>

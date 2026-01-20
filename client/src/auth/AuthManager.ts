@@ -7,6 +7,7 @@ import NetworkManager, { EReqMethods } from '@/network/NetworkManager'
 import type { TAuthRenponse } from '@/interfaces/Error'
 import { jwtStrategy } from './strategies/jwt.strategy'
 import type { Router } from 'vue-router'
+import type { isLoginedResult } from './strategies/Strategy'
 
 export class AuthManager implements IAuthManager {
 
@@ -15,7 +16,8 @@ export class AuthManager implements IAuthManager {
   _strategy: TStrategies = null
   _authStore
 
-  private _isLogined: boolean = false //авторизация, любыми стратегиями
+  private _isLogined: isLoginedResult = {isLogined: false} //авторизация, любыми стратегиями
+
   networkManager: NetworkManager
 
   static instance: AuthManager | null = null
@@ -44,7 +46,12 @@ export class AuthManager implements IAuthManager {
     this._postData = this.networkManager.getApiRequestMethod(EReqMethods.post)(this._apiModule)
 
     //при создании менеджера проверяем статус логина и разлогиниваем/убираем, если токен остался по какойто-причине старый
-    void this.updateAndGetIsLogined()
+    void this.updateAndGetIsLogined().then(() => {
+      //после проверки статуса сессии (токена) - загружаем данные юзера
+      if(this.loginedStatus.isLogined){
+        this._authStore.loadUserData()
+      }
+    })
   }
 
   static isLoginedByJWTToken(): boolean {
@@ -52,9 +59,17 @@ export class AuthManager implements IAuthManager {
     return !!token
   }
 
+  static getJWTUserID(): number {
+    return jwtStrategy.userId
+  }
+
   async registerRequest(registerData: TRegisterForm): Promise<TAuthRenponse> {
-    if (this._isLogined) return { error: true, message: this.ALREADY_AUTHORISED_MSG }
+    if (this._isLogined.isLogined) return { error: true, message: this.ALREADY_AUTHORISED_MSG }
     return await this._postData('register')(registerData, false)
+  }
+
+  get user () {
+    return this._authStore.user
   }
 
   /**
@@ -62,41 +77,40 @@ export class AuthManager implements IAuthManager {
    * @returns saved login status or no
   */
   async loginRequest(loginData: ILoginUser): Promise<TAuthRenponse> {
-    if (this._isLogined) return { error: true, message: this.ALREADY_AUTHORISED_MSG }
+    if (this._isLogined.isLogined) return { error: true, message: this.ALREADY_AUTHORISED_MSG }
     if (!this._strategy) return { error: true, message: 'Invalid login strategy' }
 
     const loginRes = await this._strategy.login(loginData)
 
     if (!loginRes.error) {
-      this._isLogined = true
-      this._authStore.setIsLogined(true)
+      this._isLogined = {isLogined: true, userId: loginRes.data.user.userId}
+      //при логине юзер ставится из ответа авторизации, в дальнейшем, при обновлении страницы - отдельным запросом из App
+      this._authStore.setUser(loginRes.data.user)
     }
 
     return loginRes
   }
 
-  get isLogined() {
+  get loginedStatus(): isLoginedResult {
     return this._isLogined
   }
-  set isLogined(_someFailParameter) {
+  set loginedStatus(_someFailParameter) {
     throw new ReferenceError('Cant set isLogined directly')
   }
 
-  async updateAndGetIsLogined(): Promise<boolean> {
+  async updateAndGetIsLogined(): Promise<isLoginedResult> {
     if (!this._strategy) {
       this.logOut()
-      return false
+      return {isLogined: false}
     }
     this._isLogined = await this._strategy.isLogined()
-    if (!this.isLogined) this.logOut()
     return this._isLogined
   }
 
   logOut(): boolean {
     if (!this._strategy) return true
     this._strategy.logOut()
-    this._authStore.setIsLogined(false)
-    this._isLogined = false
+    this._isLogined = {isLogined: false}
     return true
   }
 
@@ -109,12 +123,3 @@ export class AuthManager implements IAuthManager {
 
   private ALREADY_AUTHORISED_MSG = 'Вы уже авторизованы в системе'
 }
-
-// export default {
-//     install: (app: AppType) => {
-//         console.info('Auth manager as plugin instance created')
-//         const am = AuthManager.getInstance( new jwtStrategy(), useAuthStore())
-//         app.config.globalProperties.$authManager = am
-//         app.provide('$authManager', am )
-//     }
-// }

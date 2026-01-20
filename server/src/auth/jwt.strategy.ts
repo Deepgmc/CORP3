@@ -17,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     return {
       userId          : payload.sub,
       username        : payload.username,
-      loginJwtData    : payload.loginJwtData,
+      loginJwtData    : payload.loginJwtData, //from loginJwt() auth.service.ts
       someStrategyData: 'jwt.strategy.ts -> validate()'
     }
   }

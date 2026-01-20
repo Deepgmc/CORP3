@@ -3,10 +3,14 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { PasswordValidationPipe } from '../pipes/password.pipe';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UsersService,
+  ) { }
 
   /**
   * Регистрация нового пользователя
@@ -26,8 +30,19 @@ export class AuthController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('check_token')
-  checkAuth() {
-    return { error: false, logined: true }
+  checkAuth(
+    @Request() req
+  ) {
+    return { error: false, logined: true, userId: req.user.userId }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('get_user_data')
+  async getUserData(
+    @Request() req
+  ) {
+    const res = await this.userService.findOne('userId', req.user.userId)
+    return res
   }
 
   /**

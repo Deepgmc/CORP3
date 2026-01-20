@@ -1,20 +1,22 @@
 export interface IUser {
-    userId  : number,
-    username: string,
-    birth   : number, //timestamp of a birth
+    userId    : number,
+    username  : string,
+    birth     : number, //timestamp of a birth
+    email     : string,
+    companyId : number | null,
+    isDirector: boolean
+}
+
+export interface ILoginUser extends Pick<IUser, 'username'> {
+  password: string,
+}
+
+export interface TRegisterForm extends Pick<IUser, 'username' | 'email' | 'birth' | 'companyId' | 'isDirector'> {
+    passwordConfirm: string,
     password: string,
-    email   : string,
 }
 
 export type TUserId = IUser['userId'];
-
-export interface ILoginUser extends Pick<IUser, 'username' | 'password'> {}
-
-export interface TRegisterForm extends Pick<IUser, 'username' | 'password' | 'email' | 'birth'> {
-    passwordConfirm: string,
-    companyId      : number | null,
-    isDirector     : boolean
-}
 
 export type IUsersCreateDTO = Omit<IUser, 'userId'>
 export type IUsersUpdateDTO = Partial<IUser>
