@@ -8,12 +8,6 @@
         </q-toolbar-title>
         <q-btn @click="logout" class="text-blue-10">Выйти</q-btn>
       </q-toolbar>
-
-      <!-- <q-tabs align="left">
-        <q-route-tab to="/main" label="Main" />
-        <q-route-tab to="/company" label="Company" />
-        <q-route-tab to="/employee" label="Employee" />
-      </q-tabs> -->
     </q-header>
 
     <!-- mini -->
@@ -28,7 +22,7 @@
 
       class="bg-brown-3"
       v-model="leftDrawerOpen"
-      >
+    >
       <q-scroll-area class="fit">
           <q-list padding class="menu-list">
             <q-item v-ripple to="/profile" active-class="text-blue-9">
@@ -79,9 +73,13 @@
         </q-scroll-area>
     </q-drawer>
 
-    <q-page-container class="bg-grey">
-      <router-view />
-    </q-page-container>
+    <div class="q-pa-md">
+      <q-page-container class="bg-grey">
+        <q-page>
+          <router-view />
+        </q-page>
+      </q-page-container>
+    </div>
   </q-layout>
 </template>
 

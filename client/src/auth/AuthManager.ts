@@ -98,6 +98,7 @@ export class AuthManager implements IAuthManager {
     throw new ReferenceError('Cant set isLogined directly')
   }
 
+  /** Обновляет статус авторизации при обновлении страницы */
   async updateAndGetIsLogined(): Promise<isLoginedResult> {
     if (!this._strategy) {
       this.logOut()
