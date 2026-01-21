@@ -7,53 +7,64 @@ import { CreateUserDto } from './dto/create-user.dto'
 @Injectable()
 export class UsersService {
 
-    constructor(
-        @InjectRepository(UsersEntity)//тут под капотом делается const userRepository = MyDataSource.getRepository(User)
-        private usersRepository: Repository<UsersEntity>,
-    ) {}
+   constructor(
+      @InjectRepository(UsersEntity)//тут под капотом делается const userRepository = MyDataSource.getRepository(User)
+      private usersRepository: Repository<UsersEntity>,
+   ) { }
 
-    async create(createUserDto: CreateUserDto): Promise<CreateUserDto | boolean> {
-        if(
-            //check if already have such login/email
-            await this.usersRepository.existsBy([{'username': createUserDto.username}, {'email': createUserDto.email}])
-        ){
-            return false
-        }
-        return await this.usersRepository.save(createUserDto)
+   async create(createUserDto: CreateUserDto): Promise<CreateUserDto | boolean> {
+      if (
+         //check if already have such login/email
+         await this.usersRepository.existsBy([{ 'username': createUserDto.username }, { 'email': createUserDto.email }])
+      ) {
+         return false
+      }
+      return await this.usersRepository.save(createUserDto)
 
-        //! ПРИМЕР QueryBuilder
-        // const alias = 'users'
-        // const q = this.usersRepository.createQueryBuilder()
-        // q.andWhere(${alias}.userId in (:...userIds), {userIds: params.userIds})
+   }
 
-        // return await this.postRepository.createQueryBuilder("post")
-        // .innerJoinAndSelect("post.images", "image")
-        // .where("user_id = :userId", {userId: id})
-        // .getMany();
-    }
+   /**
+      UNSAFE!
+    * Searches the unique user with the unique id or login or email
+    * @param field userId, username, email
+    * @param value id or string
+    * @returns
+    */
+   async findOneWithPassword(field: string, value: string | number): Promise<UsersEntity | null> {
+      try {
+         return await this.usersRepository.findOne({
+            select: ['userId', 'username', 'password'],
+            where: {
+               [field]: value
+            },
+         })
+      } catch {
+         throw new NotFoundException()
+      }
+   }
 
-    /**
-     * Searches the unique user with the unique id or login or email
-     * @param field userId, username, email
-     * @param value id or string
-     * @returns
-     */
-    async findOne(field: string, value: string | number): Promise<UsersEntity | null> {
-        try{
-            const searchObject = {
-                [field]: value
-            }
-            return await this.usersRepository.findOneBy(searchObject)
-        } catch {
-            throw new NotFoundException()
-        }
-    }
+   /**
+    * Searches the unique user with the unique id or login or email
+    * @param field userId, username, email
+    * @param value id or string
+    * @returns
+    */
+   async findOne(field: string, value: string | number): Promise<UsersEntity | null> {
+      try {
+         const searchObject = {
+            [field]: value
+         }
+         return await this.usersRepository.findOneBy(searchObject)
+      } catch {
+         throw new NotFoundException()
+      }
+   }
 
-    /**
-     * Just all users without conditions
-     * @returns users array
-     */
-    async findAll(): Promise<UsersEntity[]> {
-        return await this.usersRepository.find()
-    }
+   /**
+    * Just all users without conditions
+    * @returns users array
+    */
+   async findAll(): Promise<UsersEntity[]> {
+      return await this.usersRepository.find()
+   }
 }

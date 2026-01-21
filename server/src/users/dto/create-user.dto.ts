@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsPositive, Length, IsEmail, IsOptional, IsNumber } from 'class-validator'
+import { IsString, IsNotEmpty, IsPositive, Length, IsEmail, IsOptional, IsNumber, IsBoolean } from 'class-validator'
 
 import { IUsersCreateDTO } from '../../interfaces/IUser'
 import { dtoValidationMessageHandler } from '../../validation/dtoMsgHandler'
@@ -71,6 +71,7 @@ export class CreateUserDto implements IUsersCreateDTO {
     })
     @IsNotEmpty({message: dtoMsg.getMessage('notempty')})
     @IsNumber()
+    @IsPositive()
     companyId: number
 
     @ApiProperty({
@@ -79,6 +80,46 @@ export class CreateUserDto implements IUsersCreateDTO {
         type: Boolean
     })
     isDirector: boolean
+
+    @ApiProperty({
+        description: 'Пол',
+        required: false,
+        type: Boolean
+    })
+    @IsBoolean()
+    gender: boolean;
+
+    @ApiProperty({
+        description: 'О себе',
+        required: false,
+        type: Boolean
+    })
+    @IsString()
+    bio: string;
+
+    @ApiProperty({
+        description: 'Имя',
+        required: false,
+        type: Boolean
+    })
+    @IsString()
+    firstName: string;
+
+    @ApiProperty({
+        description: 'Фамилия',
+        required: false,
+        type: Boolean
+    })
+    @IsString()
+    lastName: string;
+
+    @ApiProperty({
+        description: 'Телефон',
+        required: false,
+        type: Boolean
+    })
+    @IsString()
+    phone: string;
 
 
 

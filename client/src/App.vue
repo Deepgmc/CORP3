@@ -11,11 +11,9 @@ const $networkManager = NetworkManager.getInstance()
 provide('$networkManager', $networkManager)
 const $authManager = AuthManager.getInstance( new jwtStrategy($networkManager), authStore)
 provide('$authManager', $authManager)
+
 </script>
 
 <template>
   <router-view />
 </template>
-
-<style lang="scss">
-</style>

@@ -5,13 +5,18 @@ import { jwtStrategy } from '@/auth/strategies/jwt.strategy'
 import NetworkManager, { EReqMethods } from '@/network/NetworkManager'
 import type { AxiosResponse } from 'axios'
 
-const userDummy = {
+export const userDummy = {
     userId    : 0,
     username  : 'dummy',
     birth     : 0,
     email     : '',
     companyId : null,
     isDirector: false,
+    gender: true,
+    bio: '',
+    firstName: '',
+    lastName: '',
+    phone: ''
 }
 
 export const useAuthStore = defineStore('auth', () => {
@@ -23,8 +28,6 @@ export const useAuthStore = defineStore('auth', () => {
     */
 
     const user = ref<IUser>(userDummy)
-    const isLogined = ref<boolean>(false)
-    const authLoading = ref<boolean>(true)
     const timeLogined = ref<number>(0)
 
     function setUser(incomeUuser: IUser){
@@ -39,7 +42,8 @@ export const useAuthStore = defineStore('auth', () => {
       const userId = jwtStrategy.userId
       if(userId && userId > 0){
         const $networkManager = NetworkManager.getInstance()
-        const res: AxiosResponse | boolean = await $networkManager.getApiRequestMethod(EReqMethods.get)('auth')('get_user_data')({data: {userId}}, true) as AxiosResponse | boolean
+        const res: AxiosResponse | boolean = await $networkManager
+          .getApiRequestMethod(EReqMethods.get)('auth')('get_user_data')({data: {userId}}, true) as AxiosResponse | boolean
         if(typeof res !== 'boolean') setUser(res.data)
       }
       return userDummy
@@ -48,10 +52,8 @@ export const useAuthStore = defineStore('auth', () => {
     return {
       user,
       timeLogined,
-      authLoading,
 
       isDirector,
-      isLogined,
 
       setUser,
       loadUserData,

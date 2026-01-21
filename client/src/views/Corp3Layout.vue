@@ -4,7 +4,7 @@
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
         <q-toolbar-title>
-          Ваша компания: {{ $authManager.user.username }}
+          Ваша компания: {{ $authManager.getUser().username }}
         </q-toolbar-title>
         <q-btn @click="logout" class="text-blue-10">Выйти</q-btn>
       </q-toolbar>
@@ -34,7 +34,7 @@
               </q-item-section>
             </q-item>
 
-            <q-item v-ripple to="/main" active-class="text-blue-9">
+            <q-item v-ripple to="/stats" active-class="text-blue-9">
               <q-item-section avatar>
                 <q-icon name="assessment" />
               </q-item-section>

@@ -14,7 +14,11 @@ export class UsersEntity {
   @Column()
   email: string;
 
-  @Column()
+  /*
+    убираем пароль из обычных запросов типа findOne
+    чтобы добавить - нужно юзать addSelect
+  */
+  @Column({select: false})
   password: string;
 
   @Column()
@@ -33,8 +37,21 @@ export class UsersEntity {
   )
   companyId: number;
 
-  @Column({
-    default: false
-  })
+  @Column({default: false})
   isDirector: boolean;
+
+  @Column({default: false})
+  gender: boolean;
+
+  @Column({default: ''})
+  bio: string;
+
+  @Column({default: ''})
+  firstName: string;
+
+  @Column({default: ''})
+  lastName: string;
+
+  @Column({default: ''})
+  phone: string;
 }

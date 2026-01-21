@@ -1,8 +1,7 @@
-
 import { availableStrategies, type IAuthManager } from '@/interfaces/Auth'
 
 import type { TStrategies } from '@/interfaces/Auth'
-import type { ILoginUser, TRegisterForm } from '@/interfaces/User'
+import type { ILoginUser, IUser, TRegisterForm } from '@/interfaces/User'
 import NetworkManager, { EReqMethods } from '@/network/NetworkManager'
 import type { TAuthRenponse } from '@/interfaces/Error'
 import { jwtStrategy } from './strategies/jwt.strategy'
@@ -21,6 +20,7 @@ export class AuthManager implements IAuthManager {
   networkManager: NetworkManager
 
   static instance: AuthManager | null = null
+
   static getInstance(
     strategy?: IAuthManager['_strategy'],
     authStore?: any
@@ -54,6 +54,10 @@ export class AuthManager implements IAuthManager {
     })
   }
 
+  isLogined() {
+    return this.loginedStatus.isLogined
+  }
+
   static isLoginedByJWTToken(): boolean {
     const token = jwtStrategy.token
     return !!token
@@ -68,8 +72,26 @@ export class AuthManager implements IAuthManager {
     return await this._postData('register')(registerData, false)
   }
 
-  get user () {
+  public getUser (): IUser {
     return this._authStore.user
+  }
+
+  public isDirector(): boolean {
+    const user: IUser = this.getUser()
+    if(this.checkLoginedAndUser(user)) {
+      return user.isDirector
+    }
+    return false
+  }
+
+  public isEmployee(): boolean {
+    return !this.isDirector
+  }
+
+  private checkLoginedAndUser(user: IUser): boolean {
+    /** helper function */
+    if (!this.isLogined || !user) return false
+    return true
   }
 
   /**
@@ -84,8 +106,9 @@ export class AuthManager implements IAuthManager {
 
     if (!loginRes.error) {
       this._isLogined = {isLogined: true, userId: loginRes.data.user.userId}
-      //при логине юзер ставится из ответа авторизации, в дальнейшем, при обновлении страницы - отдельным запросом из App
-      this._authStore.setUser(loginRes.data.user)
+      //если авторизация успешна - загружаем данные юзера
+      this._authStore.loadUserData()
+      this._authStore.timeLogined = Date.now()
     }
 
     return loginRes
@@ -105,6 +128,8 @@ export class AuthManager implements IAuthManager {
       return {isLogined: false}
     }
     this._isLogined = await this._strategy.isLogined()
+    if(!this._isLogined.isLogined) { this.logOut() }
+
     return this._isLogined
   }
 
@@ -116,7 +141,7 @@ export class AuthManager implements IAuthManager {
   }
 
   setRouteAfterLogin(router: Router): void {
-    router.push({ name: 'main' })
+    router.push({ name: 'profile' })
   }
   setRouterAfterLogOut(router: Router): void {
     router.push({ name: 'login' })

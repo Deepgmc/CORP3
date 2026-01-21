@@ -77,7 +77,7 @@ export class AuthService {
   }
 
   async getAndCheckUser(username: string): Promise<IUsersCreateDTO> {
-    const user = await this.usersService.findOne('username', username)
+    const user = await this.usersService.findOneWithPassword('username', username)
     if (!user) throw new UnauthorizedException('Not found such user')
     return user
   }
