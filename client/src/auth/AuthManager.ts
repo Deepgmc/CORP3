@@ -35,7 +35,7 @@ export class AuthManager implements IAuthManager {
   private _apiModule: string = 'auth'
   private _postData: (action: string) => any
 
-  private constructor(
+  private constructor (
     strategy?: IAuthManager['_strategy'],
     authStore?: any
   ) {
@@ -87,6 +87,14 @@ export class AuthManager implements IAuthManager {
 
   public isEmployee(): boolean {
     return !this.isDirector
+  }
+
+  public async saveUserProfile(user: IUser): Promise<boolean> {
+    if(this._authStore.setUser(user)){
+      await this._postData('save_user_profile')(user)
+      return true
+    }
+    return false
   }
 
   private checkLoginedAndUser(user: IUser): boolean {

@@ -1,15 +1,15 @@
 export interface IUser {
   userId    : number,
   username  : string,
-  birth     : number, //timestamp of a birth
+  birth     : number,          //timestamp of a birth
   email     : string,
   companyId : number | null,
   isDirector: boolean,
-  gender: boolean,
-  bio: string;
-  firstName: string,
-  lastName: string,
-  phone: string,
+  gender    : number,
+  bio       : string;
+  firstName : string,
+  lastName  : string,
+  phone     : string,
 }
 
 export interface ILoginUser extends Pick<IUser, 'username'> {

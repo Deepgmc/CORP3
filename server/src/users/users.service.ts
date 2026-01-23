@@ -3,6 +3,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm'
 import { UsersEntity } from './entities/user.entity'
 import { CreateUserDto } from './dto/create-user.dto'
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -24,11 +25,12 @@ export class UsersService {
       ) {
          return false
       }
+      createUserDto.reg_date = Date.now() // единственное место, где дата регистрации выставляется
       return await this.usersRepository.save(createUserDto)
    }
 
    /**
-      UNSAFE!
+      !!! UNSAFE !!!
     * Searches the unique user with the unique id or login or email
     * @param field userId, username, email
     * @param value id or string
@@ -69,9 +71,18 @@ export class UsersService {
 
    /**
     * Just all users without conditions
-    * @returns users array
+    * @returns IUser[]
     */
    async findAll(): Promise<UsersEntity[]> {
       return await this.usersRepository.find()
+   }
+
+   /**
+    * Сохраняем профиль юзера из /profile
+    * @param user UpdateUserDTO
+    */
+   async saveProfileData(user: UpdateUserDto) {
+      if(!user.userId || user.userId < 1) throw new Error('Invalid user object')
+      this.usersRepository.save(user)
    }
 }

@@ -5,18 +5,18 @@ import { jwtStrategy } from '@/auth/strategies/jwt.strategy'
 import NetworkManager, { EReqMethods } from '@/network/NetworkManager'
 import type { AxiosResponse } from 'axios'
 
-export const userDummy = {
+export const userDummy: IUser = {
     userId    : 0,
     username  : 'dummy',
     birth     : 0,
     email     : '',
     companyId : null,
     isDirector: false,
-    gender: true,
-    bio: '',
-    firstName: '',
-    lastName: '',
-    phone: ''
+    gender    : 1,
+    bio       : '',
+    firstName : '',
+    lastName  : '',
+    phone     : '',
 }
 
 export const useAuthStore = defineStore('auth', () => {
@@ -30,8 +30,9 @@ export const useAuthStore = defineStore('auth', () => {
     const user = ref<IUser>(userDummy)
     const timeLogined = ref<number>(0)
 
-    function setUser(incomeUuser: IUser){
-      user.value = incomeUuser
+    function setUser(incomeUser: IUser): boolean{
+      user.value = incomeUser
+      return true
     }
 
     const isDirector = computed(() => {

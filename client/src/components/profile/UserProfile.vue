@@ -1,6 +1,6 @@
 <template>
    <div class="row justify-center">
-      <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
+      <q-form @submit="onSubmit" class="q-gutter-md">
          <!-- login -->
          <div class="row">
             <div class="col-12">
@@ -63,11 +63,11 @@
          <!-- Дата рождения -->
          <div class="row">
             <div class="col-12">
-               <q-input v-model="form.birthDate" label="Дата рождения" dense>
+               <q-input v-model="form.birth" label="Дата рождения" dense>
                   <template #append>
                      <q-icon name="event" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                           <q-date v-model="form.birthDate" mask="DD.MM.YYYY" today-btn>
+                           <q-date v-model="form.birth" mask="DD.MM.YYYY">
                               <div class="row items-center justify-end">
                                  <q-btn v-close-popup label="OK" color="primary" flat />
                               </div>
@@ -154,14 +154,16 @@
 <script setup lang="ts">
 import { reactive, onBeforeMount, ref } from 'vue'
 import { AuthManager } from '@/auth/AuthManager'
-import { convertTSToStr } from '@/utils/helpers/dates'
+import { convertStrToUnixTimestamp, convertTSToStr } from '@/utils/helpers/dates'
 import type { IUser } from '@/interfaces/User'
 import { genderOptions } from '@/utils/constants/main'
 import { userDummy } from '@/stores/authStore'
 
-import { v_msg } from '@/utils/constants/texts.ts'
+import { v_msg, SAVED_SUCCESS } from '@/utils/constants/texts.ts'
+import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
 
 const $authManager = AuthManager.getInstance()
+const notify = useNotify()
 
 onBeforeMount(() => {
    assignUserToFormData($authManager.getUser())
@@ -181,12 +183,8 @@ function assignUserToFormData(user: IUser) {
    console.info('%c UserProfile assigns $authManager user to formData:', 'background:rgb(85, 55, 0); color: #bada55; padding: 2px;', user)
    Object.assign(form, user)
    const bDate = convertTSToStr(user.birth)
-   if (typeof bDate === 'string') form.birthDate = bDate
+   if (typeof bDate === 'string') form.birth = bDate
    form.gender = Number(form.gender)
-}
-
-const onReset = () => {
-   Object.assign(form, dummyCopy)
 }
 
 
@@ -205,24 +203,13 @@ function onCPSubmit() {
 
 
 ////////////////////////////////////////////////////////////////////////
-// const onSubmit = async () => {
-//    try {
-//       // Здесь обычно API-запрос
-//       console.log('Данные формы:', JSON.stringify(form, null, 2))
-
-//       $q.notify({
-//          type: 'positive',
-//          message: 'Профиль успешно сохранен!',
-//          position: 'top'
-//       })
-//    } catch {
-//       $q.notify({
-//          type: 'negative',
-//          message: 'Ошибка сохранения профиля',
-//          position: 'top'
-//       })
-//    }
-// }
+const onSubmit = async (): Promise<void> => {
+  const saveProfileData: IUser = Object.assign({}, form)
+  saveProfileData.birth = convertStrToUnixTimestamp(String(saveProfileData.birth))
+  if(await $authManager.saveUserProfile(saveProfileData)){
+    notify.run(SAVED_SUCCESS, notifyTypes.succ)
+  }
+}
 ////////////////////////////////////////////////////////////////////////
 </script>
 
@@ -231,6 +218,4 @@ function onCPSubmit() {
 .q-form {
    max-width: 600px;
 }
-
-.CP_form_container {}
 </style>

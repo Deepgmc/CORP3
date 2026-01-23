@@ -128,7 +128,7 @@ const regUser = ref<TRegisterForm>({
     password       : '1234567',
     passwordConfirm: '1234567',
     email          : 'test@mail.ru',
-    birth          : 577396800000,
+    birth          : 0,
     companyId      : null,
     isDirector     : false
 })

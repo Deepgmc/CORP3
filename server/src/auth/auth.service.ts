@@ -3,7 +3,8 @@ import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
-import { IUser, IUsersCreateDTO } from '../interfaces/IUser'
+import { IUser } from '../interfaces/IUser'
+import { UsersEntity } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -76,7 +77,7 @@ export class AuthService {
     }
   }
 
-  async getAndCheckUser(username: string): Promise<IUsersCreateDTO> {
+  async getAndCheckUser(username: string): Promise<UsersEntity> {
     const user = await this.usersService.findOneWithPassword('username', username)
     if (!user) throw new UnauthorizedException('Not found such user')
     return user
