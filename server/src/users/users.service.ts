@@ -12,6 +12,11 @@ export class UsersService {
       private usersRepository: Repository<UsersEntity>,
    ) { }
 
+   async getFullUserData(field: string, value: string | number): Promise<any> {
+      const user = await this.findOne('userId', value)
+      return user
+   }
+
    async create(createUserDto: CreateUserDto): Promise<CreateUserDto | boolean> {
       if (
          //check if already have such login/email
@@ -20,7 +25,6 @@ export class UsersService {
          return false
       }
       return await this.usersRepository.save(createUserDto)
-
    }
 
    /**
@@ -38,7 +42,8 @@ export class UsersService {
                [field]: value
             },
          })
-      } catch {
+      } catch (e) {
+         console.log('ERR:', e)
          throw new NotFoundException()
       }
    }
@@ -52,10 +57,12 @@ export class UsersService {
    async findOne(field: string, value: string | number): Promise<UsersEntity | null> {
       try {
          const searchObject = {
-            [field]: value
+            where: {[field]: value},
+            relations: ['company'],
          }
-         return await this.usersRepository.findOneBy(searchObject)
-      } catch {
+         return await this.usersRepository.findOne(searchObject)
+      } catch (e) {
+         console.log('ERR:', e)
          throw new NotFoundException()
       }
    }

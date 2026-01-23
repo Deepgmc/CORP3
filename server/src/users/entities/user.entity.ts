@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, JoinTable } from 'typeorm';
+import { CompanyEntity } from 'src/company/entities/company.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 
 @Entity('users')
@@ -32,10 +33,12 @@ export class UsersEntity {
   reg_date: Date;
 
   @Column()
-  @JoinTable(
-    { name: 'company', joinColumn: { name: 'companyId' } }
-  )
   companyId: number;
+
+  @ManyToOne(() => CompanyEntity, { cascade: true })
+  @JoinColumn({ name: 'companyId' })
+  company: CompanyEntity
+
 
   @Column({default: false})
   isDirector: boolean;

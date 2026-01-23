@@ -41,7 +41,7 @@ export class AuthController {
   async getUserData(
     @Request() req
   ) {
-    const res = await this.userService.findOne('userId', req.user.userId)
+    const res = await this.userService.getFullUserData('userId', req.user.userId)
     return res
   }
 

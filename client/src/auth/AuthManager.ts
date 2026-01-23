@@ -1,12 +1,13 @@
+import type { Router } from 'vue-router'
 import { availableStrategies, type IAuthManager } from '@/interfaces/Auth'
-
 import type { TStrategies } from '@/interfaces/Auth'
 import type { ILoginUser, IUser, TRegisterForm } from '@/interfaces/User'
 import NetworkManager, { EReqMethods } from '@/network/NetworkManager'
 import type { TAuthRenponse } from '@/interfaces/Error'
 import { jwtStrategy } from './strategies/jwt.strategy'
-import type { Router } from 'vue-router'
 import type { isLoginedResult } from './strategies/Strategy'
+import { ALREADY_AUTHORISED_MSG } from '@/utils/constants/texts.ts'
+
 
 export class AuthManager implements IAuthManager {
 
@@ -68,7 +69,7 @@ export class AuthManager implements IAuthManager {
   }
 
   async registerRequest(registerData: TRegisterForm): Promise<TAuthRenponse> {
-    if (this._isLogined.isLogined) return { error: true, message: this.ALREADY_AUTHORISED_MSG }
+    if (this._isLogined.isLogined) return { error: true, message: ALREADY_AUTHORISED_MSG }
     return await this._postData('register')(registerData, false)
   }
 
@@ -99,7 +100,7 @@ export class AuthManager implements IAuthManager {
    * @returns saved login status or no
   */
   async loginRequest(loginData: ILoginUser): Promise<TAuthRenponse> {
-    if (this._isLogined.isLogined) return { error: true, message: this.ALREADY_AUTHORISED_MSG }
+    if (this._isLogined.isLogined) return { error: true, message: ALREADY_AUTHORISED_MSG }
     if (!this._strategy) return { error: true, message: 'Invalid login strategy' }
 
     const loginRes = await this._strategy.login(loginData)
@@ -146,6 +147,4 @@ export class AuthManager implements IAuthManager {
   setRouterAfterLogOut(router: Router): void {
     router.push({ name: 'login' })
   }
-
-  private ALREADY_AUTHORISED_MSG = 'Вы уже авторизованы в системе'
 }

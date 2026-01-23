@@ -54,6 +54,7 @@ export default typescriptEslint.config(
       'vue/html-self-closing'                      : 'off',
       'vue/require-default-prop'                   : 'off',
       'vue/singleline-html-element-content-newline': 'off',
+      'vue/html-closing-bracket-newline'           : 'off'
     },
   },
 );
