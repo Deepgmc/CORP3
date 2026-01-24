@@ -37,7 +37,17 @@
 
 
 <script setup lang="ts">
-
+/**
+export default {
+  setup() {
+    const count = ref(0)
+    function increment() {
+      count.value++
+    }
+    return { count, increment }
+  }
+}
+*/
 import {ref, reactive } from 'vue'
 import { AuthManager } from '@/auth/AuthManager'
 import type { ILoginUser } from '@/interfaces/User'

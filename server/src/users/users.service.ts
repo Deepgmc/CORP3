@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { UsersEntity } from './entities/user.entity'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto';
+import { SkillsEntity } from './entities/skills.entity';
 
 @Injectable()
 export class UsersService {
@@ -11,6 +12,9 @@ export class UsersService {
     constructor(
         @InjectRepository(UsersEntity)//тут под капотом делается const userRepository = MyDataSource.getRepository(User)
         private usersRepository: Repository<UsersEntity>,
+
+        @InjectRepository(SkillsEntity)
+        private skillsRepository: Repository<SkillsEntity>,
     ) { }
 
     async getFullUserData(field: string, value: string | number): Promise<any> {
@@ -30,7 +34,7 @@ export class UsersService {
     }
 
     /**
-       !!! UNSAFE !!!
+     *  !!! UNSAFE !!!
      * Searches the unique user with the unique id or login or email
      * @param field userId, username, email
      * @param value id or string
@@ -59,17 +63,20 @@ export class UsersService {
     async findOne(field: string, value: string | number): Promise<UsersEntity | null> {
         try {
             const searchObject = {
+
                 where: { [field]: value },
-                relations: ['company'],
+                relations: ['company', 'skills'],
             }
+            console.log('findOne searchObject:', searchObject)
             return await this.usersRepository.findOne(searchObject)
         } catch (e) {
-            console.log('ERR:', e)
-            throw new NotFoundException()
+            console.log('users.service findOne error:', e)
+            return null
         }
     }
 
     /**
+     *   !!! UNSAFE !!!
      * Just all users without conditions
      * @returns IUser[]
      */
@@ -85,6 +92,15 @@ export class UsersService {
         if (!user.userId || user.userId < 1) {
             throw new Error('Invalid user object')
         }
-        this.usersRepository.save(user)
+        await this.usersRepository.save(user)
+        // const skill1 = new SkillsEntity()
+        // skill1.userId = 1
+        // skill1.skill = 'testskill_1'
+        // const skill2 = new SkillsEntity()
+        // skill2.userId = 1
+        // skill2.skill = 'testskill_2'
+
+        // const aaa = await this.skillsRepository.save([skill1, skill2])
+        // console.log('aaa:', aaa)
     }
 }

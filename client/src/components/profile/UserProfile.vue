@@ -1,4 +1,38 @@
 <template>
+    <q-dialog v-model="isCPOpen">
+        <q-card>
+            <q-card-section class="q-ma-xl">
+                <q-form @submit="onCPSubmit">
+                    <div class="row">
+                        <div class="col">
+                            <q-input readonly v-model="CPForm.username" label="логин *"
+                                :rules="[val => !!val || v_msg.REQUIRED]" dense />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <q-input v-model="CPForm.password" label="текущий пароль *"
+                                :rules="[val => !!val || v_msg.REQUIRED]" dense />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <q-input v-model="CPForm.newPassword" label="новый пароль *"
+                                :rules="[val => !!val || v_msg.REQUIRED]" dense />
+                        </div>
+                    </div>
+
+                    <q-separator class="q-mt-xl"></q-separator>
+
+                    <q-btn flat color="primary" type="submit" label="Изменить" />
+                    <q-btn v-close-popup flat color="secondary" label="Закрыть" />
+                </q-form>
+            </q-card-section>
+        </q-card>
+    </q-dialog>
+
+
+
     <div class="row justify-center">
         <q-form @submit="onSubmit" class="card_form q-gutter-md">
             <!-- login -->
@@ -93,52 +127,44 @@
                 </div>
             </div>
 
+            <!-- Навыки -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="q-mt-sm">
+                        <div class="q-mb-xs text-caption">Навыки</div>
+                        <user-skills
+                            :skills="form.skills"
+                        >
+                        </user-skills>
+                    </div>
+                </div>
+            </div>
+
             <!-- Кнопки действий -->
             <div class="row q-gutter-sm">
                 <q-btn label="Сохранить" type="submit" color="primary" />
             </div>
         </q-form>
     </div><!-- .row -->
-
-
-    <q-dialog v-model="isCPOpen">
-        <q-card>
-            <q-card-section class="q-ma-xl">
-                <q-form @submit="onCPSubmit">
-                    <div class="row">
-                        <div class="col">
-                            <q-input readonly v-model="CPForm.username" label="логин *"
-                                :rules="[val => !!val || v_msg.REQUIRED]" dense />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <q-input v-model="CPForm.password" label="текущий пароль *"
-                                :rules="[val => !!val || v_msg.REQUIRED]" dense />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <q-input v-model="CPForm.newPassword" label="новый пароль *"
-                                :rules="[val => !!val || v_msg.REQUIRED]" dense />
-                        </div>
-                    </div>
-
-                    <q-separator class="q-mt-xl"></q-separator>
-
-                    <q-btn flat color="primary" type="submit" label="Изменить" />
-                    <q-btn v-close-popup flat color="secondary" label="Закрыть" />
-                </q-form>
-            </q-card-section>
-        </q-card>
-    </q-dialog>
 </template>
 
 <script setup lang="ts">
+/**
+export default {
+  setup() {
+    const count = ref(0)
+    function increment() {
+      count.value++
+    }
+    return { count, increment }
+  }
+}
+*/
 import { reactive, onBeforeMount, ref } from 'vue'
 import { AuthManager } from '@/auth/AuthManager'
 import { convertStrToUnixTimestamp, convertTSToStr } from '@/utils/helpers/dates'
 import type { ICPForm, IUser } from '@/interfaces/User'
+import UserSkills from '@/components/UserSkills.vue'
 import { genderOptions } from '@/utils/constants/main'
 import { userDummy } from '@/stores/authStore'
 
@@ -158,6 +184,7 @@ const isCPOpen = ref(false)
 // Модель формы
 const dummyCopy = Object.create(userDummy)
 const form = reactive(dummyCopy)
+
 
 /**
  * Берём юзера из юзер-стора и запихиваем в форму, конвертируя нужные данные

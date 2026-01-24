@@ -1,64 +1,72 @@
 import { CompanyEntity } from 'src/company/entities/company.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { SkillsEntity } from './skills.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 
 
 @Entity('users')
 export class UsersEntity {
-  @PrimaryGeneratedColumn('increment', { //uuid для генерации большого ключа
-    comment: 'User autoincrement id'
-  })
-  readonly userId: number;
+    @PrimaryGeneratedColumn('increment', { //uuid для генерации большого ключа
+        comment: 'User autoincrement id'
+    })
+    readonly userId: number;
 
-  @Column()
-  username: string;
+    @Column()
+    username: string;
 
-  @Column()
-  email: string;
+    @Column()
+    email: string;
 
-  /*
-    убираем пароль из обычных запросов типа findOne
-    чтобы добавить - нужно юзать addSelect
-  */
-  @Column({select: false})
-  password: string;
+    /*
+      убираем пароль из обычных запросов типа findOne
+      чтобы добавить - нужно юзать addSelect
+    */
+    @Column({ select: false })
+    password: string;
 
-  @Column({
-    type: 'bigint',
-  })
-  birth: number;
+    @Column({
+        type: 'bigint',
+    })
+    birth: number;
 
-  @Column({
-    type: 'bigint',
-  })
-  reg_date: number;
+    @Column({
+        type: 'bigint',
+    })
+    reg_date: number;
 
-  @Column()
-  companyId: number;
+    @Column()
+    companyId: number;
 
-  @Column({default: false})
-  isDirector: boolean;
+    @Column({ default: false })
+    isDirector: boolean;
 
-  @Column({
-    type: 'tinyint',
-    default: 1
-  })
-  gender: number;
+    @Column({
+        type: 'tinyint',
+        default: 1
+    })
+    gender: number;
 
-  @Column({default: ''})
-  bio: string;
+    @Column({ default: '' })
+    bio: string;
 
-  @Column({default: ''})
-  firstName: string;
+    @Column({ default: '' })
+    firstName: string;
 
-  @Column({default: ''})
-  lastName: string;
+    @Column({ default: '' })
+    lastName: string;
 
-  @Column({default: ''})
-  phone: string;
+    @Column({ default: '' })
+    phone: string;
 
-  //RELATIONS
+    //! ##############   RELATIONS
 
-  @ManyToOne(() => CompanyEntity, { cascade: true })
-  @JoinColumn({ name: 'companyId' })
-  company: CompanyEntity
+    @ManyToOne(() => CompanyEntity, { cascade: true })
+    @JoinColumn({ name: 'companyId' })
+    company: CompanyEntity;
+
+    @OneToMany(() => SkillsEntity, (skills) => skills.user)
+    @JoinColumn({
+        name: 'userId',
+        referencedColumnName: 'skillUserId'
+    })
+    skills: SkillsEntity[];
 }
