@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, JoinTable } from 'typeorm';
+import { CompanyEntity } from 'src/company/entities/company.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 
 @Entity('users')
@@ -14,27 +15,50 @@ export class UsersEntity {
   @Column()
   email: string;
 
-  @Column()
+  /*
+    убираем пароль из обычных запросов типа findOne
+    чтобы добавить - нужно юзать addSelect
+  */
+  @Column({select: false})
   password: string;
 
-  @Column()
-  birth: string;
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    precision: 0,
-    default: () => 'CURRENT_TIMESTAMP'/* onUpdate: 'CURRENT_TIMESTAMP' */
+  @Column({
+    type: 'bigint',
   })
-  reg_date: Date;
-
-  @Column()
-  @JoinTable(
-    { name: 'company', joinColumn: { name: 'companyId' } }
-  )
-  companyId: number;
+  birth: number;
 
   @Column({
-    default: false
+    type: 'bigint',
   })
+  reg_date: number;
+
+  @Column()
+  companyId: number;
+
+  @Column({default: false})
   isDirector: boolean;
+
+  @Column({
+    type: 'tinyint',
+    default: 1
+  })
+  gender: number;
+
+  @Column({default: ''})
+  bio: string;
+
+  @Column({default: ''})
+  firstName: string;
+
+  @Column({default: ''})
+  lastName: string;
+
+  @Column({default: ''})
+  phone: string;
+
+  //RELATIONS
+
+  @ManyToOne(() => CompanyEntity, { cascade: true })
+  @JoinColumn({ name: 'companyId' })
+  company: CompanyEntity
 }

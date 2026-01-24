@@ -1,13 +1,13 @@
 import { ValidationArguments } from 'class-validator';
 
-export class dtoValidationMessageHandler{
+export class dtoValidationMessageHandler {
 
     private validateSection: string
 
     args: ValidationArguments
     message: string[] = []
 
-    constructor(validateSection: string){
+    constructor(validateSection: string) {
         this.validateSection = validateSection
     }
 
@@ -21,11 +21,11 @@ export class dtoValidationMessageHandler{
             this.args = args
             this.message = []
 
-            this.message.push(args.property.replace(  /^\w/, s => s.toUpperCase() ))
+            this.message.push(args.property.replace(/^\w/, s => s.toUpperCase()))
 
             this.message.push(this[`${type}Message`]())
 
-            return this.message.join (' ')
+            return this.message.join(' ')
         }
     }
 
@@ -49,5 +49,8 @@ export class dtoValidationMessageHandler{
     }
     stringMessage(): string {
         return 'is not a string'
+    }
+    numberMessage(): string {
+        return 'is not a number'
     }
 }

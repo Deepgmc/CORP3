@@ -6,15 +6,24 @@ import AuthLogin from '@/components/auth/AuthLogin.vue'
 import AuthRegister from '@/components/auth/AuthRegister.vue'
 import { AuthManager } from '@/auth/AuthManager'
 
+//import ProfileView from '@/views/pages/ProfileView.vue'
+
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'indexLogined',
     component: Corp3Layout,
     children: [
-    {
-        path: 'main', // страница статистики
-        name: 'main',
+      {
+        path: 'profile',
+        name: 'profile',
+        //component: ProfileView,
+        component: () => import('@/views/pages/ProfileView.vue'),
+      },
+      {
+        path: 'stats', // страница статистики
+        name: 'stats',
         component: () => import('@/views/pages/StatsView.vue'),
       },
 
@@ -34,12 +43,6 @@ const routes: Array<RouteRecordRaw> = [
         path: 'departments',
         name: 'departments',
         component: () => import('@/views/pages/DepartmentsView.vue'),
-      },
-
-      {
-        path: 'profile',
-        name: 'profile',
-        component: () => import('@/views/pages/ProfileView.vue'),
       },
 
     ]
@@ -80,12 +83,12 @@ const router = createRouter({
 })
 
 let isLogined = AuthManager.isLoginedByJWTToken()
-console.log('isLogined at router:', isLogined)
+//console.log('isLogined at router:', isLogined)
 
 
 router.beforeEach((to, _from, next) => {
   isLogined = AuthManager.isLoginedByJWTToken()
-  console.log('isLogined at befreEach:', isLogined)
+  //console.log('isLogined at befreEach:', isLogined)
   if (!isLogined && to.name !== 'login' && to.name !== 'register') {
     next('/auth/login')
   } else {

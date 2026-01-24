@@ -1,15 +1,27 @@
 export interface IUser {
-    userId   : number,
-    username : string,
-    birth    : string,   //timestamp of a birth
-    password : string,
-    email    : string,
-    companyId: number
+    userId    : number,
+    username  : string,
+    password  : string,
+    birth     : number, //timestamp
+    email     : string,
+    companyId : number | null,
+    isDirector: boolean,
+    gender    : number,
+    bio       : string;
+    firstName : string,
+    lastName  : string,
+    phone     : string,
 }
 
 export type TUserId = IUser['userId'];
 
 export type ILoginUser = Pick<IUser, 'username' | 'password'>
+
+//тип для формы смены пароля
+export interface ICPForm extends Pick<IUser, 'username' | 'userId'> {
+    password: string,
+    newPassword: string
+}
 
 export interface TRegisterForm extends Pick<IUser, 'username' | 'password' | 'email' | 'birth'> {
     passwordConfirm: string,

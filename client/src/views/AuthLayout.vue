@@ -20,19 +20,9 @@
     <q-page-container>
       <q-page>
         <div class="row">
-          <div class="col-sm-3 col-md-4 col-xl-5 col-xs-12"></div>
-          <div class="col-sm-6 col-md-4 col-xl-2 col-xs-12" align="center">
-            <!-- <Suspense>
-              <template #default>
-                <router-view />
-              </template>
-              <template #fallback>
-                <div>Загрузка...</div>
-              </template>
-            </Suspense> -->
-            <router-view />
-          </div>
-          <div class="col-sm-3 col-md-4 col-xl-5 col-xs-12"></div>
+          <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4 col-xl-5"></div>
+          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-2" align="center"><router-view /></div>
+          <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4 col-xl-5"></div>
         </div>
       </q-page>
     </q-page-container>

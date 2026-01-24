@@ -77,10 +77,10 @@ export default class NetworkManager {
       return (action: string) => {
         return async (
           parameters: AxiosRequestConfig,
-          withAuth: boolean = true
+          withAuth: boolean = true // нужно ли для запроса посылать токен авторизации или это обычный справочный запрос
         ): Promise<AxiosResponse | boolean> => {
           if(withAuth){
-            console.log(`${module}/${action} with auth`)
+            console.log(`%c NM: authenticated request = ${module}/${action}`, 'background:rgb(27, 122, 35); color: #bfc231; padding: 4px;')
             if( !this.applyAuthorization(AuthManager.getInstance()) ){
               console.warn('Apply authorization failed at NetworkManager')
               return false

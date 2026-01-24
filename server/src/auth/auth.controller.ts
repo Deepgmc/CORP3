@@ -4,6 +4,7 @@ import { PasswordValidationPipe } from '../pipes/password.pipe';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from 'src/users/users.service';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -24,7 +25,6 @@ export class AuthController {
   async register(
     @Body() createUserDto: CreateUserDto
   ): Promise<any> {
-    console.log('createUserDto:', createUserDto)
     await this.authService.registerNewUser(createUserDto)
   }
 
@@ -36,12 +36,31 @@ export class AuthController {
     return { error: false, logined: true, userId: req.user.userId }
   }
 
+  /**
+   * Возвращает одного юзера со всеми возможными связанными данными
+   * @param req User id
+   * @returns IUser
+   */
   @UseGuards(AuthGuard('jwt'))
   @Get('get_user_data')
   async getUserData(
     @Request() req
   ) {
-    const res = await this.userService.findOne('userId', req.user.userId)
+    const res = await this.userService.getFullUserData('userId', req.user.userId)
+    return res
+  }
+
+  /**
+   * Изменение профиля юзера
+   * @param updateUserDto UpdateUserDto
+   * @returns IUser
+   */
+  @UseGuards(AuthGuard('jwt'))
+  @Post('save_user_profile')
+  async saveUserProfile(
+    @Body() updateUserDto: UpdateUserDto
+  ) {
+    const res = await this.userService.saveProfileData(updateUserDto)
     return res
   }
 

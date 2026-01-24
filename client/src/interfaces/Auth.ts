@@ -29,6 +29,16 @@ export interface IAuthManager {
     availableStrategies: typeof availableStrategies
 
     /**
+     * Определяет директор ли текущий юзер или нет
+     */
+    isDirector(): boolean
+
+    /**
+     * Обратное к isDirector. Оставлено на будущее, возможно будет больше "типов"
+     */
+    isEmployee(): boolean
+
+    /**
      * User registration. Sends query to a server
      */
     registerRequest: (registerData: TRegisterForm) => Promise<any>

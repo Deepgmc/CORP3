@@ -1,9 +1,9 @@
 <template>
-    <h3>Profile page</h3>
+    <user-profile></user-profile>
 </template>
 
 <script setup lang="ts">
-
+import UserProfile from '@/components/profile/UserProfile.vue';
 </script>
 
 <style lang="scss">

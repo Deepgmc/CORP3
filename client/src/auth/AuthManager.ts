@@ -1,125 +1,173 @@
-
+import type { Router } from 'vue-router'
 import { availableStrategies, type IAuthManager } from '@/interfaces/Auth'
-
 import type { TStrategies } from '@/interfaces/Auth'
-import type { ILoginUser, TRegisterForm } from '@/interfaces/User'
-import NetworkManager, { EReqMethods } from '@/network/NetworkManager'
+import type { ILoginUser, IUser, TRegisterForm } from '@/interfaces/User'
 import type { TAuthRenponse } from '@/interfaces/Error'
 import { jwtStrategy } from './strategies/jwt.strategy'
-import type { Router } from 'vue-router'
 import type { isLoginedResult } from './strategies/Strategy'
+import { ALREADY_AUTHORISED_MSG } from '@/utils/constants/texts.ts'
+import Manager from '@/entities/Manager'
+import Company from '@/entities/Company'
+import type { ICompany } from '@/interfaces/Company'
 
-export class AuthManager implements IAuthManager {
 
-  public availableStrategies = availableStrategies
+export class AuthManager extends Manager implements IAuthManager {
 
-  _strategy: TStrategies = null
-  _authStore
+    public availableStrategies = availableStrategies
 
-  private _isLogined: isLoginedResult = {isLogined: false} //авторизация, любыми стратегиями
+    _strategy: TStrategies = null
+    _authStore
 
-  networkManager: NetworkManager
+    private _isLogined: isLoginedResult = { isLogined: false } //авторизация, любыми стратегиями
 
-  static instance: AuthManager | null = null
-  static getInstance(
-    strategy?: IAuthManager['_strategy'],
-    authStore?: any
-  ): AuthManager {
-    if (AuthManager.instance) {
-      return AuthManager.instance
-    }
-    return new AuthManager(strategy, authStore)
-  }
+    static instance: AuthManager | null = null
 
-  private _apiModule: string = 'auth'
-  private _postData: (action: string) => any
-
-  private constructor(
-    strategy?: IAuthManager['_strategy'],
-    authStore?: any
-  ) {
-    if (AuthManager.instance) throw new TypeError('Instance creation only with .getInstance()')
-    AuthManager.instance = this
-    if (strategy) this._strategy = strategy
-    this._authStore = authStore
-    this.networkManager = NetworkManager.getInstance()
-    this._postData = this.networkManager.getApiRequestMethod(EReqMethods.post)(this._apiModule)
-
-    //при создании менеджера проверяем статус логина и разлогиниваем/убираем, если токен остался по какойто-причине старый
-    void this.updateAndGetIsLogined().then(() => {
-      //после проверки статуса сессии (токена) - загружаем данные юзера
-      if(this.loginedStatus.isLogined){
-        this._authStore.loadUserData()
-      }
-    })
-  }
-
-  static isLoginedByJWTToken(): boolean {
-    const token = jwtStrategy.token
-    return !!token
-  }
-
-  static getJWTUserID(): number {
-    return jwtStrategy.userId
-  }
-
-  async registerRequest(registerData: TRegisterForm): Promise<TAuthRenponse> {
-    if (this._isLogined.isLogined) return { error: true, message: this.ALREADY_AUTHORISED_MSG }
-    return await this._postData('register')(registerData, false)
-  }
-
-  get user () {
-    return this._authStore.user
-  }
-
-  /**
-   * Depends on strategy: logins current user, saving authorisation data
-   * @returns saved login status or no
-  */
-  async loginRequest(loginData: ILoginUser): Promise<TAuthRenponse> {
-    if (this._isLogined.isLogined) return { error: true, message: this.ALREADY_AUTHORISED_MSG }
-    if (!this._strategy) return { error: true, message: 'Invalid login strategy' }
-
-    const loginRes = await this._strategy.login(loginData)
-
-    if (!loginRes.error) {
-      this._isLogined = {isLogined: true, userId: loginRes.data.user.userId}
-      //при логине юзер ставится из ответа авторизации, в дальнейшем, при обновлении страницы - отдельным запросом из App
-      this._authStore.setUser(loginRes.data.user)
+    static getInstance(
+        strategy?: IAuthManager['_strategy'],
+        authStore?: any
+    ): AuthManager {
+        if (AuthManager.instance) {
+            return AuthManager.instance
+        }
+        return new AuthManager(strategy, authStore)
     }
 
-    return loginRes
-  }
+    protected _apiModule: string = 'auth'
 
-  get loginedStatus(): isLoginedResult {
-    return this._isLogined
-  }
-  set loginedStatus(_someFailParameter) {
-    throw new ReferenceError('Cant set isLogined directly')
-  }
+    public company !: ICompany //объект компании юзера
 
-  async updateAndGetIsLogined(): Promise<isLoginedResult> {
-    if (!this._strategy) {
-      this.logOut()
-      return {isLogined: false}
+    private constructor(
+        strategy?: IAuthManager['_strategy'],
+        authStore?: any
+    ) {
+        super()
+        if (AuthManager.instance) throw new TypeError('Instance creation only with .getInstance()')
+        AuthManager.instance = this
+        if (strategy) this._strategy = strategy
+        this._authStore = authStore
+        this._postData = this._post(this._apiModule)
+        this._getData = this._get(this._apiModule)
+
+        //при создании менеджера проверяем статус логина и разлогиниваем/убираем, если токен остался по какойто-причине старый
+        void this.updateAndGetIsLogined()
+            .then(async () => {
+            //после проверки статуса сессии (токена) - загружаем данные юзера
+            if (this.loginedStatus.isLogined) {
+                const createdUser: IUser = await this._authStore.loadUserData()
+                if(createdUser.company !== null){
+                    //юзер загружен, цепляем к нему его компанию
+                    this.company = Company.getInstance (
+                        {
+                            companyId: createdUser.company.companyId,
+                            name     : createdUser.company.name,
+                            address  : createdUser.company.address,
+                            user     : createdUser
+                        }
+                    )
+                }
+
+            }
+        })
     }
-    this._isLogined = await this._strategy.isLogined()
-    return this._isLogined
-  }
 
-  logOut(): boolean {
-    if (!this._strategy) return true
-    this._strategy.logOut()
-    this._isLogined = {isLogined: false}
-    return true
-  }
+    isLogined() {
+        return this.loginedStatus.isLogined
+    }
 
-  setRouteAfterLogin(router: Router): void {
-    router.push({ name: 'main' })
-  }
-  setRouterAfterLogOut(router: Router): void {
-    router.push({ name: 'login' })
-  }
+    static isLoginedByJWTToken(): boolean {
+        const token = jwtStrategy.token
+        return !!token
+    }
 
-  private ALREADY_AUTHORISED_MSG = 'Вы уже авторизованы в системе'
+    static getJWTUserID(): number {
+        return jwtStrategy.userId
+    }
+
+    async registerRequest(registerData: TRegisterForm): Promise<TAuthRenponse> {
+        if (this._isLogined.isLogined) return { error: true, message: ALREADY_AUTHORISED_MSG }
+        return await this._postData('register')(registerData, false)
+    }
+
+    public getUser(): IUser {
+        return this._authStore.user
+    }
+
+    public isDirector(): boolean {
+        const user: IUser = this.getUser()
+        if (this.checkLoginedAndUser(user)) {
+            return user.isDirector
+        }
+        return false
+    }
+
+    public isEmployee(): boolean {
+        return !this.isDirector
+    }
+
+    public async saveUserProfile(user: IUser): Promise<boolean> {
+        if (this._authStore.setUser(user)) {
+            await this._postData('save_user_profile')(user)
+            return true
+        }
+        return false
+    }
+
+    private checkLoginedAndUser(user: IUser): boolean {
+        /** helper function */
+        if (!this.isLogined || !user) return false
+        return true
+    }
+
+    /**
+     * Depends on strategy: logins current user, saving authorisation data
+     * @returns saved login status or no
+    */
+    async loginRequest(loginData: ILoginUser): Promise<TAuthRenponse> {
+        if (this._isLogined.isLogined) return { error: true, message: ALREADY_AUTHORISED_MSG }
+        if (!this._strategy) return { error: true, message: 'Invalid login strategy' }
+
+        const loginRes = await this._strategy.login(loginData)
+
+        if (!loginRes.error) {
+            this._isLogined = { isLogined: true, userId: loginRes.data.user.userId }
+            //если авторизация успешна - загружаем данные юзера
+            this._authStore.loadUserData()
+            this._authStore.timeLogined = Date.now()
+        }
+
+        return loginRes
+    }
+
+    get loginedStatus(): isLoginedResult {
+        return this._isLogined
+    }
+    set loginedStatus(_someFailParameter) {
+        throw new ReferenceError('Cant set isLogined directly')
+    }
+
+    /** Обновляет статус авторизации при обновлении страницы */
+    async updateAndGetIsLogined(): Promise<isLoginedResult> {
+        if (!this._strategy) {
+            this.logOut()
+            return { isLogined: false }
+        }
+        this._isLogined = await this._strategy.isLogined()
+        if (!this._isLogined.isLogined) { this.logOut() }
+
+        return this._isLogined
+    }
+
+    logOut(): boolean {
+        if (!this._strategy) return true
+        this._strategy.logOut()
+        this._isLogined = { isLogined: false }
+        return true
+    }
+
+    setRouteAfterLogin(router: Router): void {
+        router.push({ name: 'profile' })
+    }
+    setRouterAfterLogOut(router: Router): void {
+        router.push({ name: 'login' })
+    }
 }

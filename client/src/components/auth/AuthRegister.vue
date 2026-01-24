@@ -9,6 +9,7 @@
         label="Логин *"
         :error="$v.username.$error"
         :error-message="getErrorForField('username')"
+        @blur="setBlur('username')"
       />
 
       <q-input
@@ -16,6 +17,7 @@
         label="Эл. почта *"
         :error="$v.email.$error"
         :error-message="getErrorForField('email')"
+        @blur="setBlur('email')"
       />
 
       <q-input
@@ -24,6 +26,7 @@
         label="Пароль *"
         :error="$v.password.$error"
         :error-message="getErrorForField('password')"
+        @blur="setBlur('password')"
       >
         <template #append>
           <q-icon
@@ -40,6 +43,7 @@
         label="Пароль повторно *"
         :error="$v.passwordConfirm.$error"
         :error-message="getErrorForField('passwordConfirm')"
+        @blur="setBlur('passwordConfirm')"
       >
         <template #append>
           <q-icon
@@ -128,10 +132,11 @@ const regUser = ref<TRegisterForm>({
     password       : '1234567',
     passwordConfirm: '1234567',
     email          : 'test@mail.ru',
-    birth          : 577396800000,
+    birth          : 0,
     companyId      : null,
     isDirector     : false
 })
+
 onMounted(() => {
   //загружаем список компаний при инициализации
   loadAllCompanies()
@@ -139,6 +144,10 @@ onMounted(() => {
 
 const rules = getAuthRules(['username', 'password', 'passwordConfirm', 'email', 'passEqual', 'companyId'])
 const $v = useVuelidate(rules, regUser, { $externalResults: $externalResults })
+
+function setBlur(fieldName: string){
+    $v.value[fieldName].$touch()
+}
 
 async function onSubmit(): Promise<boolean> {
   if(!await $v.value.$validate()) return false
