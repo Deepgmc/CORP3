@@ -23,7 +23,7 @@
             </div>
 
             <!-- Кнопки действий -->
-            <div class="row q-gutter-sm">
+            <div class="row q-gutter-sm" v-if="$authManager.isDirector()">
                 <q-btn label="Сохранить" type="submit" color="primary" />
             </div>
         </q-form>
