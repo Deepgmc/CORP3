@@ -50,6 +50,11 @@ export class AuthController {
     return res
   }
 
+  /**
+   * Изменение профиля юзера
+   * @param updateUserDto UpdateUserDto
+   * @returns IUser
+   */
   @UseGuards(AuthGuard('jwt'))
   @Post('save_user_profile')
   async saveUserProfile(

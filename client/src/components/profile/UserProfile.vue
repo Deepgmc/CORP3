@@ -107,19 +107,19 @@
                 <q-form @submit="onCPSubmit">
                     <div class="row">
                         <div class="col">
-                            <q-input readonly v-model="CPform.username" label="login *"
+                            <q-input readonly v-model="CPForm.username" label="логин *"
                                 :rules="[val => !!val || v_msg.REQUIRED]" dense />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <q-input v-model="CPform.password" label="password old *"
+                            <q-input v-model="CPForm.password" label="текущий пароль *"
                                 :rules="[val => !!val || v_msg.REQUIRED]" dense />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <q-input v-model="CPform.newPassword" label="password new *"
+                            <q-input v-model="CPForm.newPassword" label="новый пароль *"
                                 :rules="[val => !!val || v_msg.REQUIRED]" dense />
                         </div>
                     </div>
@@ -138,7 +138,7 @@
 import { reactive, onBeforeMount, ref } from 'vue'
 import { AuthManager } from '@/auth/AuthManager'
 import { convertStrToUnixTimestamp, convertTSToStr } from '@/utils/helpers/dates'
-import type { IUser } from '@/interfaces/User'
+import type { ICPForm, IUser } from '@/interfaces/User'
 import { genderOptions } from '@/utils/constants/main'
 import { userDummy } from '@/stores/authStore'
 
@@ -149,7 +149,8 @@ const $authManager = AuthManager.getInstance()
 const notify = useNotify()
 
 onBeforeMount(() => {
-    assignUserToFormData($authManager.getUser())
+    const user = $authManager.getUser()
+    assignUserToFormData(user)
 })
 
 const isCPOpen = ref(false)
@@ -169,7 +170,7 @@ function assignUserToFormData(user: IUser) {
     form.gender = Number(form.gender)
 }
 
-const onSubmit = async (): Promise<void> => {
+async function onSubmit(): Promise<void> {
     const saveProfileData: IUser = Object.assign({}, form)
     saveProfileData.birth = convertStrToUnixTimestamp(String(saveProfileData.birth))
     if (await $authManager.saveUserProfile(saveProfileData)) {
@@ -179,13 +180,14 @@ const onSubmit = async (): Promise<void> => {
 
 
 ///// CHANGE PASSWORD
-const CPform = reactive({
+const CPForm: ICPForm = reactive({
+    userId: 0,
     username: '',
     password: '',
     newPassword: ''
 })
-function onCPSubmit() {
-    //isCPOpen.value = false
+
+async function onCPSubmit(): Promise<void> {
 }
 ///// CHANGE PASSWORD
 </script>

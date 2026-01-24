@@ -17,6 +17,12 @@ export type TUserId = IUser['userId'];
 
 export type ILoginUser = Pick<IUser, 'username' | 'password'>
 
+//тип для формы смены пароля
+export interface ICPForm extends Pick<IUser, 'username' | 'userId'> {
+    password: string,
+    newPassword: string
+}
+
 export interface TRegisterForm extends Pick<IUser, 'username' | 'password' | 'email' | 'birth'> {
     passwordConfirm: string,
 }

@@ -20,6 +20,12 @@ export interface ILoginUser extends Pick<IUser, 'username'> {
     password: string,
 }
 
+//тип для формы смены пароля
+export interface ICPForm extends Pick<IUser, 'username' | 'userId'> {
+    password: string,
+    newPassword: string
+}
+
 export interface TRegisterForm extends Pick<IUser, 'username' | 'email' | 'birth' | 'companyId' | 'isDirector'> {
     passwordConfirm: string,
     password: string,

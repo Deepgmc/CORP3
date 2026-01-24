@@ -40,6 +40,7 @@ export class UsersEntity {
 
   @Column({
     type: 'tinyint',
+    default: 1
   })
   gender: number;
 
