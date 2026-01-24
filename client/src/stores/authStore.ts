@@ -47,7 +47,10 @@ export const useAuthStore = defineStore('auth', () => {
             const $networkManager = NetworkManager.getInstance()
             const res: AxiosResponse | boolean = await $networkManager
                 .getApiRequestMethod(EReqMethods.get)('auth')('get_user_data')({ data: { userId } }, true) as AxiosResponse | boolean
-            if (typeof res !== 'boolean') setUser(res.data)
+            if (typeof res !== 'boolean') {
+                setUser(res.data)
+                return res.data
+            }
         }
         return userDummy
     }

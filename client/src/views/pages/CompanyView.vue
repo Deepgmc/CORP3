@@ -1,8 +1,9 @@
 <template>
-    <h3>Company page</h3>
+    <company-card></company-card>
 </template>
 
 <script setup lang="ts">
+import CompanyCard from '@/components/CompanyCard.vue';
 
 </script>
 
