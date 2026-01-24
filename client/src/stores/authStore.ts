@@ -1,22 +1,24 @@
 import { computed, ref } from 'vue'
-import { defineStore  } from 'pinia'
+import { defineStore } from 'pinia'
 import type { IUser } from '@/interfaces/User'
 import { jwtStrategy } from '@/auth/strategies/jwt.strategy'
 import NetworkManager, { EReqMethods } from '@/network/NetworkManager'
 import type { AxiosResponse } from 'axios'
 
 export const userDummy: IUser = {
-    userId    : 0,
-    username  : 'dummy',
-    birth     : 0,
-    email     : '',
-    companyId : null,
+    userId: 0,
+    username: 'dummy',
+    birth: 0,
+    email: '',
+    companyId: null,
     isDirector: false,
-    gender    : 1,
-    bio       : '',
-    firstName : '',
-    lastName  : '',
-    phone     : '',
+    gender: 1,
+    bio: '',
+    firstName: '',
+    lastName: '',
+    phone: '',
+
+    company: null
 }
 
 export const useAuthStore = defineStore('auth', () => {
@@ -30,34 +32,34 @@ export const useAuthStore = defineStore('auth', () => {
     const user = ref<IUser>(userDummy)
     const timeLogined = ref<number>(0)
 
-    function setUser(incomeUser: IUser): boolean{
-      user.value = incomeUser
-      return true
+    function setUser(incomeUser: IUser): boolean {
+        user.value = incomeUser
+        return true
     }
 
     const isDirector = computed(() => {
-      return user.value.isDirector
+        return user.value.isDirector
     })
 
     const loadUserData = async (): Promise<IUser> => {
-      const userId = jwtStrategy.userId
-      if(userId && userId > 0){
-        const $networkManager = NetworkManager.getInstance()
-        const res: AxiosResponse | boolean = await $networkManager
-          .getApiRequestMethod(EReqMethods.get)('auth')('get_user_data')({data: {userId}}, true) as AxiosResponse | boolean
-        if(typeof res !== 'boolean') setUser(res.data)
-      }
-      return userDummy
+        const userId = jwtStrategy.userId
+        if (userId && userId > 0) {
+            const $networkManager = NetworkManager.getInstance()
+            const res: AxiosResponse | boolean = await $networkManager
+                .getApiRequestMethod(EReqMethods.get)('auth')('get_user_data')({ data: { userId } }, true) as AxiosResponse | boolean
+            if (typeof res !== 'boolean') setUser(res.data)
+        }
+        return userDummy
     }
 
     return {
-      user,
-      timeLogined,
+        user,
+        timeLogined,
 
-      isDirector,
+        isDirector,
 
-      setUser,
-      loadUserData,
+        setUser,
+        loadUserData,
     }
 })
 

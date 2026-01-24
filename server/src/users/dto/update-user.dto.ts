@@ -7,8 +7,13 @@ import { dtoValidationMessageHandler } from '../../validation/dtoMsgHandler'
 const dtoMsg = new dtoValidationMessageHandler('User')
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
-    @IsNotEmpty({message: dtoMsg.getMessage('notempty')})
+    @IsNotEmpty({ message: dtoMsg.getMessage('notempty') })
     @IsNumber()
     @IsPositive()
     userId: number
+
+    @IsNotEmpty({ message: dtoMsg.getMessage('notempty') })
+    @IsNumber()
+    @IsPositive({ message: dtoMsg.getMessage('positiveMessage') })
+    birth: number
 }
