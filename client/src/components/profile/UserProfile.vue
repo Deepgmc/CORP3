@@ -34,24 +34,29 @@
 
 
     <div class="row justify-center">
-        <q-form @submit="onSubmit" class="card_form q-gutter-md">
+        <q-form @submit="onSubmit" class="card_block q-gutter-md">
             <!-- login -->
             <div class="row">
                 <div class="col-12">
-                    <q-chip size="md" color="orange-5" icon="account_circle">
+                    <q-badge class="q-pa-sm" text-color="black" color="orange-5" icon="account_circle">
                         {{ form.username }}
-                        <q-icon class="q-ml-md" name="swap_horiz" size="md" @click="isCPOpen = true"
-                            style="cursor:pointer" color="green-10" />
-                    </q-chip>
+                        <q-icon class="q-ml-md"
+                            name="swap_horiz"
+                            size="md"
+                            @click="isCPOpen = true"
+                            style="cursor:pointer"
+                            color="green-10"
+                        />
+                    </q-badge>
                 </div>
             </div>
 
             <div class="row">
                 <!-- Компания -->
                 <div class="col-12">
-                    <q-chip size="md" color="orange-5" icon="home">
+                    <q-badge class="q-pa-sm" transparent text-color="black" color="orange-5" icon="home">
                         {{ form.company.name }}
-                    </q-chip>
+                    </q-badge>
                 </div>
             </div>
 
@@ -127,25 +132,28 @@
                 </div>
             </div>
 
-            <!-- Навыки -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="q-mt-sm">
-                        <div class="q-mb-xs text-caption">Навыки</div>
-                        <user-skills
-                            :skills="form.skills"
-                        >
-                        </user-skills>
-                    </div>
-                </div>
-            </div>
-
             <!-- Кнопки действий -->
             <div class="row q-gutter-sm">
                 <q-btn label="Сохранить" type="submit" color="primary" />
             </div>
         </q-form>
     </div><!-- .row -->
+
+    <!-- Навыки -->
+    <div class="row justify-center">
+        <div>
+            <div class="q-mt-sm">
+                <h6 class="q-mb-xs">Навыки</h6>
+                <user-skills
+                    :skills="form.skills"
+                    :needAssession="true"
+                    @remove-skill="removeSkill"
+                    @add-skill="addSkill"
+                >
+                </user-skills>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -163,7 +171,7 @@ export default {
 import { reactive, onBeforeMount, ref } from 'vue'
 import { AuthManager } from '@/auth/AuthManager'
 import { convertStrToUnixTimestamp, convertTSToStr } from '@/utils/helpers/dates'
-import type { ICPForm, IUser } from '@/interfaces/User'
+import type { ICPForm, IUser, TSkill } from '@/interfaces/User'
 import UserSkills from '@/components/UserSkills.vue'
 import { genderOptions } from '@/utils/constants/main'
 import { userDummy } from '@/stores/authStore'
@@ -205,6 +213,14 @@ async function onSubmit(): Promise<void> {
     }
 }
 
+function removeSkill(skillId: TSkill['id']): void {
+    if(!Number.isInteger(skillId)) return
+    $authManager.removeUserSkill(skillId)
+}
+
+function addSkill(skillText: string): void {
+    $authManager.addUserSkill(skillText)
+}
 
 ///// CHANGE PASSWORD
 const CPForm: ICPForm = reactive({

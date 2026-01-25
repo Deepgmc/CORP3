@@ -1,14 +1,37 @@
 <template>
-    <div v-for="prop in props.skills" :key="prop.id">
-        {{ prop.skill }}
+    <div class="row card_block">
+        <template v-for="prop in props.skills" :key="prop.id">
+            <q-chip removable color="teal" text-color="white" @remove="$emit('remove-skill', prop.id)">
+                {{ prop.skill }}
+            </q-chip>
+        </template>
+    </div>
+    <div class="row wrap" v-if="needAssession">
+        <q-form @submit="addSkill" class="card_block wrap">
+            <q-input v-model="newSkill" label="Добавить навык">
+                <template #append>
+                    <q-icon @click="addSkill" name="add" class="pointer" />
+                </template>
+            </q-input>
+        </q-form>
     </div>
 </template>
 
 <script setup lang="ts">
-import type { TSkills } from '@/interfaces/User';
+import type { TSkill } from '@/interfaces/User';
+import { ref } from 'vue';
 
 const props = defineProps<{
-  skills: TSkills[]
+    skills: TSkill[],
+    needAssession: boolean,
 }>()
+const emit = defineEmits(['remove-skill', 'add-skill'])
+
+const newSkill = ref<string>('')
+
+function addSkill() {
+    emit('add-skill', newSkill.value)
+    newSkill.value = ''
+}
 
 </script>

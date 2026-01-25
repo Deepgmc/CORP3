@@ -5,6 +5,7 @@ import { UsersEntity } from './entities/user.entity'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto';
 import { SkillsEntity } from './entities/skills.entity';
+import { TSkill } from 'src/interfaces/IUser';
 
 @Injectable()
 export class UsersService {
@@ -93,14 +94,21 @@ export class UsersService {
             throw new Error('Invalid user object')
         }
         await this.usersRepository.save(user)
-        // const skill1 = new SkillsEntity()
-        // skill1.userId = 1
-        // skill1.skill = 'testskill_1'
-        // const skill2 = new SkillsEntity()
-        // skill2.userId = 1
-        // skill2.skill = 'testskill_2'
+    }
 
-        // const aaa = await this.skillsRepository.save([skill1, skill2])
-        // console.log('aaa:', aaa)
+    async removeUserSkill(skillId: TSkill['id']) {
+        if(!Number.isInteger(skillId)) throw new TypeError('Wrong skill id')
+        return this.skillsRepository.delete(skillId)
+    }
+
+    async addUserSkill(skillText: string, userId: TSkill['skillUserId']) {
+        if(!Number.isInteger(userId)) throw new TypeError('Wrong user id')
+        const newSkill = this.skillsRepository.create({
+            skillUserId: userId,
+            skill: skillText,
+        })
+        const res = await this.skillsRepository.insert(newSkill)
+        if(!res) throw new Error('Add user skill error')
+        return res.raw.insertId
     }
 }

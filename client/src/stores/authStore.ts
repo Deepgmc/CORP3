@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { IUser } from '@/interfaces/User'
+import type { IUser, TSkill } from '@/interfaces/User'
 import { jwtStrategy } from '@/auth/strategies/jwt.strategy'
 import NetworkManager, { EReqMethods } from '@/network/NetworkManager'
 import type { AxiosResponse } from 'axios'
@@ -18,7 +18,8 @@ export const userDummy: IUser = {
     lastName: '',
     phone: '',
 
-    company: null
+    company: null,
+    skills: []
 }
 
 export const useAuthStore = defineStore('auth', () => {
@@ -55,6 +56,24 @@ export const useAuthStore = defineStore('auth', () => {
         return userDummy
     }
 
+    function removeSkill(skillId: TSkill['id']) {
+        user.value.skills.forEach((skill, index) => {
+            if(skill.id === skillId){
+                user.value.skills.splice(index, 1)
+                return true
+            }
+        })
+    }
+
+    function addSkill(skillText: TSkill['skill'], addedSkillId: TSkill['id']): boolean {
+        user.value.skills.push({
+            id: addedSkillId,
+            skillUserId: user.value.userId,
+            skill: skillText
+        })
+        return true
+    }
+
     return {
         user,
         timeLogined,
@@ -63,6 +82,9 @@ export const useAuthStore = defineStore('auth', () => {
 
         setUser,
         loadUserData,
+
+        removeSkill,
+        addSkill,
     }
 })
 

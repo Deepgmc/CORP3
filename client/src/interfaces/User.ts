@@ -13,14 +13,15 @@ export interface IUser {
     lastName: string,
     phone: string,
 
-    company: ICompany | null //relation
+    company: ICompany | null, //relation
+    skills: TSkill[]
 }
 
 export interface ILoginUser extends Pick<IUser, 'username'> {
     password: string,
 }
 
-export type TSkills = {
+export type TSkill = {
     id         : number,
     skillUserId: number,
     skill      : string

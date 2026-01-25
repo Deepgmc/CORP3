@@ -1,7 +1,7 @@
 import type { Router } from 'vue-router'
 import { availableStrategies, type IAuthManager } from '@/interfaces/Auth'
 import type { TStrategies } from '@/interfaces/Auth'
-import type { ILoginUser, IUser, TRegisterForm } from '@/interfaces/User'
+import type { ILoginUser, IUser, TRegisterForm, TSkill } from '@/interfaces/User'
 import type { TAuthRenponse } from '@/interfaces/Error'
 import { jwtStrategy } from './strategies/jwt.strategy'
 import type { isLoginedResult } from './strategies/Strategy'
@@ -65,9 +65,32 @@ export class AuthManager extends Manager implements IAuthManager {
                         }
                     )
                 }
-
             }
         })
+    }
+
+    /**
+     * Удаляет skillId навык из стора и из базы
+     * @param skillId id навыка юзера
+     */
+    async removeUserSkill(skillId: TSkill['id']) {
+        if(await this._postData('remove_user_skill')({skillId})) {
+            this._authStore.removeSkill(skillId)
+        }
+    }
+    /**
+     * Добавляет skillText навык в стор и в базу
+     * @param skillText текст навыка юзера
+     */
+    async addUserSkill(skillText: TSkill['skill']): Promise<boolean> {
+        const res = await this._postData('add_user_skill')({
+            skillText,
+            userId: this.getUser().userId
+        })
+        if(res.data && Number.isInteger(res.data)) {
+            return this._authStore.addSkill(skillText, res.data)
+        }
+        return false
     }
 
     isLogined() {

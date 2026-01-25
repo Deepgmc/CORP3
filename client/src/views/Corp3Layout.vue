@@ -95,7 +95,8 @@ function logout() {
 </script>
 
 <style lang="scss">
-.card_form {
-    width: 600px;
+.card_block {
+    max-width: 700px;
+    min-width: 300px;
 }
 </style>

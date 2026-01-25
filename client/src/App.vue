@@ -17,3 +17,9 @@ provide('$authManager', $authManager)
 <template>
   <router-view />
 </template>
+
+<style lang="scss">
+.pointer{
+    cursor: pointer
+}
+</style>

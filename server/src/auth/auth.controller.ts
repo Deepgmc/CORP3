@@ -65,6 +65,34 @@ export class AuthController {
   }
 
   /**
+   * Удаление одного навыка из списка юзера
+   * @param skillId TSkill['id']
+   * @returns boolean
+   */
+  @UseGuards(AuthGuard('jwt'))
+  @Post('remove_user_skill')
+  async removeUserSkill(
+    @Body() req: any
+  ) {
+    const res = await this.userService.removeUserSkill(req.skillId)
+    return res
+  }
+
+  /**
+   * Добавление ноыого навыка юзеру
+   * @param skillText TSkill['skill']
+   * @param userId TSkill['skillUserId']
+   * @returns addedSkillId: number
+   */
+  @UseGuards(AuthGuard('jwt'))
+  @Post('add_user_skill')
+  async addUserSkill(
+    @Body() req: any
+  ) {
+    return await this.userService.addUserSkill(req.skillText, req.userId)
+  }
+
+  /**
    *
    * @param req username + password
    * @returns

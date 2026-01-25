@@ -11,6 +11,14 @@ export interface IUser {
     firstName : string,
     lastName  : string,
     phone     : string,
+
+    skills?: TSkill[]
+}
+
+export type TSkill = {
+    id         : number,
+    skillUserId: number,
+    skill      : string
 }
 
 export type TUserId = IUser['userId'];
