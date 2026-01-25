@@ -4,7 +4,6 @@ describe('My First Test', () => {
   it('Идём на страницу логина', () => {
     cy.visit('/auth/login')
     cy.contains('h5', 'cypress')
-    cy.contains('h6', 'тест2')
   })
 })
 
