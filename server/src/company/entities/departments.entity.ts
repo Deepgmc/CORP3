@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { CompanyEntity } from './company.entity';
 import { UsersEntity } from 'src/users/entities/user.entity';
 
@@ -28,6 +28,6 @@ export class DepartmentEntity {
     })
     company: CompanyEntity;
 
-    @OneToOne(() => UsersEntity, (user) => user.userId)
-    user: UsersEntity
+    @OneToMany(() => UsersEntity, user => user.departmentId)
+    users: UsersEntity[]
 }

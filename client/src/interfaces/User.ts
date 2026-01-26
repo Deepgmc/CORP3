@@ -1,20 +1,22 @@
-import type { ICompany } from "./Company";
+import type { ICompany, IDepartment } from "./Company";
 
 export interface IUser {
-    userId: number,
-    username: string,
-    birth: number,          //timestamp of a birth
-    email: string,
-    companyId: number | null,
+    userId    : number,
+    username  : string,
+    birth     : number, //timestamp
+    email     : string,
+    companyId : number | null,
     isDirector: boolean,
-    gender: number,
-    bio: string;
-    firstName: string,
-    lastName: string,
-    phone: string,
+    gender    : number,
+    bio       : string;
+    firstName : string,
+    lastName  : string,
+    phone     : string,
 
-    company: ICompany | null, //relation
-    skills: TSkill[]
+    //! RELATIONS
+    company   : ICompany | null,
+    skills    : TSkill[],
+    department: IDepartment | null
 }
 
 export interface ILoginUser extends Pick<IUser, 'username'> {

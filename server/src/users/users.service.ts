@@ -6,6 +6,7 @@ import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto';
 import { SkillsEntity } from './entities/skills.entity';
 import { TSkill } from 'src/interfaces/IUser';
+import { DepartmentEntity } from 'src/company/entities/departments.entity';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +17,9 @@ export class UsersService {
 
         @InjectRepository(SkillsEntity)
         private skillsRepository: Repository<SkillsEntity>,
+
+        @InjectRepository(DepartmentEntity)
+        private deptRepository: Repository<DepartmentEntity>,
     ) { }
 
     async getFullUserData(field: string, value: string | number): Promise<any> {
@@ -66,7 +70,7 @@ export class UsersService {
             const searchObject = {
 
                 where: { [field]: value },
-                relations: ['company', 'skills'],
+                relations: ['company', 'skills', 'department'],
             }
             console.log('findOne searchObject:', searchObject)
             return await this.usersRepository.findOne(searchObject)

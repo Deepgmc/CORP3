@@ -52,7 +52,7 @@
             <!-- Компания -->
             <div class="col-12">
                 <q-badge class="q-pa-sm" transparent text-color="black" color="orange-5" icon="home">
-                    {{ form.company.name }}
+                    {{ form.company?.name }} / {{ form.department?.name }}
                 </q-badge>
             </div>
         </div>
@@ -94,11 +94,11 @@
         <!-- Дата рождения -->
         <div class="row">
             <div class="col-12">
-                <q-input v-model="form.birth" label="Дата рождения" dense>
+                <q-input v-model="bDateStr" label="Дата рождения" dense>
                     <template #append>
                         <q-icon name="event" class="cursor-pointer">
                             <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                                <q-date v-model="form.birth" mask="DD.MM.YYYY">
+                                <q-date v-model="bDateStr" mask="DD.MM.YYYY">
                                     <div class="row items-center justify-end">
                                         <q-btn v-close-popup label="OK" color="primary" flat />
                                     </div>
@@ -158,7 +158,7 @@ export default {
   }
 }
 */
-import { reactive, onBeforeMount, ref } from 'vue'
+import { reactive, onBeforeMount, ref, watch } from 'vue'
 import { AuthManager } from '@/auth/AuthManager'
 import { convertStrToUnixTimestamp, convertTSToStr } from '@/utils/helpers/dates'
 import type { ICPForm, IUser, TSkill } from '@/interfaces/User'
@@ -180,9 +180,9 @@ onBeforeMount(() => {
 const isCPOpen = ref(false)
 
 // Модель формы
-const dummyCopy = Object.create(userDummy)
-const form = reactive(dummyCopy)
-
+const dummyCopy: IUser = Object.create(userDummy)
+const form = reactive<IUser>(dummyCopy)
+const bDateStr = ref<string>()
 
 /**
  * Берём юзера из юзер-стора и запихиваем в форму, конвертируя нужные данные
@@ -191,13 +191,17 @@ const form = reactive(dummyCopy)
 function assignUserToFormData(user: IUser) {
     Object.assign(form, user)
     const bDate = convertTSToStr(user.birth)
-    if (typeof bDate === 'string') form.birth = bDate
+    if (typeof bDate === 'string') bDateStr.value = bDate
     form.gender = Number(form.gender)
 }
 
+watch(bDateStr, (newBdate) => {
+    form.birth = convertStrToUnixTimestamp(String(newBdate))
+})
+
 async function onSubmit(): Promise<void> {
     const saveProfileData: IUser = Object.assign({}, form)
-    saveProfileData.birth = convertStrToUnixTimestamp(String(saveProfileData.birth))
+    //saveProfileData.birth = convertStrToUnixTimestamp(String(saveProfileData.birth))
     if (await $authManager.saveUserProfile(saveProfileData)) {
         notify.run(SAVED_SUCCESS, notifyTypes.succ)
     }

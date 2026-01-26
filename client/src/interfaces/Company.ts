@@ -8,6 +8,13 @@ export interface ICompany {
 
 export interface ICompanyForm extends Pick<ICompany, 'companyId' | 'name' | 'address'> {}
 
+export interface IDepartment {
+    id         : number,
+    companyId  : ICompany['companyId'],
+    name       : string,
+    description: string
+}
+
 export type ICompanySelect<T extends ICompany> = {
     value: T['companyId'],
     label: T['name'],

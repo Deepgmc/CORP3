@@ -19,7 +19,8 @@ export const userDummy: IUser = {
     phone: '',
 
     company: null,
-    skills: []
+    skills: [],
+    department: null
 }
 
 export const useAuthStore = defineStore('auth', () => {
