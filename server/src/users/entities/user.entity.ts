@@ -1,6 +1,7 @@
 import { CompanyEntity } from 'src/company/entities/company.entity';
 import { SkillsEntity } from './skills.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import { DepartmentEntity } from 'src/company/entities/departments.entity';
 
 
 @Entity('users')
@@ -57,6 +58,12 @@ export class UsersEntity {
     @Column({ default: '' })
     phone: string;
 
+    @Column({
+        type: 'integer',
+        default: 0
+    })
+    departmentId: number;
+
     //! ##############   RELATIONS
 
     @ManyToOne(() => CompanyEntity, { cascade: true })
@@ -69,4 +76,7 @@ export class UsersEntity {
         referencedColumnName: 'skillUserId'
     })
     skills: SkillsEntity[];
+
+    @OneToOne(() => DepartmentEntity, (dep) => dep.id)
+    department: DepartmentEntity
 }

@@ -1,11 +1,7 @@
 <template>
-    <h3>Employee page</h3>
+    <employee-list></employee-list>
 </template>
 
 <script setup lang="ts">
-
+import EmployeeList from '@/components/employee/EmployeeList.vue';
 </script>
-
-<style lang="scss">
-
-</style>

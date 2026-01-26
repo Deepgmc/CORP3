@@ -21,16 +21,17 @@ const routes: Array<RouteRecordRaw> = [
                 //component: ProfileView,
                 component: () => import('@/views/pages/ProfileView.vue'),
             },
-            {
-                path: 'stats', // страница статистики
-                name: 'stats',
-                component: () => import('@/views/pages/StatsView.vue'),
-            },
 
             {
                 path: 'company',
                 name: 'company',
                 component: () => import('@/views/pages/CompanyView.vue'),
+            },
+
+            {
+                path: 'departments',
+                name: 'departments',
+                component: () => import('@/views/pages/DepartmentsView.vue'),
             },
 
             {
@@ -40,9 +41,9 @@ const routes: Array<RouteRecordRaw> = [
             },
 
             {
-                path: 'departments',
-                name: 'departments',
-                component: () => import('@/views/pages/DepartmentsView.vue'),
+                path: 'stats', // страница статистики
+                name: 'stats',
+                component: () => import('@/views/pages/StatsView.vue'),
             },
 
             //   { ДЛЯ ПРИМЕРА

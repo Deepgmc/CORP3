@@ -1,11 +1,7 @@
 <template>
-    <h3>Departments page</h3>
+    <departments-list></departments-list>
 </template>
 
 <script setup lang="ts">
-
+import DepartmentsList from '@/components/DepartmentsList.vue';
 </script>
-
-<style lang="scss">
-
-</style>

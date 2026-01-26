@@ -24,21 +24,21 @@
                         </q-item-section>
                     </q-item>
 
-                    <q-item v-ripple to="/stats" active-class="text-blue-9">
-                        <q-item-section avatar>
-                            <q-icon name="assessment" />
-                        </q-item-section>
-                        <q-item-section>
-                            Статистика
-                        </q-item-section>
-                    </q-item>
-
                     <q-item v-ripple to="/company" active-class="text-blue-9">
                         <q-item-section avatar>
                             <q-icon name="apartment" />
                         </q-item-section>
                         <q-item-section>
                             Компания
+                        </q-item-section>
+                    </q-item>
+
+                    <q-item v-ripple to="/departments" active-class="text-blue-9">
+                        <q-item-section avatar>
+                            <q-icon name="assignment" />
+                        </q-item-section>
+                        <q-item-section>
+                            Департаменты
                         </q-item-section>
                     </q-item>
 
@@ -51,12 +51,12 @@
                         </q-item-section>
                     </q-item>
 
-                    <q-item v-ripple to="/departments" active-class="text-blue-9">
+                    <q-item v-ripple to="/stats" active-class="text-blue-9">
                         <q-item-section avatar>
-                            <q-icon name="assignment" />
+                            <q-icon name="assessment" />
                         </q-item-section>
                         <q-item-section>
-                            Департаменты
+                            Статистика
                         </q-item-section>
                     </q-item>
                 </q-list>

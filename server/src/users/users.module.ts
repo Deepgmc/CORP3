@@ -5,6 +5,7 @@ import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersEntity } from './entities/user.entity'
 import { SkillsEntity } from './entities/skills.entity';
+import { DepartmentEntity } from 'src/company/entities/departments.entity';
 
 @Module({
     controllers: [UsersController],
@@ -14,7 +15,8 @@ import { SkillsEntity } from './entities/skills.entity';
     imports: [
         TypeOrmModule.forFeature([
             UsersEntity,
-            SkillsEntity
+            SkillsEntity,
+            DepartmentEntity
         ]),
     ],
     exports: [UsersService],

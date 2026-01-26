@@ -1,15 +1,7 @@
 <template>
-  <div class="row">
-    <div class="col-12">
-      <div class="text-h3">Statistic page</div>
-    </div>
-  </div>
+    <stats-component></stats-component>
 </template>
 
 <script setup lang="ts">
-
+import StatsComponent from '@/components/StatsComponent.vue';
 </script>
-
-<style lang="scss">
-
-</style>
