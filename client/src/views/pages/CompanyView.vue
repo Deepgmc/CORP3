@@ -4,9 +4,4 @@
 
 <script setup lang="ts">
 import CompanyCard from '@/components/CompanyCard.vue';
-
 </script>
-
-<style lang="scss">
-
-</style>

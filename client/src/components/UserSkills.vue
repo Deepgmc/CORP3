@@ -1,13 +1,13 @@
 <template>
-    <div class="row card_block">
+    <div class="row">
         <template v-for="prop in props.skills" :key="prop.id">
             <q-chip removable color="teal" text-color="white" @remove="$emit('remove-skill', prop.id)">
                 {{ prop.skill }}
             </q-chip>
         </template>
     </div>
-    <div class="row wrap" v-if="needAssession">
-        <q-form @submit="addSkill" class="card_block wrap">
+    <div class="row" v-if="needAssession">
+        <q-form @submit="addSkill">
             <q-input v-model="newSkill" label="Добавить навык">
                 <template #append>
                     <q-icon @click="addSkill" name="add" class="pointer" />

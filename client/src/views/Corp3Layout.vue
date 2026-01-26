@@ -63,13 +63,15 @@
             </q-scroll-area>
         </q-drawer>
 
-        <div class="q-pa-md">
-            <q-page-container class="bg-grey">
-                <q-page>
-                    <router-view />
-                </q-page>
-            </q-page-container>
-        </div>
+        <q-page-container class="bg-grey">
+            <q-page class="q-pa-md">
+                <div class="row justify-center">
+                    <div class="col-xs-12 col-sm-8 col-md-6 col-lg-4 card_block">
+                        <router-view />
+                    </div>
+                </div>
+            </q-page>
+        </q-page-container>
     </q-layout>
 </template>
 
@@ -95,8 +97,9 @@ function logout() {
 </script>
 
 <style lang="scss">
-.card_block {
-    max-width: 700px;
-    min-width: 300px;
-}
+// .card_block {
+//     // max-width: 700px;
+//     // min-width: 400px;
+//     border:1px solid grey
+// }
 </style>
