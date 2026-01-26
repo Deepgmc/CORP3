@@ -4,6 +4,7 @@ import { CompanyService } from './company.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateCompanyDTO } from './dto/update-company.dto';
 import { CompanyEntity } from './entities/company.entity';
+import { DepartmentEntity } from './entities/departments.entity';
 
 @Controller('company')
 export class CompanyController {
@@ -27,5 +28,12 @@ export class CompanyController {
         @Body() updateCompanyDTO: UpdateCompanyDTO
     ): Promise<CompanyEntity | boolean> {
         return await this.companyService.saveCompanyProfile(updateCompanyDTO)
+    }
+
+    @Post('get_full_departmets_list')
+    async getFullDepartmentsList(
+        @Body() data: {companyId: number}
+    ): Promise<DepartmentEntity[] | boolean> {
+        return await this.companyService.getFullDepartmentsList(data.companyId)
     }
 }

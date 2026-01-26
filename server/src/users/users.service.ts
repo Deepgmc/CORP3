@@ -68,7 +68,6 @@ export class UsersService {
     async findOne(field: string, value: string | number): Promise<UsersEntity | null> {
         try {
             const searchObject = {
-
                 where: { [field]: value },
                 relations: ['company', 'skills', 'department'],
             }

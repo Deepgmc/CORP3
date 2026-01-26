@@ -1,9 +1,14 @@
+import type { AxiosResponse } from "axios"
+
 export interface ICompany {
     companyId: number,
     name: string,
     address: string,
+    saveCompanyProfile: (company: ICompanyForm) => boolean,
+    getFullDepartmetsList: () => Promise<AxiosResponse>,
 
-    saveCompanyProfile: (company: ICompanyForm) => boolean
+    //! RELATIONS
+    departments?: IDepartment[]
 }
 
 export interface ICompanyForm extends Pick<ICompany, 'companyId' | 'name' | 'address'> {}

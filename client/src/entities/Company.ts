@@ -1,6 +1,7 @@
 import type { ICompany, ICompanyForm } from "@/interfaces/Company";
 import type { IUser } from "@/interfaces/User";
 import Manager from "./Manager";
+import type { AxiosResponse } from "axios";
 
 type TCompanyData = {
     companyId: number,
@@ -30,7 +31,7 @@ export default class Company extends Manager implements ICompany {
         return new Company(companyData.companyId, companyData.name, companyData.address, companyData.user)
     }
 
-    private constructor(
+    private constructor (
         public readonly companyId: number,
         public name              : string,
         public address           : string,
@@ -45,5 +46,9 @@ export default class Company extends Manager implements ICompany {
     saveCompanyProfile(company: ICompanyForm): boolean {
         console.log('Saving company:', company)
         return this._postData('save_company_profile')(company)
+    }
+
+    async getFullDepartmetsList(): Promise<AxiosResponse> {
+        return await this._postData('get_full_departmets_list')({companyId: this.companyId}, false)
     }
 }

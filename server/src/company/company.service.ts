@@ -3,6 +3,7 @@ import { CompanyEntity } from './entities/company.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UpdateCompanyDTO } from './dto/update-company.dto';
+import { DepartmentEntity } from './entities/departments.entity';
 
 @Injectable()
 export class CompanyService {
@@ -10,6 +11,9 @@ export class CompanyService {
     constructor(
         @InjectRepository(CompanyEntity)//тут под капотом делается const userRepository = MyDataSource.getRepository(User)
         private companyRepository: Repository<CompanyEntity>,
+
+        @InjectRepository(DepartmentEntity)
+        private deptRepository: Repository<DepartmentEntity>,
     ) { }
 
     /**
@@ -26,5 +30,10 @@ export class CompanyService {
             throw new Error('Invalid user object')
         }
         return this.companyRepository.save(company)
+    }
+
+    async getFullDepartmentsList(companyId: number): Promise<DepartmentEntity[] | boolean> {
+        if(!Number.isInteger(companyId)) throw new TypeError('Wrong company id')
+        return this.deptRepository.find({where: {companyId: companyId}})
     }
 }
