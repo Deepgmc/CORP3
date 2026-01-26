@@ -1,8 +1,10 @@
-import { Controller, Get, Logger } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post, UseGuards } from '@nestjs/common';
 
 import { UsersService } from './users.service';
 import { UserId } from './userId.decorator'
 import { IUser } from 'src/interfaces/IUser';
+import { AuthGuard } from '@nestjs/passport';
+import { UsersEntity } from './entities/user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -25,5 +27,13 @@ export class UsersController {
         this.logger.debug('Find one user:')
         this.logger.debug(user)
         return user
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Post('gv_user_field')
+    async saveDepartmentsOneField(
+        @Body() savingData: any
+    ): Promise<UsersEntity | boolean> {
+        return await this.usersService.saveOneUserField(savingData.data)
     }
 }

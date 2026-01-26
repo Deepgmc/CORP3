@@ -1,30 +1,43 @@
 <template>
+    <h4>Компания</h4>
     <q-form class="q-gutter-md" @submit="onSubmit">
-        <!-- company id (readonly) -->
-        <div class="row">
-            <div class="col-12">
-                <q-input readonly v-model="companyForm.companyId" label="ID"
-                            :rules="[val => !!val || v_msg.REQUIRED]" dense />
+        <fieldset class="fieldset">
+            <legend class="text-h5">Редактировать компанию</legend>
+            <!-- company id (readonly) -->
+            <div class="row">
+                <div class="col-12">
+                    <q-input readonly
+                        v-model="companyForm.companyId"
+                        label="ID"
+                        :rules="[val => !!val || v_msg.REQUIRED]" dense
+                    />
+                </div>
             </div>
-        </div>
-        <!-- company name -->
-        <div class="row">
-            <div class="col-12">
-                <q-input :readonly="!$authManager.isDirector()" v-model="companyForm.name" label="Название *"
-                            :rules="[val => !!val || v_msg.REQUIRED]" dense />
+            <!-- company name -->
+            <div class="row">
+                <div class="col-12">
+                    <q-input
+                        :readonly="!$authManager.isDirector()"
+                        v-model="companyForm.name"
+                        label="Название *"
+                        :rules="[val => !!val || v_msg.REQUIRED]" dense
+                    />
+                </div>
             </div>
-        </div>
-        <!-- company address -->
-        <div class="row">
-            <div class="col-12">
-                <q-input :readonly="!$authManager.isDirector()" v-model="companyForm.address" label="Адрес" dense />
+            <!-- company address -->
+            <div class="row">
+                <div class="col-12">
+                    <q-input :readonly="!$authManager.isDirector()" v-model="companyForm.address" label="Адрес" dense />
+                </div>
             </div>
-        </div>
 
-        <!-- Кнопки действий -->
-        <div class="row q-gutter-sm" v-if="$authManager.isDirector()">
-            <q-btn label="Сохранить" type="submit" color="primary" />
-        </div>
+            <!-- Кнопки действий -->
+            <div class="row q-pt-md" v-if="$authManager.isDirector()">
+                <div class="col">
+                    <q-btn label="Сохранить" type="submit" color="primary" />
+                </div>
+            </div>
+        </fieldset>
     </q-form>
 </template>
 

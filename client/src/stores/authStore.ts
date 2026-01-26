@@ -5,23 +5,6 @@ import { jwtStrategy } from '@/auth/strategies/jwt.strategy'
 import NetworkManager, { EReqMethods } from '@/network/NetworkManager'
 import type { AxiosResponse } from 'axios'
 
-export const userDummy: IUser = {
-    userId: 0,
-    username: 'dummy',
-    birth: 0,
-    email: '',
-    companyId: null,
-    isDirector: false,
-    gender: 1,
-    bio: '',
-    firstName: '',
-    lastName: '',
-    phone: '',
-
-    company: null,
-    skills: []
-}
-
 export const useAuthStore = defineStore('auth', () => {
 
     /**
@@ -87,4 +70,25 @@ export const useAuthStore = defineStore('auth', () => {
         addSkill,
     }
 })
+
+
+
+export const userDummy: IUser = {
+    userId      : 0,
+    username    : 'dummy',
+    birth       : 0,
+    email       : '',
+    companyId   : null,
+    isDirector  : false,
+    gender      : 1,
+    bio         : '',
+    firstName   : '',
+    lastName    : '',
+    phone       : '',
+    departmentId: null,
+
+    company   : null,
+    skills    : [],
+    department: null
+}
 

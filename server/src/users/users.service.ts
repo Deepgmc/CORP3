@@ -6,6 +6,7 @@ import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto';
 import { SkillsEntity } from './entities/skills.entity';
 import { TSkill } from 'src/interfaces/IUser';
+import { DepartmentEntity } from 'src/company/entities/departments.entity';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +17,9 @@ export class UsersService {
 
         @InjectRepository(SkillsEntity)
         private skillsRepository: Repository<SkillsEntity>,
+
+        @InjectRepository(DepartmentEntity)
+        private deptRepository: Repository<DepartmentEntity>,
     ) { }
 
     async getFullUserData(field: string, value: string | number): Promise<any> {
@@ -64,11 +68,9 @@ export class UsersService {
     async findOne(field: string, value: string | number): Promise<UsersEntity | null> {
         try {
             const searchObject = {
-
                 where: { [field]: value },
-                relations: ['company', 'skills'],
+                relations: ['company', 'skills', 'department'],
             }
-            console.log('findOne searchObject:', searchObject)
             return await this.usersRepository.findOne(searchObject)
         } catch (e) {
             console.log('users.service findOne error:', e)
@@ -110,5 +112,17 @@ export class UsersService {
         const res = await this.skillsRepository.insert(newSkill)
         if(!res) throw new Error('Add user skill error')
         return res.raw.insertId
+    }
+
+    //редактируем одно поле юзера
+    async saveOneUserField(savingData : {
+        fieldName: string,
+        itemId   : string,
+        val      : string
+    }){
+        return await this.usersRepository.save({
+            'userId': Number(savingData.itemId),
+            [savingData.fieldName]: savingData.val
+        })
     }
 }
