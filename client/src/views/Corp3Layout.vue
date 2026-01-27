@@ -66,7 +66,7 @@
         <q-page-container class="bg-grey">
             <q-page class="q-pa-md">
                 <div class="row justify-center">
-                    <div class="col-xs-12 col-sm-8 col-md-6 col-lg-4 card_block">
+                    <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6 card_block">
                         <router-view />
                     </div>
                 </div>
@@ -98,8 +98,6 @@ function logout() {
 
 <style lang="scss">
 // .card_block {
-//     // max-width: 700px;
-//     // min-width: 400px;
 //     border:1px solid grey
 // }
 </style>

@@ -5,6 +5,7 @@ import { CompanyService } from './company.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CompanyEntity } from './entities/company.entity'
 import { DepartmentEntity } from './entities/departments.entity';
+import { UsersEntity } from 'src/users/entities/user.entity';
 
 @Module({
   controllers: [CompanyController],
@@ -12,7 +13,8 @@ import { DepartmentEntity } from './entities/departments.entity';
   imports: [
     TypeOrmModule.forFeature([
         CompanyEntity,
-        DepartmentEntity
+        DepartmentEntity,
+        UsersEntity
     ]),
   ],
   exports: [ CompanyService ]

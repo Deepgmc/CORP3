@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UpdateCompanyDTO } from './dto/update-company.dto';
 import { DepartmentEntity } from './entities/departments.entity';
+import { UsersEntity } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class CompanyService {
@@ -11,6 +12,9 @@ export class CompanyService {
     constructor(
         @InjectRepository(CompanyEntity)//тут под капотом делается const userRepository = MyDataSource.getRepository(User)
         private companyRepository: Repository<CompanyEntity>,
+
+        @InjectRepository(UsersEntity)
+        private usersRepository: Repository<UsersEntity>,
 
         @InjectRepository(DepartmentEntity)
         private deptRepository: Repository<DepartmentEntity>,
@@ -35,5 +39,10 @@ export class CompanyService {
     async getFullDepartmentsList(companyId: number): Promise<DepartmentEntity[] | boolean> {
         if(!Number.isInteger(companyId)) throw new TypeError('Wrong company id')
         return this.deptRepository.find({where: {companyId: companyId}})
+    }
+
+    async getFullEmployeesList(companyId: number): Promise<UsersEntity[] | boolean> {
+        if(!Number.isInteger(companyId)) throw new TypeError('Wrong company id')
+        return this.usersRepository.find({where: {companyId: companyId}})
     }
 }

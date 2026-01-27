@@ -5,6 +5,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { UpdateCompanyDTO } from './dto/update-company.dto';
 import { CompanyEntity } from './entities/company.entity';
 import { DepartmentEntity } from './entities/departments.entity';
+import { UsersEntity } from 'src/users/entities/user.entity';
 
 @Controller('company')
 export class CompanyController {
@@ -35,5 +36,12 @@ export class CompanyController {
         @Body() data: {companyId: number}
     ): Promise<DepartmentEntity[] | boolean> {
         return await this.companyService.getFullDepartmentsList(data.companyId)
+    }
+
+    @Post('get_full_employees_list')
+    async getFullEmployeesList(
+        @Body() data: {companyId: number}
+    ): Promise<UsersEntity[] | boolean> {
+        return await this.companyService.getFullEmployeesList(data.companyId)
     }
 }

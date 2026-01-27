@@ -4,8 +4,10 @@ export interface ICompany {
     companyId: number,
     name: string,
     address: string,
+
     saveCompanyProfile: (company: ICompanyForm) => boolean,
     getFullDepartmetsList: () => Promise<AxiosResponse>,
+    getFullEmployeesList: () => Promise<AxiosResponse>,
 
     //! RELATIONS
     departments?: IDepartment[]

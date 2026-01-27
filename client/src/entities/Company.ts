@@ -48,7 +48,19 @@ export default class Company extends Manager implements ICompany {
         return this._postData('save_company_profile')(company)
     }
 
+    /**
+     * Получаем список департаментов, без проверок, без авторизации
+     * @returns IDepartment[]
+     */
     async getFullDepartmetsList(): Promise<AxiosResponse> {
         return await this._postData('get_full_departmets_list')({companyId: this.companyId}, false)
+    }
+
+    /**
+     * Получаем список работников, без проверок, без авторизации
+     * @returns IUser[]
+     */
+    async getFullEmployeesList(): Promise<AxiosResponse> {
+        return await this._postData('get_full_employees_list')({companyId: this.companyId}, false)
     }
 }
