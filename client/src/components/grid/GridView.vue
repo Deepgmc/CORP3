@@ -15,7 +15,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="row in dataArray" :key="row[idName]">
+                    <tr v-for="row in data" :key="row[idName]">
                         <td v-for="col in cols.keys()" :key="col" :align="cols.get(col)!.align">
                             {{ row[col] }}
                         </td>
@@ -28,16 +28,13 @@
 
 <script setup lang="ts">
 
-import { ref } from 'vue';
 import type { TGridColMap } from './GridColumnOptionTypes';
 
-const props = defineProps<{
+defineProps<{
     cols: Map<string, TGridColMap>,
     data  : any,
     idName: string
 }>()
-
-const dataArray = ref<any>(props.data)
 
 </script>
 

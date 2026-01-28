@@ -1,4 +1,4 @@
-import type { ICompany, ICompanyForm } from "@/interfaces/Company";
+import type { IAddDepartment, ICompany, ICompanyForm } from "@/interfaces/Company";
 import type { IUser } from "@/interfaces/User";
 import Manager from "./Manager";
 import type { AxiosResponse } from "axios";
@@ -46,11 +46,13 @@ export default class Company extends Manager implements ICompany {
         if (Company.instance) throw new TypeError('Instance creation only with .getInstance()')
         super()
         this.user = user
-        this._store = useCompanyStore()
-        this._store.setCompany({companyId, name, address})
 
         this._postData = this._post(this._apiModule)
         this._getData = this._get(this._apiModule)
+
+        this._store = useCompanyStore()
+        this._store.setCompany({companyId, name, address})
+        this.getFullDepartmentsList()
     }
 
     get companyId() {
@@ -61,6 +63,9 @@ export default class Company extends Manager implements ICompany {
     }
     get address() {
         return this._store.company.address
+    }
+    get departments() {
+        return this._store.departments
     }
 
     async saveCompanyProfile(company: ICompanyForm): Promise<boolean> {
@@ -77,7 +82,9 @@ export default class Company extends Manager implements ICompany {
      * @returns IDepartment[]
      */
     async getFullDepartmentsList(): Promise<AxiosResponse> {
-        return await this._postData('get_full_departmets_list')({companyId: this.companyId}, false)
+        const deptFullList = await this._postData('get_full_departmets_list')({companyId: this.companyId}, false)
+        this._store.setDepartments(deptFullList.data)
+        return deptFullList.data
     }
 
     /**
@@ -86,5 +93,21 @@ export default class Company extends Manager implements ICompany {
      */
     async getFullEmployeesList(): Promise<AxiosResponse> {
         return await this._postData('get_full_employees_list')({companyId: this.companyId}, false)
+    }
+
+    /**
+     * Добавляем новый департамент в компанию
+     * @returns AxiosResponse
+     */
+    async addNewDepartment(newDepartment: IAddDepartment): Promise<AxiosResponse | boolean> {
+        const res = await this._postData('add_new_company_department')(newDepartment)
+        if(res.status === RESPONSE_STATUS_CODES.CREATED || res.status === RESPONSE_STATUS_CODES.SUCCESS){
+            const newDeptId = res.data as number
+            this._store.addNewDepartment({
+                id: newDeptId,
+                ...newDepartment
+            })
+        }
+        return false
     }
 }

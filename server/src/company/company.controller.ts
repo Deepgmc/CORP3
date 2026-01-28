@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Logger, Post, UseGuards } from '@nestjs/common';
-import { ICompany } from 'src/interfaces/ICompany';
+import { IAddDepartment, ICompany } from 'src/interfaces/ICompany';
 import { CompanyService } from './company.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateCompanyDTO } from './dto/update-company.dto';
@@ -29,6 +29,14 @@ export class CompanyController {
         @Body() updateCompanyDTO: UpdateCompanyDTO
     ): Promise<CompanyEntity | boolean> {
         return await this.companyService.saveCompanyProfile(updateCompanyDTO)
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Post('add_new_company_department')
+    async addNewCompanyDepartment(
+        @Body() data: IAddDepartment
+    ): Promise<number | boolean> {
+        return await this.companyService.addNewCompanyDepartment(data)
     }
 
     @Post('get_full_departmets_list')

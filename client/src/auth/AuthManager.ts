@@ -34,7 +34,7 @@ export class AuthManager extends Manager implements IAuthManager {
 
     protected _apiModule: string = 'auth'
 
-    public company !: Company //объект компании юзера
+    public company !: Company // Инстанс объекта компании
 
     private constructor(
         strategy?: IAuthManager['_strategy'],

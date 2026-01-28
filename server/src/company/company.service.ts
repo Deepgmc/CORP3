@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { UpdateCompanyDTO } from './dto/update-company.dto';
 import { DepartmentEntity } from './entities/departments.entity';
 import { UsersEntity } from 'src/users/entities/user.entity';
+import { IAddDepartment } from 'src/interfaces/ICompany';
 
 @Injectable()
 export class CompanyService {
@@ -44,5 +45,12 @@ export class CompanyService {
     async getFullEmployeesList(companyId: number): Promise<UsersEntity[] | boolean> {
         if(!Number.isInteger(companyId)) throw new TypeError('Wrong company id')
         return this.usersRepository.find({where: {companyId: companyId}})
+    }
+
+    async addNewCompanyDepartment(newDepartment: IAddDepartment): Promise<number | boolean> {
+        const newDept = this.deptRepository.create(newDepartment)
+        const res = await this.deptRepository.insert(newDept)
+        if(!res) throw new Error('Add department error')
+        return res.raw.insertId
     }
 }

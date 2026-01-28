@@ -5,7 +5,7 @@
             <grid-view
                 v-if="departments && departments.length"
                 :cols="departmentColsMap"
-                :data="departments"
+                :data="deptComp"
                 :idName="'id'"
             >
             </grid-view>
@@ -42,33 +42,33 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { computed, reactive } from 'vue';
 import GridView from './grid/GridView.vue';
 import { AuthManager } from '@/auth/AuthManager';
-import { RESPONSE_STATUS_CODES } from '@/constants';
-import type { IAddDepartment, IDepartment } from '@/interfaces/Company';
+import type { IAddDepartment } from '@/interfaces/Company';
 import { modifyGridData, setColsMap, departmentBaseMap, departmentAvailableCols } from '@/components/grid/GridColumnOptionTypes';
 import { v_msg } from '@/utils/constants/texts';
 
-const departments = ref<IDepartment[] | null>(null)
-
-const needFields = ['id', 'name', 'description']
+const $authManager = AuthManager.getInstance()
+const needFields = ['id', 'name', 'description', 'companyId']
 const departmentColsMap = setColsMap(needFields, departmentBaseMap, departmentAvailableCols)
 
-onMounted(async () => {
-    const res = await AuthManager.getInstance().company.getFullDepartmentsList()
-    if(res.status === RESPONSE_STATUS_CODES.CREATED || res.status === RESPONSE_STATUS_CODES.SUCCESS) {
-        departments.value = modifyGridData([...res.data], departmentColsMap)
-    }
+const departments = $authManager.company.departments
+
+const deptComp = computed(() => {
+    return modifyGridData([...departments], departmentColsMap)
 })
 
 const newDepartment = reactive<IAddDepartment>({
     name: '',
-    description: ''
+    description: '',
+    companyId: $authManager.company.companyId
 })
 
-function addDepartment() {
-    console.log('newDept:', newDepartment)
+async function addDepartment() {
+    await $authManager.company.addNewDepartment(newDepartment)
+    newDepartment.name = ''
+    newDepartment.description = ''
 }
 </script>
 

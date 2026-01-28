@@ -27,4 +27,4 @@ export interface IDepartment {
     description: string
 }
 
-export interface IAddDepartment extends Pick<IDepartment, 'name' | 'description'> {}
+export interface IAddDepartment extends Pick<IDepartment, 'companyId' | 'name' | 'description'> {}
