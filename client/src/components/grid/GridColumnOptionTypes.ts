@@ -1,11 +1,12 @@
 import { AuthManager } from "@/auth/AuthManager"
+import type { IDepartment } from "@/interfaces/Company";
 import { convertTSToStr } from "@/utils/helpers/dates"
 
 export type TGridColMap = {
     label     ?: string,
-    switchData?: boolean, //нужно ли видоизменять данные (id менять на названия или переформатировать данные)
+    switchData?: boolean,                       //нужно ли видоизменять данные (id менять на названия или переформатировать данные)
     sortFn    ?: (a: any, b: any) => void,
-    align      : 'left' | 'center' | 'right'
+    align      : 'left' | 'center' | 'right',
 }
 // interface TableConfig {
 //   [key: string]: TGridColMap;
@@ -62,7 +63,7 @@ export const employeeAvailableCols: TableConfig = {
     },
     bio: {
         label    : 'О себе',
-        align    : 'center',
+        align    : 'left',
     },
 }
 
@@ -84,11 +85,11 @@ export const departmentAvailableCols: TableConfig = {
     name: {
         label    : 'Название',
         sortFn   : (val1, val2) => val1 < val2,
-        align    : 'center'
+        align    : 'left'
     },
     description: {
         label    : 'Описание',
-        align    : 'center'
+        align    : 'left'
     },
 }
 
@@ -123,9 +124,12 @@ export function modifyGridData(data: any[], cols: Map<string, TGridColMap>) {
 }
 
 function switchGridValue(item: any, field: string){
+    let thisDept: IDepartment
     switch(field){
         case 'companyId':
-            item.companyId = $authManager.company.name
+            if(item.companyId !== null){
+                item['companyIdValue'] = $authManager.company.name
+            }
         break;
         case 'birth':
             item.birth = convertTSToStr(item.birth)
@@ -134,7 +138,10 @@ function switchGridValue(item: any, field: string){
             item.reg_date = convertTSToStr(item.reg_date)
         break;
         case 'departmentId':
-            item.departmentId = $authManager.getUser().department?.name
+            if(item.departmentId !== null){
+                thisDept = $authManager.company.departments.find((dept: IDepartment) => dept.id === item.departmentId)
+                item['departmentIdValue'] = thisDept.name
+            }
         break;
     }
 }

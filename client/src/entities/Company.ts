@@ -49,6 +49,7 @@ export default class Company extends Manager implements ICompany {
 
         this._postData = this._post(this._apiModule)
         this._getData = this._get(this._apiModule)
+        this._deleteData = this._delete(this._apiModule)
 
         this._store = useCompanyStore()
         this._store.setCompany({companyId, name, address})
@@ -107,6 +108,18 @@ export default class Company extends Manager implements ICompany {
                 id: newDeptId,
                 ...newDepartment
             })
+        }
+        return false
+    }
+
+    /**
+     * ОТкрепляем от компании и удаляем департамент
+     * @returns AxiosResponse
+     */
+    async deleteDepartment(departmentId: number): Promise<AxiosResponse | boolean> {
+        const res = await this._deleteData(`delete_company_department/${departmentId}`)()
+        if(res.status === RESPONSE_STATUS_CODES.CREATED || res.status === RESPONSE_STATUS_CODES.SUCCESS){
+            this._store.deleteDepartment(departmentId)
         }
         return false
     }

@@ -1,4 +1,5 @@
 <template>
+    <h4>Мой профиль</h4>
     <q-dialog v-model="isCPOpen">
         <q-card>
             <q-card-section class="q-ma-xl">
@@ -57,37 +58,31 @@
             </div>
         </div>
 
-        <!-- Имя и Фамилия в строку -->
+        <!-- Имя и Фамилия -->
         <div class="row">
-            <!-- Имя -->
-            <div class="col-12">
+            <div class="col-6">
                 <q-input v-model="form.firstName" label="Имя *" :rules="[val => !!val || v_msg.REQUIRED]" dense />
             </div>
 
-            <!-- Фамилия -->
-            <div class="col-12">
-                <q-input v-model="form.lastName" label="Фамилия *" :rules="[val => !!val || v_msg.REQUIRED]"
-                    dense />
+            <div class="col-6">
+                <q-input v-model="form.lastName" label="Фамилия *" :rules="[val => !!val || v_msg.REQUIRED]" dense />
             </div>
         </div>
 
-        <!-- Email -->
         <div class="row">
-            <div class="col-12">
+            <div class="col-6"><!-- Email -->
                 <q-input v-model="form.email" label="Email *" type="email" :rules="[
                     val => !!val || v_msg.REQUIRED,
                     val => /.+@.+\..+/.test(val) || v_msg.EMAIL_FORMAT
-                ]" dense />
+                    ]" dense
+                />
             </div>
-        </div>
-
-        <!-- Телефон -->
-        <div class="row">
-            <div class="col-12">
+            <div class="col-6"><!-- Телефон -->
                 <q-input v-model="form.phone" label="Телефон" mask="+# (###) ###-##-##" fill-mask
                     hint="Формат: +7 (123) 456-78-90" :rules="[
                         val => !val || /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/.test(val) || v_msg.PHONE_FORMAT
-                    ]" dense />
+                    ]" dense
+                />
             </div>
         </div>
 
@@ -115,7 +110,8 @@
             <div class="col-12">
                 <q-input v-model="form.bio" label="О себе" type="textarea" autogrow dense :rules="[
                     val => !val || val.length <= 500 || 'Максимум 500 символов'
-                ]" counter />
+                    ]" counter
+                />
             </div>
         </div>
 

@@ -1,4 +1,5 @@
 <template>
+    <h4>Компания</h4>
     <q-form class="q-gutter-md" @submit="onSubmit">
         <!-- company id (readonly) -->
         <div class="row">

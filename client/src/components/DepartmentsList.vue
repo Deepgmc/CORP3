@@ -1,13 +1,24 @@
 <template>
-    <h3>Департаменты</h3>
+    <h4>Департаменты</h4>
     <div class="row">
         <div class="col">
             <grid-view
                 v-if="departments && departments.length"
                 :cols="departmentColsMap"
-                :data="deptComp"
+                :data="deptComputed"
                 :idName="'id'"
             >
+                <template #actions_caption>
+                    <q-icon class="gv-edit_buttons" name="edit" />
+                </template>
+
+                <template #actions_buttons="slotProps">
+                    <q-icon
+                        class="gv-edit_buttons"
+                        name="delete_forever"
+                        @click="deleteDepartment"
+                        :data-itemId="slotProps.itemId" />
+                </template>
             </grid-view>
         </div>
     </div>
@@ -20,10 +31,12 @@
                     v-model="newDepartment.name"
                     label="Название"
                     class="q-mb-md add-department-ta"
+                    dense
                     filled
                     :rules="[val => !!val || v_msg.REQUIRED]"
                 ></q-input>
                 <q-input
+                    dense
                     filled
                     type="textarea"
                     v-model="newDepartment.description"
@@ -50,12 +63,12 @@ import { modifyGridData, setColsMap, departmentBaseMap, departmentAvailableCols 
 import { v_msg } from '@/utils/constants/texts';
 
 const $authManager = AuthManager.getInstance()
-const needFields = ['id', 'name', 'description', 'companyId']
+const needFields = ['name', 'description']
 const departmentColsMap = setColsMap(needFields, departmentBaseMap, departmentAvailableCols)
 
 const departments = $authManager.company.departments
 
-const deptComp = computed(() => {
+const deptComputed = computed(() => {
     return modifyGridData([...departments], departmentColsMap)
 })
 
@@ -69,6 +82,15 @@ async function addDepartment() {
     await $authManager.company.addNewDepartment(newDepartment)
     newDepartment.name = ''
     newDepartment.description = ''
+}
+
+async function deleteDepartment(e: MouseEvent) {
+    if(e.target instanceof HTMLElement){
+        const itemId: number = Number(e.target.dataset.itemid)
+        if(itemId && Number.isInteger(itemId)){
+            await $authManager.company.deleteDepartment(Number(itemId))
+        }
+    }
 }
 </script>
 

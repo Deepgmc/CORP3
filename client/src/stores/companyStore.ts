@@ -26,12 +26,17 @@ export const useCompanyStore = defineStore('company', () => {
         departments.value.push(newDept)
     }
 
+    function deleteDepartment(depertmentId: number): void {
+        departments.value.splice(departments.value.findIndex(dept => dept.id === depertmentId), 1)
+    }
+
     return {
         company,
         departments,
         setCompany,
         setDepartments,
         addNewDepartment,
+        deleteDepartment,
     }
 })
 

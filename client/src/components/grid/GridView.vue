@@ -12,12 +12,18 @@
                         >
                             {{ cols.get(col)!.label }}
                         </th>
+                        <th v-if="$slots.actions_caption" class="text-center">
+                            <slot name="actions_caption"></slot>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="row in data" :key="row[idName]">
                         <td v-for="col in cols.keys()" :key="col" :align="cols.get(col)!.align">
-                            {{ row[col] }}
+                            {{ cols.get(col)!.switchData ? row[`${col}Value`] : row[col] }}
+                        </td>
+                        <td v-if="$slots.actions_buttons" class="text-center pointer">
+                            <slot name="actions_buttons" :itemId="row[idName]"></slot>
                         </td>
                     </tr>
                 </tbody>
@@ -35,7 +41,6 @@ defineProps<{
     data  : any,
     idName: string
 }>()
-
 </script>
 
 
@@ -65,6 +70,11 @@ $cellPadding: 5px;
     }
     tbody tr td {
         padding: $cellPadding;
+    }
+
+    .gv-edit_buttons{
+        font-size: $text18;
+        color: $dark-negative;
     }
 }
 </style>

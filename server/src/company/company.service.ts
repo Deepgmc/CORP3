@@ -30,7 +30,6 @@ export class CompanyService {
     }
 
     async saveCompanyProfile(company: UpdateCompanyDTO): Promise<CompanyEntity | boolean> {
-        console.log('Saving company profile:', company)
         if (!company.companyId || company.companyId < 1) {
             throw new Error('Invalid user object')
         }
@@ -52,5 +51,12 @@ export class CompanyService {
         const res = await this.deptRepository.insert(newDept)
         if(!res) throw new Error('Add department error')
         return res.raw.insertId
+    }
+
+    async deleteCompanyDepartment(departmentId: number): Promise<boolean> {
+        if(!Number.isInteger(departmentId)) throw new TypeError('Wrong department id')
+        const res = await this.deptRepository.delete({id: departmentId})
+        if(!res.affected) throw new Error('Delete department error')
+        return true
     }
 }

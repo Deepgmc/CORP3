@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, UseGuards } from '@nestjs/common';
 import { IAddDepartment, ICompany } from 'src/interfaces/ICompany';
 import { CompanyService } from './company.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -37,6 +37,14 @@ export class CompanyController {
         @Body() data: IAddDepartment
     ): Promise<number | boolean> {
         return await this.companyService.addNewCompanyDepartment(data)
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Delete('delete_company_department/:deptid')
+    async deleteCompanyDepartment(
+        @Param('deptid') deptid: number
+    ): Promise<number | boolean> {
+        return await this.companyService.deleteCompanyDepartment(Number(deptid))
     }
 
     @Post('get_full_departmets_list')
