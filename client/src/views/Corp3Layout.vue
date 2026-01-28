@@ -10,21 +10,27 @@
             </q-toolbar>
         </q-header>
 
-        <!-- mini -->
-        <q-drawer mini-to-overlay show-if-above side="left" :mini="miniState" @mouseenter="miniState = false"
-            @mouseleave="miniState = true" class="bg-brown-3" v-model="leftDrawerOpen">
+        <!-- :mini="miniState"    @mouseenter="miniState = false"  @mouseleave="miniState = true"-->
+        <q-drawer
+            mini-to-overlay
+            show-if-above
+            side="left"
+            :width="200"
+            class="bg-brown-3"
+            v-model="leftDrawerOpen"
+        >
             <q-scroll-area class="fit">
-                <q-list padding class="menu-list">
-                    <q-item v-ripple to="/profile" active-class="text-blue-9">
+                <q-list class="menu-list">
+                    <q-item to="/profile" active-class="text-blue-9">
                         <q-item-section avatar>
                             <q-icon name="home" />
                         </q-item-section>
-                        <q-item-section>
+                        <q-item-section id="sdfsdfsdf">
                             Мой профиль
                         </q-item-section>
                     </q-item>
 
-                    <q-item v-ripple to="/company" active-class="text-blue-9">
+                    <q-item to="/company" active-class="text-blue-9">
                         <q-item-section avatar>
                             <q-icon name="apartment" />
                         </q-item-section>
@@ -33,25 +39,19 @@
                         </q-item-section>
                     </q-item>
 
-                    <q-item v-ripple to="/departments" active-class="text-blue-9">
-                        <q-item-section avatar>
-                            <q-icon name="assignment" />
-                        </q-item-section>
-                        <q-item-section>
-                            Департаменты
+                    <q-item to="/departments" active-class="text-blue-9" dense>
+                        <q-item-section class="text-right" dense>
+                            <div class="sub-item q-mr-lg">Департаменты</div>
                         </q-item-section>
                     </q-item>
 
-                    <q-item v-ripple to="/employee" active-class="text-blue-9">
-                        <q-item-section avatar>
-                            <q-icon name="people" />
-                        </q-item-section>
-                        <q-item-section>
-                            Сотрудники
+                    <q-item to="/employee" active-class="text-blue-9" dense>
+                        <q-item-section class="text-right q-ml-xl" dense>
+                            <div class="sub-item q-mr-lg">Сотрудники</div>
                         </q-item-section>
                     </q-item>
 
-                    <q-item v-ripple to="/stats" active-class="text-blue-9">
+                    <q-item to="/stats" active-class="text-blue-9">
                         <q-item-section avatar>
                             <q-icon name="assessment" />
                         </q-item-section>
@@ -64,7 +64,7 @@
         </q-drawer>
 
         <q-page-container class="bg-grey">
-            <q-page class="q-pa-md">
+            <q-page class="q-pa-xs">
                 <div class="row justify-center">
                     <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6 card_block">
                         <router-view />
@@ -83,7 +83,6 @@ import { ref } from 'vue'
 const router = useRouter()
 const $authManager = AuthManager.getInstance()
 const leftDrawerOpen = ref(true)
-const miniState = ref(true)
 
 function toggleLeftDrawer() {
     leftDrawerOpen.value = !leftDrawerOpen.value
@@ -97,7 +96,10 @@ function logout() {
 </script>
 
 <style lang="scss">
+.sub-item {
+    font-size: $text12;
+}
 // .card_block {
-//     border:1px solid grey
+//     border:1px solid red;
 // }
 </style>

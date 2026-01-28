@@ -2,6 +2,8 @@ import type { ICompany, ICompanyForm } from "@/interfaces/Company";
 import type { IUser } from "@/interfaces/User";
 import Manager from "./Manager";
 import type { AxiosResponse } from "axios";
+import { useCompanyStore } from "@/stores/companyStore";
+import { RESPONSE_STATUS_CODES } from "@/constants";
 
 type TCompanyData = {
     companyId: number,
@@ -19,6 +21,10 @@ export default class Company extends Manager implements ICompany {
 
     protected _apiModule: string = 'company'
 
+    _store: any
+
+    user: IUser
+
     static getInstance (
         companyData?: TCompanyData
     ): Company {
@@ -32,27 +38,45 @@ export default class Company extends Manager implements ICompany {
     }
 
     private constructor (
-        public readonly companyId: number,
-        public name              : string,
-        public address           : string,
-        public user              : IUser
+        companyId: number,
+        name: string,
+        address: string,
+        user: IUser
     ){
         if (Company.instance) throw new TypeError('Instance creation only with .getInstance()')
         super()
+        this.user = user
+        this._store = useCompanyStore()
+        this._store.setCompany({companyId, name, address})
+
         this._postData = this._post(this._apiModule)
         this._getData = this._get(this._apiModule)
     }
 
-    saveCompanyProfile(company: ICompanyForm): boolean {
+    get companyId() {
+        return this._store.company.companyId
+    }
+    get name() {
+        return this._store.company.name
+    }
+    get address() {
+        return this._store.company.address
+    }
+
+    async saveCompanyProfile(company: ICompanyForm): Promise<boolean> {
         console.log('Saving company:', company)
-        return this._postData('save_company_profile')(company)
+        const res: AxiosResponse = await this._postData('save_company_profile')(company)
+        if(res.status === RESPONSE_STATUS_CODES.CREATED || res.status === RESPONSE_STATUS_CODES.SUCCESS) {
+            return this._store.setCompany(company)
+        }
+        return false
     }
 
     /**
      * Получаем список департаментов, без проверок, без авторизации
      * @returns IDepartment[]
      */
-    async getFullDepartmetsList(): Promise<AxiosResponse> {
+    async getFullDepartmentsList(): Promise<AxiosResponse> {
         return await this._postData('get_full_departmets_list')({companyId: this.companyId}, false)
     }
 

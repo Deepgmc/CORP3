@@ -3,15 +3,22 @@
         <!-- company id (readonly) -->
         <div class="row">
             <div class="col-12">
-                <q-input readonly v-model="companyForm.companyId" label="ID"
-                            :rules="[val => !!val || v_msg.REQUIRED]" dense />
+                <q-input readonly
+                    v-model="companyForm.companyId"
+                    label="ID"
+                    :rules="[val => !!val || v_msg.REQUIRED]" dense
+                />
             </div>
         </div>
         <!-- company name -->
         <div class="row">
             <div class="col-12">
-                <q-input :readonly="!$authManager.isDirector()" v-model="companyForm.name" label="Название *"
-                            :rules="[val => !!val || v_msg.REQUIRED]" dense />
+                <q-input
+                    :readonly="!$authManager.isDirector()"
+                    v-model="companyForm.name"
+                    label="Название *"
+                    :rules="[val => !!val || v_msg.REQUIRED]" dense
+                />
             </div>
         </div>
         <!-- company address -->

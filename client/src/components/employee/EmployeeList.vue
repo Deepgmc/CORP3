@@ -1,5 +1,5 @@
 <template>
-    <h3>Employee list</h3>
+    <h3>Сотрудники</h3>
     <grid-view
         v-if="employees && employees.length"
         :cols="employeeColsMap"

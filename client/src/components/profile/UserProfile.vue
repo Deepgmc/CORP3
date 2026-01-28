@@ -94,7 +94,7 @@
         <!-- Дата рождения -->
         <div class="row">
             <div class="col-12">
-                <q-input v-model="bDateStr" label="Дата рождения" dense>
+                <q-input readonly v-model="bDateStr" label="Дата рождения" dense>
                     <template #append>
                         <q-icon name="event" class="cursor-pointer">
                             <q-popup-proxy cover transition-show="scale" transition-hide="scale">
@@ -201,7 +201,6 @@ watch(bDateStr, (newBdate) => {
 
 async function onSubmit(): Promise<void> {
     const saveProfileData: IUser = Object.assign({}, form)
-    //saveProfileData.birth = convertStrToUnixTimestamp(String(saveProfileData.birth))
     if (await $authManager.saveUserProfile(saveProfileData)) {
         notify.run(SAVED_SUCCESS, notifyTypes.succ)
     }

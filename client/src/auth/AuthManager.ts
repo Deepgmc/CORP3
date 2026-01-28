@@ -8,7 +8,6 @@ import type { isLoginedResult } from './strategies/Strategy'
 import { ALREADY_AUTHORISED_MSG } from '@/utils/constants/texts.ts'
 import Manager from '@/entities/Manager'
 import Company from '@/entities/Company'
-import type { ICompany } from '@/interfaces/Company'
 
 
 export class AuthManager extends Manager implements IAuthManager {
@@ -16,6 +15,7 @@ export class AuthManager extends Manager implements IAuthManager {
     public availableStrategies = availableStrategies
 
     _strategy: TStrategies = null
+
     _authStore
 
     private _isLogined: isLoginedResult = { isLogined: false } //авторизация, любыми стратегиями
@@ -34,7 +34,7 @@ export class AuthManager extends Manager implements IAuthManager {
 
     protected _apiModule: string = 'auth'
 
-    public company !: ICompany //объект компании юзера
+    public company !: Company //объект компании юзера
 
     private constructor(
         strategy?: IAuthManager['_strategy'],
