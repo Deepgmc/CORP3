@@ -1,6 +1,6 @@
 import { CompanyEntity } from 'src/company/entities/company.entity';
 import { SkillsEntity } from './skills.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { DepartmentEntity } from 'src/company/entities/departments.entity';
 
 
@@ -60,7 +60,7 @@ export class UsersEntity {
 
     @Column({
         type: 'integer',
-        default: 0
+        default: null
     })
     departmentId: number;
 
@@ -77,6 +77,10 @@ export class UsersEntity {
     })
     skills: SkillsEntity[];
 
-    @OneToOne(() => DepartmentEntity, (dep) => dep.id)
-    department: DepartmentEntity
+    @ManyToOne(() => DepartmentEntity)
+    @JoinColumn({
+        name: 'departmentId',
+        referencedColumnName: 'id'
+    })
+    department: DepartmentEntity;
 }

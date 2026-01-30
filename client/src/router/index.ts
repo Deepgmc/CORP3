@@ -7,6 +7,7 @@ import AuthRegister from '@/components/auth/AuthRegister.vue'
 import { AuthManager } from '@/auth/AuthManager'
 
 //import ProfileView from '@/views/pages/ProfileView.vue'
+// import DepartmentsView from '@/views/pages/DepartmentsView.vue'
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -31,6 +32,7 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: 'departments',
                 name: 'departments',
+                //component: DepartmentsView,
                 component: () => import('@/views/pages/DepartmentsView.vue'),
             },
 
@@ -83,8 +85,6 @@ const routes: Array<RouteRecordRaw> = [
     }
 ];
 
-
-
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: routes,
@@ -98,6 +98,7 @@ router.beforeEach((to, _from, next) => {
     if (!isLogined && to.name !== 'login' && to.name !== 'register') {
         next('/auth/login')
     } else {
+        if(to.name === 'indexLogined') { next('/profile') }
         next()
     }
     // USE META

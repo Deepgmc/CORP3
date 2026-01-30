@@ -8,7 +8,6 @@ import type { isLoginedResult } from './strategies/Strategy'
 import { ALREADY_AUTHORISED_MSG } from '@/utils/constants/texts.ts'
 import Manager from '@/entities/Manager'
 import Company from '@/entities/Company'
-import type { ICompany } from '@/interfaces/Company'
 
 
 export class AuthManager extends Manager implements IAuthManager {
@@ -16,6 +15,7 @@ export class AuthManager extends Manager implements IAuthManager {
     public availableStrategies = availableStrategies
 
     _strategy: TStrategies = null
+
     _authStore
 
     private _isLogined: isLoginedResult = { isLogined: false } //авторизация, любыми стратегиями
@@ -34,7 +34,7 @@ export class AuthManager extends Manager implements IAuthManager {
 
     protected _apiModule: string = 'auth'
 
-    public company !: ICompany //объект компании юзера
+    public company!: Company // Инстанс объекта компании
 
     private constructor(
         strategy?: IAuthManager['_strategy'],
@@ -53,20 +53,24 @@ export class AuthManager extends Manager implements IAuthManager {
             .then(async () => {
             //после проверки статуса сессии (токена) - загружаем данные юзера
             if (this.loginedStatus.isLogined) {
-                const createdUser: IUser = await this._authStore.loadUserData()
-                if(createdUser.company !== null){
-                    //юзер загружен, цепляем к нему его компанию
-                    this.company = Company.getInstance (
-                        {
-                            companyId: createdUser.company.companyId,
-                            name     : createdUser.company.name,
-                            address  : createdUser.company.address,
-                            user     : createdUser
-                        }
-                    )
-                }
+                this.loadInitData()
             }
         })
+    }
+
+    async loadInitData(){
+        const createdUser: IUser = await this._authStore.loadUserData()
+        if(createdUser.company !== null && !this.company){
+            //юзер загружен, цепляем к нему его компанию
+            this.company = Company.getInstance (
+                {
+                    companyId: createdUser.company.companyId,
+                    name     : createdUser.company.name,
+                    address  : createdUser.company.address,
+                    user     : createdUser
+                }
+            )
+        }
     }
 
     /**
@@ -154,7 +158,7 @@ export class AuthManager extends Manager implements IAuthManager {
         if (!loginRes.error) {
             this._isLogined = { isLogined: true, userId: loginRes.data.user.userId }
             //если авторизация успешна - загружаем данные юзера
-            this._authStore.loadUserData()
+            await this.loadInitData()
             this._authStore.timeLogined = Date.now()
         }
 

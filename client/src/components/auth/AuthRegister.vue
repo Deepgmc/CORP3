@@ -104,13 +104,16 @@
 <script setup lang="ts">
 /**
 export default {
-  setup() {
-    const count = ref(0)
-    function increment() {
-      count.value++
-    }
-    return { count, increment }
-  }
+    components: {GridView},
+    setup() {
+        const aaa = ref('Test aa')
+        onMounted(() => {
+            setTimeout(() => {
+                aaa.value = 'dsfdsf'
+            }, 2000)
+        })
+        return {aaa}
+    },
 }
 */
 import {ref, reactive, inject, onMounted, computed } from 'vue'

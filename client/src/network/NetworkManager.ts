@@ -76,7 +76,7 @@ export default class NetworkManager {
     return (module: string) => {
       return (action: string) => {
         return async (
-          parameters: AxiosRequestConfig,
+          parameters?: AxiosRequestConfig,
           withAuth: boolean = true // нужно ли для запроса посылать токен авторизации или это обычный справочный запрос
         ): Promise<AxiosResponse | boolean> => {
           if(withAuth){
