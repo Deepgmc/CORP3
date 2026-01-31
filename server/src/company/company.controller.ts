@@ -54,14 +54,19 @@ export class CompanyController {
         return await this.companyService.getFullDepartmentsList(data.companyId)
     }
 
+    @Get('get_departments_of_company/:companyId')
+    async getCompanyDepartments(
+        @Param('companyId') companyId: number
+    ): Promise<DepartmentEntity[]> {
+        return await this.companyService.getCompanyDepartments(Number(companyId))
+    }
+
     @Post('get_full_employees_list')
     async getFullEmployeesList(
         @Body() data: {companyId: number}
     ): Promise<UsersEntity[] | boolean> {
         return await this.companyService.getFullEmployeesList(data.companyId)
     }
-
-
 
     @UseGuards(AuthGuard('jwt'))
     @Post('gv_departments')

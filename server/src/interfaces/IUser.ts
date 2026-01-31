@@ -1,16 +1,17 @@
 export interface IUser {
-    userId    : number,
-    username  : string,
-    password  : string,
-    birth     : number, //timestamp
-    email     : string,
-    companyId : number | null,
-    isDirector: boolean,
-    gender    : number,
-    bio       : string;
-    firstName : string,
-    lastName  : string,
-    phone     : string,
+    userId      : number,
+    username    : string,
+    password    : string,
+    birth       : number,          //timestamp
+    email       : string,
+    companyId   : number | null,
+    departmentId: number | null,
+    isDirector  : boolean,
+    gender      : number,
+    bio         : string;
+    firstName   : string,
+    lastName    : string,
+    phone       : string,
 
     skills?: TSkill[]
 }

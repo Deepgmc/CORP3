@@ -74,6 +74,16 @@ export class CreateUserDto implements IUsersCreateDTO {
     companyId: number
 
     @ApiProperty({
+        description: 'ID департамента в компании',
+        required: true,
+        type: String
+    })
+    @IsNotEmpty({message: dtoMsg.getMessage('notempty')})
+    @IsNumber()
+    @IsPositive()
+    departmentId: number
+
+    @ApiProperty({
         description: 'Является ли руководителем компании',
         required: false,
         type: Boolean
