@@ -35,7 +35,7 @@ export interface ICPForm extends Pick<IUser, 'username' | 'userId'> {
     newPassword: string
 }
 
-export interface TRegisterForm extends Pick<IUser, 'username' | 'email' | 'birth' | 'companyId' | 'isDirector'> {
+export interface TRegisterForm extends Pick<IUser, 'username' | 'email' | 'birth' | 'companyId' | 'isDirector' | 'departmentId'> {
     passwordConfirm: string,
     password: string,
 }

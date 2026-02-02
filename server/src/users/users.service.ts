@@ -125,4 +125,16 @@ export class UsersService {
             [savingData.fieldName]: savingData.val
         })
     }
+
+    async changeUserDepartment(savingData: {
+        userId        : string,
+        departmentFrom: string,
+        departmentTo  : string
+    }) {
+        return this.saveOneUserField({
+            fieldName: 'departmentId',
+            itemId   : savingData.userId,
+            val      : savingData.departmentTo
+        })
+    }
 }

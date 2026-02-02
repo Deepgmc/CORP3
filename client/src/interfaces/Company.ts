@@ -20,6 +20,12 @@ export type ICompanySelect<T extends ICompany> = {
     value: T['companyId'],
     label: T['name'],
 }
+
+export type IDeptSelect = {
+    value: number,
+    label: string
+}
+
 export interface IDepartment {
     id         : number,
     companyId  : ICompany['companyId'],

@@ -68,6 +68,10 @@ export class CompanyService {
         //return this.deptRepository.find({where: {companyId: companyId}})
     }
 
+    async getCompanyDepartments(companyId: number) {
+        return this.deptRepository.find({where: {companyId: companyId}})
+    }
+
     async getFullEmployeesList(companyId: number): Promise<UsersEntity[] | boolean> {
         if(!Number.isInteger(companyId)) throw new TypeError('Wrong company id')
         return this.usersRepository.find({where: {companyId: companyId}})
