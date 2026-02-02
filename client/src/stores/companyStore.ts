@@ -1,7 +1,7 @@
 import { type IDepartment, type ICompany } from "@/interfaces/Company"
 import type { IUser } from "@/interfaces/User"
 import { defineStore } from "pinia"
-import { ref } from "vue"
+import { computed, ref } from "vue"
 
 export const useCompanyStore = defineStore('company', () => {
     /**
@@ -35,10 +35,18 @@ export const useCompanyStore = defineStore('company', () => {
         departments.value.splice(departments.value.findIndex(dept => dept.id === depertmentId), 1)
     }
 
+    const getDepartments = computed(() => {
+        return departments
+    })
+    const getEmployees = computed(() => {
+        return employees
+    })
+
     return {
         company,
-        departments,
-        employees,
+
+        getDepartments,
+        getEmployees,
 
         setCompany,
         setDepartments,

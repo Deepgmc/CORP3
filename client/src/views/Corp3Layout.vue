@@ -97,6 +97,7 @@ function logout() {
 </script>
 
 <style lang="scss">
+//@use '@/assets/globalVariables.scss' as globals;
 .top-main-header{
     box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.5);
 }

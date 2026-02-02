@@ -24,6 +24,6 @@ const employeeColsMap = setColsMap(needFields, employeeBaseMap, employeeAvailabl
 const employees = ref<IUser[] | null>(null)
 
 onMounted(async () => {
-    employees.value = modifyGridData([...$authManager.company.employees], employeeColsMap)
+    employees.value = modifyGridData([...$authManager.company.employees.value], employeeColsMap)
 })
 </script>

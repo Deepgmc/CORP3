@@ -26,28 +26,6 @@
         </div>
     </div>
 
-    <div class="row q-mt-lg justify-between">
-        <div
-            v-for="dept in departments"
-            :key="dept.id"
-            class="GT_block"
-        >
-            <div class="GT_label" dropable="true">
-                <p>{{ dept.name }}</p>
-            </div>
-            <div class="GT_users">
-                <div
-                    v-for="empl in employees.filter((empl: IUser) => empl.departmentId === dept.id)"
-                    :key="empl.userId"
-                    draggable="true"
-                    class="GT_user"
-                >
-                    <div>{{ empl.username }}</div><div>{{ empl.firstName }} {{ empl.lastName }}</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="row q-mt-lg">
         <div class="col-8 offset-2">
             <q-form @submit="addDepartment">
@@ -78,16 +56,48 @@
             </q-form>
         </div>
     </div>
+
+    <div class="row q-mt-lg justify-between">
+        <div
+            class="GT_block"
+            v-for="dept in deptsDndList"
+            :key="dept[0].id"
+        >
+            <div
+                class="GT_label"
+                @drop="dropUser($event)"
+                @dragenter.prevent=""
+                @dragover.prevent=""
+                :data-deptid="dept[0].id"
+            >
+                <p>{{ dept[0].name }}</p>
+            </div>
+            <div class="GT_users">
+                <div
+                    v-for="empl in dept[1]"
+                    :key="empl.userId"
+                    draggable="true"
+                    class="GT_user"
+                    :data-deptid="dept[0].id"
+                    @dragstart="dragItem($event, empl)"
+                >
+                    <div>{{ empl.username }}</div><div>{{ empl.firstName }} {{ empl.lastName }}</div>
+                </div><!--employees v-for-->
+            </div>
+        </div><!--departments v-for-->
+    </div>
 </template>
 
 <script setup lang="ts">
-import { computed, reactive } from 'vue';
+import { computed, reactive, type Ref } from 'vue';
 import GridView from './grid/GridView.vue';
 import { AuthManager } from '@/auth/AuthManager';
-import type { IAddDepartment } from '@/interfaces/Company';
+import type { IAddDepartment, IDepartment } from '@/interfaces/Company';
 import { modifyGridData, setColsMap, departmentBaseMap, departmentAvailableCols } from '@/components/grid/GridColumnOptionTypes';
 import { v_msg } from '@/utils/constants/texts';
 import type { IUser } from '@/interfaces/User';
+
+import { dragItem, dropItem } from '@/composables/dnd'
 
 const $authManager = AuthManager.getInstance()
 const needFields = ['id', 'name', 'description', 'companyId', 'countusers']
@@ -96,8 +106,43 @@ const departmentColsMap = setColsMap(needFields, departmentBaseMap, departmentAv
 const departments = $authManager.company.departments
 const employees = $authManager.company.employees
 
+
+/**
+ * создаём итерируемый реактивный Map для вывода виджета сотрудников департаментов с перетаскиванием
+ */
+const deptsDndList: Ref<Map<IDepartment, IUser[]>> = computed(() => {
+    const list = new Map()
+    departments.value.forEach((dept: IDepartment) => {
+        const emps = employees.value.filter((emp: IUser) => emp.departmentId === dept.id)
+        list.set(dept, emps)
+    })
+    return list
+})
+
+
+//перемещаем юзера между департаментами
+function dropUser(event: DragEvent){
+
+    //непосредственно днд обрабатываем тут
+    const dropResult = dropItem(event)
+
+    //а работу с данными проводим дальше
+    if(typeof dropResult === 'boolean') {
+        return dropResult
+    }
+    const {dropId, dragItemId, dragFromId} = dropResult
+
+    employees.value.forEach((thisEmp: IUser) => {
+        if(thisEmp.userId === dragItemId && thisEmp.departmentId === dragFromId) {
+            $authManager.company.switchUserDepartmets(thisEmp, dragFromId, dropId)
+            return true
+        }
+    })
+}
+
+
 const deptComputed = computed(() => {
-    return modifyGridData([...departments], departmentColsMap)
+    return modifyGridData([...departments.value], departmentColsMap)
 })
 
 const newDepartment = reactive<IAddDepartment>({

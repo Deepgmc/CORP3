@@ -50,6 +50,7 @@ export default class Company extends Manager implements ICompany {
         this._postData = this._post(this._apiModule)
         this._getData = this._get(this._apiModule)
         this._deleteData = this._delete(this._apiModule)
+        this._patchData = this._patch(this._apiModule)
 
         this._store = useCompanyStore()
         this._store.setCompany({companyId, name, address})
@@ -75,14 +76,13 @@ export default class Company extends Manager implements ICompany {
         return this._store.company.address
     }
     get departments() {
-        return this._store.departments
+        return this._store.getDepartments
     }
     get employees() {
-        return this._store.employees
+        return this._store.getEmployees
     }
 
     async saveCompanyProfile(company: ICompanyForm): Promise<boolean> {
-        console.log('Saving company:', company)
         const res: AxiosResponse = await this._postData('save_company_profile')(company)
         if(isSuccessRequest(res)) {
             return this._store.setCompany(company)
@@ -135,4 +135,29 @@ export default class Company extends Manager implements ICompany {
         }
         return false
     }
+
+    /**
+     * Меняем департамент работника
+        меняем данные в БД, потом перезагружаем массив работников целиком (для реактивности)
+     * @param user IUser
+     * @param departmentFrom из какого департамента вытащили
+     * @param departmentTo в какой департамент назначаем
+     */
+    public async switchUserDepartmets(user: IUser, departmentFrom: number, departmentTo: number){
+        await this._patchData(`switch_user_department_id`)({
+            userId: user.userId,
+            departmentFrom,
+            departmentTo
+        }, true)
+        //после изменения просто перегружаем весь список
+        Promise.all([
+            this.getFullDepartmentsList(),
+            this.getFullEmployeesList()
+        ])
+        .then((res) => {
+            this._store.setDepartments(res[0])
+            this._store.setEmployees(res[1])
+        })
+    }
+
 }

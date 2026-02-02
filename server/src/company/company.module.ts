@@ -6,11 +6,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CompanyEntity } from './entities/company.entity'
 import { DepartmentEntity } from './entities/departments.entity';
 import { UsersEntity } from 'src/users/entities/user.entity';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   controllers: [CompanyController],
   providers: [CompanyService],
   imports: [
+    UsersModule,
     TypeOrmModule.forFeature([
         CompanyEntity,
         DepartmentEntity,

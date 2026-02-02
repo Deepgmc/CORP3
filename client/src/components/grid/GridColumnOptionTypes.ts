@@ -189,7 +189,7 @@ function switchGridValue(item: any, field: string){
         break;
         case 'departmentId':
             if(item.departmentId !== null){
-                thisDept = $authManager.company.departments.find((dept: IDepartment) => dept.id === item.departmentId)
+                thisDept = $authManager.company.departments.value.find((dept: IDepartment) => dept.id === item.departmentId)
                 item['departmentIdValue'] = thisDept.name
             }
         break;
