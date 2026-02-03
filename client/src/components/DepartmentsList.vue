@@ -11,12 +11,12 @@
                 action="departments"
             >
                 <template #actions_caption>
-                    <q-icon class="gv-edit_buttons" name="edit" />
+                    <q-icon class="gv-edit_buttons-negative" name="edit" />
                 </template>
 
                 <template #actions_buttons="slotProps">
                     <q-icon
-                        class="gv-edit_buttons"
+                        class="gv-edit_buttons-negative"
                         name="delete_forever"
                         @click="deleteDepartment"
                         :data-itemId="slotProps.itemId"
@@ -100,7 +100,7 @@ import type { IUser } from '@/interfaces/User';
 import { dragItem, dropItem } from '@/composables/dnd'
 
 const $authManager = AuthManager.getInstance()
-const needFields = ['id', 'name', 'description', 'companyId', 'countusers']
+const needFields = ['id', 'name', 'description', 'countusers']
 const departmentColsMap = setColsMap(needFields, departmentBaseMap, departmentAvailableCols)
 
 const departments = $authManager.company.departments
