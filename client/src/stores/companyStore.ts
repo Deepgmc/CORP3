@@ -42,6 +42,19 @@ export const useCompanyStore = defineStore('company', () => {
         return employees
     })
 
+    function changeUserDepartment(userId: number, newDepartmentId: number):boolean {
+        const thisEmp = employees.value.find((emp: IUser) => {
+            if(emp.userId === userId) {
+                return true
+            }
+        })
+        if(thisEmp) {
+            thisEmp.departmentId = newDepartmentId
+            return true
+        }
+        return false
+    }
+
     return {
         company,
 
@@ -53,6 +66,7 @@ export const useCompanyStore = defineStore('company', () => {
         setEmployees,
         addNewDepartment,
         deleteDepartment,
+        changeUserDepartment,
     }
 })
 
