@@ -149,15 +149,6 @@ export default class Company extends Manager implements ICompany {
             departmentFrom,
             departmentTo
         }, true)
-        //после изменения просто перегружаем весь список
-        Promise.all([
-            this.getFullDepartmentsList(),
-            this.getFullEmployeesList()
-        ])
-        .then((res) => {
-            this._store.setDepartments(res[0])
-            this._store.setEmployees(res[1])
-        })
+        this._store.changeUserDepartment(user.userId, departmentTo)
     }
-
 }
