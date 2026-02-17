@@ -70,20 +70,24 @@
                     </div>
                 </div>
             </q-page>
-            <grid-view-dialog></grid-view-dialog>
+
+            <grid-view-change-dialog></grid-view-change-dialog>
         </q-page-container>
     </q-layout>
+
+    <user-profile-card></user-profile-card>
 </template>
 
 <script setup lang="ts">
 import { AuthManager } from '@/auth/AuthManager'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
-import GridViewDialog from '@/components/GridViewDialog.vue'
+import GridViewChangeDialog from '@/components/GridViewChangeDialog.vue'
+import UserProfileCard from '@/components/profile/UserProfileCard.vue'
 
 const router = useRouter()
 const $authManager = AuthManager.getInstance()
-const leftDrawerOpen = ref(true)
+const leftDrawerOpen = ref<boolean>(true)
 
 function toggleLeftDrawer() {
     leftDrawerOpen.value = !leftDrawerOpen.value
@@ -94,6 +98,7 @@ function logout() {
         $authManager.setRouterAfterLogOut(router)
     }
 }
+
 </script>
 
 <style lang="scss">

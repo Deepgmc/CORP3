@@ -126,9 +126,14 @@ $cellPadding: 5px;
         border-left: 1px solid grey;
     }
 
-    .gv-edit_buttons{
+    .gv-edit_buttons {
         font-size: $text18;
-        color: $dark-negative;
+    }
+    .gv-edit_buttons-negative {
+        color: $dark-negative
+    }
+    .gv-edit_buttons-positive {
+        color: $positive
     }
 
     .gv_editable{
