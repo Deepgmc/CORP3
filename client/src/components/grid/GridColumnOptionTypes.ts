@@ -101,7 +101,7 @@ export const employeeAvailableCols: TableConfig = {
 
 //настройки для вывода списка департаментов
 export const departmentBaseMap: Map<string, TGridColMap> = new Map()
-//ВСЕ доступные поля. Из них йпотом выбираем нужные при выводе конкретной таблицы
+//ВСЕ доступные поля. Из них потом выбираем нужные при выводе конкретной таблицы
 export const departmentAvailableCols: TableConfig = {
     id: {
         label   : 'ID',
@@ -128,7 +128,7 @@ export const departmentAvailableCols: TableConfig = {
     description: {
         label   : 'Описание',
         align   : 'left',
-        type    : fieldTypes.text,
+        type    : fieldTypes.textarea,
         editable: true
     },
     countusers: {
