@@ -128,10 +128,11 @@ export default class Company extends Manager implements ICompany {
      * ОТкрепляем от компании и удаляем департамент
      * @returns AxiosResponse
      */
-    async deleteDepartment(departmentId: number): Promise<AxiosResponse | boolean> {
+    async deleteDepartment(departmentId: number): Promise<boolean> {
         const res = await this._deleteData(`delete_company_department/${departmentId}`)()
         if(isSuccessRequest(res)){
-            this._store.deleteDepartment(departmentId)
+            if(!res.data) return false
+            return this._store.deleteDepartment(departmentId)
         }
         return false
     }
@@ -149,15 +150,6 @@ export default class Company extends Manager implements ICompany {
             departmentFrom,
             departmentTo
         }, true)
-        //после изменения просто перегружаем весь список
-        Promise.all([
-            this.getFullDepartmentsList(),
-            this.getFullEmployeesList()
-        ])
-        .then((res) => {
-            this._store.setDepartments(res[0])
-            this._store.setEmployees(res[1])
-        })
+        this._store.changeUserDepartment(user.userId, departmentFrom, departmentTo)
     }
-
 }

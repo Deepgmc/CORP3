@@ -73,22 +73,29 @@ export class CompanyService {
     }
 
     async getFullEmployeesList(companyId: number): Promise<UsersEntity[] | boolean> {
-        if(!Number.isInteger(companyId)) throw new TypeError('Wrong company id')
+        if(!Number.isInteger(companyId)) { throw new TypeError('Wrong company id') }
         return this.usersRepository.find({where: {companyId: companyId}})
     }
 
     async addNewCompanyDepartment(newDepartment: IAddDepartment): Promise<number | boolean> {
         const newDept = this.deptRepository.create(newDepartment)
         const res = await this.deptRepository.insert(newDept)
-        if(!res) throw new Error('Add department error')
+        if(!res) throw new Error('Ошибка добавления департамента')
         return res.raw.insertId
     }
 
     async deleteCompanyDepartment(departmentId: number): Promise<boolean> {
-        if(!Number.isInteger(departmentId)) throw new TypeError('Wrong department id')
-        const res = await this.deptRepository.delete({id: departmentId})
-        if(!res.affected) throw new Error('Delete department error')
-        return true
+        if(!Number.isInteger(departmentId)) { throw new TypeError('Wrong department id') }
+
+        //перед удалением департамента проверить есть ли на нём юзеры. Если есть, то удалять нельзя
+        const usersCount = await this.usersRepository.count({where: {departmentId}})
+
+        if(usersCount === 0) {
+            const res = await this.deptRepository.delete({id: departmentId})
+            if(!res.affected) throw new Error('Ошибка удаления департамента')
+            return true
+        }
+        return false
     }
 
     //редактируем одно поле департамента

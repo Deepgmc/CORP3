@@ -182,10 +182,10 @@ function switchGridValue(item: any, field: string){
             }
         break;
         case 'birth':
-            item.birth = convertTSToStr(item.birth)
+            item['birthValue'] = convertTSToStr(item.birth)
         break;
         case 'reg_date':
-            item.reg_date = convertTSToStr(item.reg_date)
+            item['reg_dateValue'] = convertTSToStr(item.reg_date)
         break;
         case 'departmentId':
             if(item.departmentId !== null){
