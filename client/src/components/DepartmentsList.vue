@@ -94,10 +94,11 @@ import GridView from './grid/GridView.vue';
 import { AuthManager } from '@/auth/AuthManager';
 import type { IAddDepartment, IDepartment } from '@/interfaces/Company';
 import { modifyGridData, setColsMap, departmentBaseMap, departmentAvailableCols } from '@/components/grid/GridColumnOptionTypes';
-import { v_msg } from '@/utils/constants/texts';
+import { CANT_DELETE, DELETE_ERROR, v_msg } from '@/utils/constants/texts';
 import type { IUser } from '@/interfaces/User';
 
 import { dragItem, dropItem } from '@/composables/dnd'
+import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
 
 const $authManager = AuthManager.getInstance()
 const needFields = ['id', 'name', 'description', 'countusers']
@@ -105,6 +106,8 @@ const departmentColsMap = setColsMap(needFields, departmentBaseMap, departmentAv
 
 const departments = $authManager.company.departments
 const employees = $authManager.company.employees
+
+const notify = useNotify()
 
 
 /**
@@ -148,7 +151,8 @@ const deptComputed = computed(() => {
 const newDepartment = reactive<IAddDepartment>({
     name: '',
     description: '',
-    companyId: $authManager.company.companyId
+    companyId: $authManager.company.companyId,
+    countusers: '0'
 })
 
 function addDepartment() {
@@ -160,11 +164,12 @@ function addDepartment() {
 }
 
 async function deleteDepartment(e: MouseEvent) {
-    if(e.target instanceof HTMLElement){
-        const itemId: number = Number(e.target.dataset.itemid)
-        if(itemId && Number.isInteger(itemId)){
-            await $authManager.company.deleteDepartment(Number(itemId))
-        }
+    if(!(e.target instanceof HTMLElement) || typeof e.target.dataset.itemid === 'undefined') return
+    const itemId: number = Number.parseInt(e.target.dataset.itemid)
+    if(Number.isNaN(itemId)) {
+        notify.run(DELETE_ERROR, notifyTypes.err)
+    } else if(!await $authManager.company.deleteDepartment(itemId)) {
+        notify.run(`${CANT_DELETE}, в департаменте есть сотрудники`, notifyTypes.err)
     }
 }
 </script>

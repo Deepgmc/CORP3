@@ -30,7 +30,8 @@ export interface IDepartment {
     id         : number,
     companyId  : ICompany['companyId'],
     name       : string,
-    description: string
+    description: string,
+    countusers : string
 }
 
-export interface IAddDepartment extends Pick<IDepartment, 'companyId' | 'name' | 'description'> {}
+export interface IAddDepartment extends Pick<IDepartment, 'companyId' | 'name' | 'description' | 'countusers'> {}
