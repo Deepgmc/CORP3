@@ -4,11 +4,8 @@
         <div class="col">
             <grid-view
                 v-if="departments && departments.length"
-                :cols="departmentColsMap"
-                :data="deptComputed"
-                :idName="'id'"
-                module="company"
-                action="departments"
+                :gridCols="gridCols"
+                @gv_sort="sortField"
             >
                 <template #actions_caption>
                     <q-icon class="gv-edit_buttons-negative" name="edit" />
@@ -93,23 +90,70 @@ import { computed, reactive, type Ref } from 'vue';
 import GridView from './grid/GridView.vue';
 import { AuthManager } from '@/auth/AuthManager';
 import type { IAddDepartment, IDepartment } from '@/interfaces/Company';
-import { modifyGridData, setColsMap, departmentBaseMap, departmentAvailableCols } from '@/components/grid/GridColumnOptionTypes';
+import { departmentAvailableCols } from '@/components/grid/GridColumnOptions';
 import { CANT_DELETE, DELETE_ERROR, v_msg } from '@/utils/constants/texts';
 import type { IUser } from '@/interfaces/User';
 
 import { dragItem, dropItem } from '@/composables/dnd'
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
-
+import { GridCols, type GridColsDataTypes } from './grid/GridCols';
 const $authManager = AuthManager.getInstance()
-const needFields = ['id', 'name', 'description', 'countusers']
-const departmentColsMap = setColsMap(needFields, departmentBaseMap, departmentAvailableCols)
 
+const needFields = ['id', 'name', 'description', 'countusers']
 const departments = $authManager.company.departments
-const employees = $authManager.company.employees
+
+const gridCols = new GridCols(
+    needFields,
+    departmentAvailableCols,
+    departments,
+    'id',
+    'company',
+    'departments',
+)
+
+function sortField(column: keyof GridColsDataTypes): void {
+    gridCols.sortField(column)
+}
+
+
+/** Форма добавления нового департамента */
+const newDepartment = reactive<IAddDepartment>({
+    name: '',
+    description: '',
+    companyId: $authManager.company.companyId,
+    countusers: '0'
+})
+
+function addDepartment() {
+    $authManager.company.addNewDepartment(newDepartment)
+    .then(() => {
+        newDepartment.name = ''
+        newDepartment.description = ''
+    })
+}
+/**END Форма добавления нового департамента */
+
 
 const notify = useNotify()
+async function deleteDepartment(e: MouseEvent) {
+    if(!(e.target instanceof HTMLElement) || typeof e.target.dataset.itemid === 'undefined') return
+    const itemId: number = Number.parseInt(e.target.dataset.itemid)
+    if(Number.isNaN(itemId)) {
+        notify.run(DELETE_ERROR, notifyTypes.err)
+    } else if(!await $authManager.company.deleteDepartment(itemId)) {
+        notify.run(`${CANT_DELETE}, в департаменте есть сотрудники`, notifyTypes.err)
+    }
+}
 
 
+
+
+
+
+
+
+// DND WIDGET
+const employees = $authManager.company.employees
 /**
  * создаём итерируемый реактивный Map для вывода виджета сотрудников департаментов с перетаскиванием
  */
@@ -125,7 +169,6 @@ const deptsDndList: Ref<Map<IDepartment, IUser[]>> = computed(() => {
 
 //перемещаем юзера между департаментами
 function dropUser(event: DragEvent){
-
     //непосредственно днд обрабатываем тут
     const dropResult = dropItem(event)
 
@@ -141,36 +184,6 @@ function dropUser(event: DragEvent){
             return true
         }
     })
-}
-
-
-const deptComputed = computed(() => {
-    return modifyGridData([...departments.value], departmentColsMap)
-})
-
-const newDepartment = reactive<IAddDepartment>({
-    name: '',
-    description: '',
-    companyId: $authManager.company.companyId,
-    countusers: '0'
-})
-
-function addDepartment() {
-    $authManager.company.addNewDepartment(newDepartment)
-    .then(() => {
-        newDepartment.name = ''
-        newDepartment.description = ''
-    })
-}
-
-async function deleteDepartment(e: MouseEvent) {
-    if(!(e.target instanceof HTMLElement) || typeof e.target.dataset.itemid === 'undefined') return
-    const itemId: number = Number.parseInt(e.target.dataset.itemid)
-    if(Number.isNaN(itemId)) {
-        notify.run(DELETE_ERROR, notifyTypes.err)
-    } else if(!await $authManager.company.deleteDepartment(itemId)) {
-        notify.run(`${CANT_DELETE}, в департаменте есть сотрудники`, notifyTypes.err)
-    }
 }
 </script>
 
