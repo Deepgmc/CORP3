@@ -7,7 +7,7 @@ export const employeeBaseMap: Map<string, TGridColMap> = new Map()
 export const employeeAvailableCols: ColsConfig = {
     userId: {
         label    : 'ID',
-        sortFn   : (val1, val2) => val1 < val2,
+        sortFn   : defaultNumSortFn,
         order    : -1,
         align    : 'center',
         type: fieldTypes.text,
@@ -121,6 +121,8 @@ export const departmentAvailableCols: ColsConfig = {
         editable: false
     },
 }
+
+export type TSortFn = (a: any, b: any, order: sortOrders) => number
 
 
 function defaultStringSortFn(val1: string, val2: string, order: sortOrders): number {

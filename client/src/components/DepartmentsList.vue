@@ -5,7 +5,7 @@
             <grid-view-departments
                 v-if="departments && departments.length"
                 :gridCols="gridCols"
-                :sortField="sortField"
+                :sortField="gridCols.sortField.bind(gridCols)"
             ></grid-view-departments>
         </div>
     </div>
@@ -78,7 +78,7 @@ import GridViewDepartments from './grid/GridViewDepartments.vue';
 import { AuthManager } from '@/auth/AuthManager';
 import { dragItem, dropItem } from '@/composables/dnd'
 
-import { GridCols, type GridColsDataTypes } from './grid/GridCols';
+import { GridCols } from './grid/GridCols';
 import { departmentAvailableCols } from '@/components/grid/GridColumnOptions';
 import { v_msg } from '@/utils/constants/texts';
 import type { IAddDepartment, IDepartment } from '@/interfaces/Company';
@@ -90,6 +90,7 @@ const $authManager = AuthManager.getInstance()
 const needFields = ['id', 'name', 'description', 'countusers']
 const departments = $authManager.company.departments
 
+
 const gridCols = new GridCols(
     needFields,
     departmentAvailableCols,
@@ -98,11 +99,6 @@ const gridCols = new GridCols(
     'company',
     'departments',
 )
-
-function sortField(column: keyof GridColsDataTypes): void {
-    gridCols.sortField(column)
-}
-
 
 /** Форма добавления нового департамента */
 const newDepartment = reactive<IAddDepartment>({

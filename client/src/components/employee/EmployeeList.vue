@@ -3,7 +3,7 @@
     <grid-view-employees
         v-if="employees && employees.length"
         :gridCols="gridCols"
-        :sortField="sortField"
+        :sortField="gridCols.sortField.bind(gridCols)"
     ></grid-view-employees>
 </template>
 
@@ -11,10 +11,10 @@
 import GridViewEmployees from '../grid/GridViewEmployees.vue';
 import { AuthManager } from '@/auth/AuthManager';
 import { employeeAvailableCols } from '@/components/grid/GridColumnOptions'
-import { GridCols, type GridColsDataTypes } from '../grid/GridCols'
+import { GridCols } from '../grid/GridCols'
 
 const $authManager = AuthManager.getInstance()
-const needFields = ['username', 'firstName', 'lastName', 'departmentId', 'birth', 'phone']
+const needFields = ['userId', 'username', 'firstName', 'lastName', 'departmentId', 'birth', 'phone']
 const employees = $authManager.company.employees
 
 const gridCols = new GridCols(
@@ -25,8 +25,4 @@ const gridCols = new GridCols(
     'users',
     'user_field',
 )
-
-function sortField(column: keyof GridColsDataTypes): void {
-    gridCols.sortField(column)
-}
 </script>
