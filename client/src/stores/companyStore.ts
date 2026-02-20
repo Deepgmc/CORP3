@@ -1,3 +1,4 @@
+import type { sortOrders } from "@/components/grid/GridCols"
 import { type IDepartment, type ICompany } from "@/interfaces/Company"
 import type { IUser } from "@/interfaces/User"
 import { defineStore } from "pinia"
@@ -32,6 +33,7 @@ export const useCompanyStore = defineStore('company', () => {
     }
 
     function deleteDepartment(depertmentId: number): boolean {
+        if(!Number.isInteger(depertmentId)) return false
         departments.value.splice(departments.value.findIndex(dept => dept.id === depertmentId), 1)
         return true
     }
@@ -65,6 +67,12 @@ export const useCompanyStore = defineStore('company', () => {
         return false
     }
 
+    function sortDepartments(sortFn: (a: any, b: any, order: sortOrders) => number, column: keyof IDepartment, order: sortOrders){
+        departments.value.sort((dept1: IDepartment, dept2: IDepartment): number => {
+            return sortFn(dept1[column], dept2[column], order)
+        })
+    }
+
     return {
         company,
 
@@ -77,6 +85,7 @@ export const useCompanyStore = defineStore('company', () => {
         addNewDepartment,
         deleteDepartment,
         changeUserDepartment,
+        sortDepartments,
     }
 })
 
