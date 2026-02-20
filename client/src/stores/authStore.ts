@@ -28,8 +28,7 @@ export const useAuthStore = defineStore('auth', () => {
     const loadUserData = async (): Promise<IUser> => {
         const userId = jwtStrategy.userId
         if (userId && userId > 0) {
-            const $networkManager = NetworkManager.getInstance()
-            const res: AxiosResponse | boolean = await $networkManager
+            const res: AxiosResponse | boolean = await NetworkManager.getInstance()
                 .getApiRequestMethod(EReqMethods.get)('auth')('get_user_data')({ data: { userId } }, true) as AxiosResponse | boolean
             if (typeof res !== 'boolean') {
                 setUser(res.data)

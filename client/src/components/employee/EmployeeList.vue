@@ -2,11 +2,8 @@
     <h4>Сотрудники</h4>
     <grid-view
         v-if="employees && employees.length"
-        :cols="employeeColsMap"
-        :data="employees"
-        :idName="'userId'"
-        module="users"
-        action="user_field"
+        :gridCols="gridCols"
+        @gv_sort="sortField"
     >
         <template #actions_caption>
             <q-icon class="gv-edit_buttons-positive" name="edit" />
@@ -26,10 +23,9 @@
 <script setup lang="ts">
 import { AuthManager } from '@/auth/AuthManager';
 import GridView from '@/components/grid/GridView.vue';
-import type { IUser } from '@/interfaces/User';
-import { onMounted, ref } from 'vue';
-import { setColsMap, employeeBaseMap, modifyGridData, employeeAvailableCols } from '@/components/grid/GridColumnOptionTypes'
+import { employeeAvailableCols } from '@/components/grid/GridColumnOptions'
 import { useUserProfileCard } from '@/composables/userProfileCard';
+import { GridCols, type GridColsDataTypes } from '../grid/GridCols';
 
 const { userCardOpen, setDialogUser } = useUserProfileCard()
 
@@ -56,11 +52,24 @@ function redactUser() {
 
 const $authManager = AuthManager.getInstance()
 const needFields = ['username', 'firstName', 'lastName', 'departmentId', 'birth', 'phone']
-const employeeColsMap = setColsMap(needFields, employeeBaseMap, employeeAvailableCols)
+const employees = $authManager.company.employees
 
-const employees = ref<IUser[] | null>(null)
+const gridCols = new GridCols(
+    needFields,
+    employeeAvailableCols,
+    employees,
+    'userId',
+    'users',
+    'user_field',
+)
 
-onMounted(async () => {
-    employees.value = modifyGridData([...$authManager.company.employees.value], employeeColsMap)
-})
+
+function sortField(column: keyof GridColsDataTypes): void {
+    gridCols.sortField(column)
+}
+
+
+// onMounted(async () => {
+//     employees.value = modifyGridData([...$authManager.company.employees.value], employeeColsMap)
+// })
 </script>

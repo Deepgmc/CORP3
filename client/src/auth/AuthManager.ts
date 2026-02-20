@@ -60,17 +60,16 @@ export class AuthManager extends Manager implements IAuthManager {
 
     async loadInitData(){
         const createdUser: IUser = await this._authStore.loadUserData()
-        if(createdUser.company !== null && !this.company){
-            //юзер загружен, цепляем к нему его компанию
-            this.company = Company.getInstance (
-                {
-                    companyId: createdUser.company.companyId,
-                    name     : createdUser.company.name,
-                    address  : createdUser.company.address,
-                    user     : createdUser
-                }
-            )
-        }
+        if(createdUser.company === null || this.company) return
+        //юзер загружен, цепляем к нему его компанию
+        this.company = Company.getInstance (
+            {
+                companyId: createdUser.company.companyId,
+                name     : createdUser.company.name,
+                address  : createdUser.company.address,
+                user     : createdUser
+            }
+        )
     }
 
     /**

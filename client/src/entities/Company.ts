@@ -4,6 +4,7 @@ import Manager from "./Manager";
 import type { AxiosResponse } from "axios";
 import { useCompanyStore } from "@/stores/companyStore";
 import { isSuccessRequest } from "@/utils/helpers/network";
+import type { GridCols, GridColsDataTypes, TSortingColsMap } from "@/components/grid/GridCols";
 
 type TCompanyData = {
     companyId: number,
@@ -115,9 +116,8 @@ export default class Company extends Manager implements ICompany {
     async addNewDepartment(newDepartment: IAddDepartment): Promise<AxiosResponse | boolean> {
         const res = await this._postData('add_new_company_department')(newDepartment)
         if(isSuccessRequest(res)){
-            const newDeptId = res.data as number
             this._store.addNewDepartment({
-                id: newDeptId,
+                id: res.data,
                 ...newDepartment
             })
         }
@@ -128,10 +128,11 @@ export default class Company extends Manager implements ICompany {
      * ОТкрепляем от компании и удаляем департамент
      * @returns AxiosResponse
      */
-    async deleteDepartment(departmentId: number): Promise<AxiosResponse | boolean> {
+    async deleteDepartment(departmentId: number): Promise<boolean> {
         const res = await this._deleteData(`delete_company_department/${departmentId}`)()
         if(isSuccessRequest(res)){
-            this._store.deleteDepartment(departmentId)
+            if(!res.data) return false
+            return this._store.deleteDepartment(departmentId)
         }
         return false
     }
@@ -149,6 +150,20 @@ export default class Company extends Manager implements ICompany {
             departmentFrom,
             departmentTo
         }, true)
-        this._store.changeUserDepartment(user.userId, departmentTo)
+        this._store.changeUserDepartment(user.userId, departmentFrom, departmentTo)
+    }
+
+    public sortDepartments(sortingColsMap: TSortingColsMap, column: keyof GridColsDataTypes, gridCols: GridCols){
+        const thisCol = sortingColsMap.get(column)
+        const sortingFn = thisCol?.sortFn
+        const order = thisCol?.order
+        if(sortingFn !== undefined && order !== undefined && thisCol !== undefined) {
+
+            //! эти ф-ции перенести в GridCols и взять оттуда!
+            gridCols.resetColsSorting(sortingColsMap)
+            gridCols.switchColSortOrder(order, sortingColsMap, thisCol, column)
+
+            this._store.sortDepartments(sortingFn, column, order)
+        }
     }
 }

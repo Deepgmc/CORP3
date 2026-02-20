@@ -5,12 +5,16 @@
                 <thead>
                     <tr>
                         <th
-                            class="thead_th pointer"
+                            class="thead_th"
                             v-for="col in cols.keys()"
                             :key="col"
-                            :align="cols.get(col)!.align"
+                            @click="$emit('gv_sort', col)"
                         >
                             {{ cols.get(col)!.label }}
+                            <q-icon
+                                class="pointer"
+                                :name="getSortIconName(col)"
+                            />
                         </th>
 
                         <th v-if="$slots.actions_caption" class="text-center">
@@ -19,12 +23,13 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- @vue-ignore --><!-- проблема с типизацией key -->
                     <tr
                         v-for="row in data"
-                        :key="row[idName]"
-                        :data-module="module"
-                        :data-action="action"
-                        :data-item_id="row[idName]"
+                        :key="row[gridCols.idName as keyof GridColsDataTypes]"
+                        :data-module="gridCols.module"
+                        :data-action="gridCols.action"
+                        :data-item_id="row[gridCols.idName as keyof GridColsDataTypes]"
                     >
                         <td
                             v-for="col in cols.keys()"
@@ -34,19 +39,19 @@
 
                             :data-field_name="col"
                             :data-field_type="cols.get(col)?.type"
-                            :data-value="row[col]"
+                            :data-value="row[col as keyof GridColsDataTypes]"
 
                             :class="{gv_editable: cols.get(col)?.editable}"
                             @click="redactField"
                         >
-                            {{ cols.get(col)!.switchData ? row[`${col}Value`] : row[col] }}
+                            {{ cols.get(col)!.switchData ? row[`${col}Value` as keyof GridColsDataTypes] : row[col as keyof GridColsDataTypes] }}
                         </td>
 
                         <td
                             v-if="$slots.actions_buttons"
                             class="text-center pointer"
                         >
-                            <slot name="actions_buttons" :itemId="row[idName]"></slot>
+                            <slot name="actions_buttons" :itemId="row[gridCols.idName as keyof GridColsDataTypes]"></slot>
                         </td>
                     </tr>
                 </tbody>
@@ -57,17 +62,18 @@
 
 <script setup lang="ts">
 import { useGVDialog, type TEditTypes } from '@/composables/gridView/redactFieldDialog';
-import type { TGridColMap } from './GridColumnOptionTypes';
+import type { GridCols, GridColsDataTypes, TColsMap } from './GridCols';
 
-defineProps<{
-    cols  : Map<string, TGridColMap>,
-    data  : any,
-    idName: string,
-    module: string,
-    action: string
+defineEmits(['gv_sort'])
+
+const props = defineProps<{
+    gridCols: GridCols
 }>()
 
 const { openGV } = useGVDialog()
+
+const cols: TColsMap = props.gridCols.getColsMap()
+const data = props.gridCols.getModifiedColsMap()
 
 /**
  * Передаём данные из ячейки таблицы, которую хотим редактировать в компонент диалога для дальнейшего изменения
@@ -91,6 +97,17 @@ function redactField(e: MouseEvent): boolean {
     })
     return true
 }
+
+function getSortIconName(col: string){
+    const defaultVal = 'swap_vert'
+    const thisCol = cols.get(col)
+    if(thisCol === undefined) return ''
+    if(thisCol.order === undefined) return ''
+
+    if(thisCol.order === -1) return defaultVal
+    if(thisCol.order === 1) return 'south'
+    else return 'north'
+}
 </script>
 
 
@@ -110,6 +127,7 @@ $cellPadding: 5px;
     }
     thead th {
         padding: $cellPadding;
+        min-width: 60px;
     }
     tbody tr {
         border-bottom: 1px solid grey;
