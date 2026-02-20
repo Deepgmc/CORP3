@@ -1,3 +1,5 @@
+/// <reference types="vitest/config" />
+
 //import { fileURLToPath, URL } from 'node:url'
 
 import * as nodeUrl from 'node:url';

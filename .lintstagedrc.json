@@ -1,5 +1,3 @@
 {
-  "{client,server}/**/*.{js,ts,vue}": [
-    "eslint"
-  ]
+  "{client,server}/**/*.{js,ts,vue}": ["eslint"]
 }

@@ -17,8 +17,8 @@ import { describe, expect, it } from 'vitest'
 //   })
 // })
 
-describe('Empty test', () => {
-  it('tests works properly', () => {
-    expect(true).equal(true)
-  })
+describe('Empty APP init test', () => {
+    it('Tests works properly', () => {
+        expect(true).equal(true)
+    })
 })

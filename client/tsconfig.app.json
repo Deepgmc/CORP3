@@ -10,7 +10,7 @@
     "noUnusedParameters": true,
     "noEmitOnError": true,
     //"target": "es5",
-    //"lib": ["dom", "es2020"],
+    "lib": ["dom", "es2021"],
 
     "paths": {
       "@/*": ["./src/*"]
