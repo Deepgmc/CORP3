@@ -169,6 +169,7 @@ import { userDummy } from '@/stores/authStore'
 
 import { v_msg, SAVED_SUCCESS } from '@/utils/constants/texts.ts'
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
+import type { TResult } from '@/interfaces/Error'
 
 const $authManager = AuthManager.getInstance()
 const notify = useNotify()
@@ -197,7 +198,11 @@ function assignUserToFormData(user: IUser) {
 }
 
 watch(bDateStr, (newBdate) => {
-    form.birth = convertStrToUnixTimestamp(String(newBdate))
+    const birth: TResult = convertStrToUnixTimestamp(String(newBdate))
+    if(birth.error) {
+        throw new TypeError('Ошибка получения даты рождения')
+    }
+    form.birth = birth.res
 })
 
 async function onSubmit(): Promise<void> {
