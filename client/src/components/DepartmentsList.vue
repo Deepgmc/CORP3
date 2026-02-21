@@ -12,7 +12,7 @@
 
     <div class="row q-mt-lg">
         <div class="col-8 offset-2">
-            <q-form @submit="addDepartment">
+            <q-form ref="addDepartmentRef" @submit="addDepartment">
                 <fieldset class="fieldset">
                     <legend class="text-h5">Добавить новый департамент</legend>
                     <q-input
@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, type Ref } from 'vue';
+import { computed, reactive, type Ref, ref } from 'vue';
 import GridViewDepartments from './grid/GridViewDepartments.vue';
 import { AuthManager } from '@/auth/AuthManager';
 import { dragItem, dropItem } from '@/composables/dnd'
@@ -108,11 +108,14 @@ const newDepartment = reactive<IAddDepartment>({
     countusers: '0'
 })
 
+
+const addDepartmentRef = ref()
 function addDepartment() {
     $authManager.company.addNewDepartment(newDepartment)
     .then(() => {
         newDepartment.name = ''
         newDepartment.description = ''
+        addDepartmentRef.value.reset()
     })
 }
 /**END Форма добавления нового департамента */
