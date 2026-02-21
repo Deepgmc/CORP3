@@ -3,11 +3,12 @@ import { AuthManager } from "@/auth/AuthManager";
 import { convertTSToStr } from "@/utils/helpers/dates";
 import { computed, type ComputedRef, type Ref } from "vue";
 import type { IUser } from "@/interfaces/User";
+import type { TSortFn } from "./GridColumnOptions";
 
 export type TGridColMap = {
     label     ?: string,
     switchData?: boolean,                       //нужно ли видоизменять данные (id менять на названия или переформатировать данные)
-    sortFn    ?: (a: any, b: any, order: sortOrders) => void,
+    sortFn    ?: TSortFn,
     order     ?: sortOrders,
     align      : 'left' | 'center' | 'right',
     type       : fieldTypes,
@@ -64,8 +65,23 @@ export class GridCols {
         this.$authManager = AuthManager.getInstance()
     }
 
-    sortField(column: keyof GridColsDataTypes){
-        this.$authManager.company.sortDepartments(this.getColsMap(), column, this)
+    sortField(column: keyof GridColsDataTypes): void {
+        const sortingColsMap = this.getColsMap()
+        const thisCol = sortingColsMap.get(column)
+        const sortingFn = thisCol?.sortFn
+        const order = thisCol?.order
+
+        if(thisCol === undefined || sortingFn === undefined || order === undefined) return
+
+        this.resetColsSorting(sortingColsMap)
+        this.switchColSortOrder(order, sortingColsMap, thisCol, column)
+
+        this.rawData.value.sort((
+            entity1: GridColsDataTypes,
+            entity2: GridColsDataTypes
+        ): number => {
+            return sortingFn(entity1[column], entity2[column], order)
+        })
     }
 
     switchColSortOrder(

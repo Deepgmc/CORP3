@@ -1,26 +1,24 @@
 <template>
     <q-dialog v-model="isOpenedGV">
-        <q-card>
-            <q-card-section class="q-ma-md">
-                <q-form @submit.prevent="changeValue">
-                    <div class="row">
-                        <div class="col">
-                            <q-input
-                                v-model="gvSettings.val"
-                                :type="gvSettings.fieldType"
-                                dense
-                                label="Меняем значение:"
-                            ></q-input>
-                        </div>
+        <q-card class="q-pa-md" :class="qCardWidthClass">
+            <q-form @submit.prevent="changeValue">
+                <div class="row">
+                    <div class="col">
+                        <q-input
+                            v-model="gvSettings.val"
+                            :type="gvSettings.fieldType"
+                            dense
+                            label="Меняем значение:"
+                        ></q-input>
                     </div>
-                    <div class="row q-mt-lg">
-                        <div class="col">
-                            <q-btn flat label="Сохранить" type="submit" color="primary" />
-                            <q-btn v-close-popup flat label="Закрыть" color="secondary" />
-                        </div>
+                </div>
+                <div class="row q-mt-lg">
+                    <div class="col">
+                        <q-btn flat label="Сохранить" type="submit" color="primary" />
+                        <q-btn v-close-popup flat label="Закрыть" color="secondary" />
                     </div>
-                </q-form>
-            </q-card-section>
+                </div>
+            </q-form>
         </q-card>
     </q-dialog>
 </template>
@@ -30,6 +28,7 @@
 import { useGVDialog } from '@/composables/gridView/redactFieldDialog';
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
 import { SAVED_ERROR } from '@/utils/constants/texts';
+import { computed } from 'vue';
 const { isOpenedGV, gvSettings, saveNewData, closeGV } = useGVDialog()
 const notify = useNotify()
 
@@ -54,4 +53,22 @@ async function changeValue() {
         }
     };
 }
+
+//ширина модалки в зависимости от типа поля
+const qCardWidthClass = computed(() => {
+    return {
+        'gv_q_card-wide': gvSettings.value.fieldType === 'textarea',
+        'gv_q_card-narrow': ['text', 'number', 'date'].includes(gvSettings.value.fieldType)
+    }
+})
+
 </script>
+
+<style scoped>
+    .gv_q_card-wide {
+        width: 800px;
+    }
+    .gv_q_card-narrow {
+        width: 250px;
+    }
+</style>
