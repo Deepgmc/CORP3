@@ -78,7 +78,7 @@ import GridViewDepartments from './grid/GridViewDepartments.vue';
 import { AuthManager } from '@/auth/AuthManager';
 import { dragItem, dropItem } from '@/composables/dnd'
 
-import { GridCols } from './grid/GridCols';
+import { GridCols } from './grid/GridColsManager';
 import { departmentAvailableCols } from '@/components/grid/GridColumnOptions';
 import { v_msg } from '@/utils/constants/texts';
 import type { IAddDepartment, IDepartment } from '@/interfaces/Company';

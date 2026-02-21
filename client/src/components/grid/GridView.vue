@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import { useGVDialog, type TEditTypes } from '@/composables/gridView/redactFieldDialog';
-import type { GridCols, GridColsDataTypes, TColsMap } from './GridCols';
+import type { GridCols, GridColsDataTypes, TColsMap } from './GridColsManager';
 
 defineEmits(['gv_sort'])
 

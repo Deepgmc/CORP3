@@ -1,4 +1,4 @@
-import { fieldTypes, type ColsConfig, type sortOrders, type TGridColMap } from "./GridCols";
+import { fieldTypes, type ColsConfig, type sortOrders, type TGridColMap } from './GridColsManager';
 
 
 //настройки для вывода списка юзеров
@@ -125,7 +125,7 @@ export const departmentAvailableCols: ColsConfig = {
 export type TSortFn = (a: any, b: any, order: sortOrders) => number
 
 
-function defaultStringSortFn(val1: string, val2: string, order: sortOrders): number {
+export function defaultStringSortFn(val1: string, val2: string, order: sortOrders): number {
     if(val1 === val2) return 0
     if(order === 1){
         return val1 < val2 ? 1 : -1
@@ -133,7 +133,7 @@ function defaultStringSortFn(val1: string, val2: string, order: sortOrders): num
     return val1 > val2 ? 1 : -1
 }
 
-function defaultNumSortFn(val1: number, val2: number, order: sortOrders): number {
+export function defaultNumSortFn(val1: number, val2: number, order: sortOrders): number {
     if(val1 === val2) return 0
     if(order === 1){
         return val1 < val2 ? 1 : -1

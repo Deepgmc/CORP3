@@ -23,7 +23,7 @@ import GridView from './GridView.vue';
 import { AuthManager } from '@/auth/AuthManager';
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
 import { CANT_DELETE, DELETE_ERROR } from '@/utils/constants/texts';
-import type { GridCols, GridColsDataTypes } from './GridCols';
+import type { GridCols, GridColsDataTypes } from './GridColsManager';
 
 defineEmits(['gv_sort'])
 
