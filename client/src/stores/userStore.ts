@@ -5,7 +5,7 @@ import { jwtStrategy } from '@/auth/strategies/jwt.strategy'
 import NetworkManager, { EReqMethods } from '@/network/NetworkManager'
 import type { AxiosResponse } from 'axios'
 
-export const useAuthStore = defineStore('auth', () => {
+export const useUserStore = defineStore('user', () => {
 
     /**
      ref() становятся свойствами состояния
@@ -29,7 +29,7 @@ export const useAuthStore = defineStore('auth', () => {
         const userId = jwtStrategy.userId
         if (userId && userId > 0) {
             const res: AxiosResponse | boolean = await NetworkManager.getInstance()
-                .getApiRequestMethod(EReqMethods.get)('auth')('get_user_data')({ data: { userId } }, true) as AxiosResponse | boolean
+                .getApiRequestMethod(EReqMethods.get)('user')('get_user_data')({ data: { userId } }, true) as AxiosResponse | boolean
             if (typeof res !== 'boolean') {
                 setUser(res.data)
                 return res.data

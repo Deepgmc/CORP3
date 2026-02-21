@@ -4,7 +4,7 @@
         <q-toolbar>
             <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
             <q-toolbar-title>
-                Ваша компания: {{ $authManager.getUser().company?.name }}
+                Ваша компания: {{ $userManager.getUser().company?.name }}
             </q-toolbar-title>
             <q-btn @click="logout" class="text-blue-10">Выйти</q-btn>
         </q-toolbar>
@@ -79,14 +79,14 @@
 </template>
 
 <script setup lang="ts">
-import { AuthManager } from '@/auth/AuthManager'
+import { UserManager } from '@/entities/UserManager'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import GridViewChangeDialog from '@/components/GridViewChangeDialog.vue'
 import UserProfileCard from '@/components/profile/UserProfileCard.vue'
 
 const router = useRouter()
-const $authManager = AuthManager.getInstance()
+const $userManager = UserManager.getInstance()
 const leftDrawerOpen = ref<boolean>(true)
 
 function toggleLeftDrawer() {
@@ -94,8 +94,8 @@ function toggleLeftDrawer() {
 }
 
 function logout() {
-    if ($authManager.logOut()) {
-        $authManager.setRouterAfterLogOut(router)
+    if ($userManager.logOut()) {
+        $userManager.setRouterAfterLogOut(router)
     }
 }
 

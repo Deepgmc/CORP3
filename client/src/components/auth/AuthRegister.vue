@@ -111,7 +111,7 @@ import type { TRegisterForm } from '@/interfaces/User'
 import { getAuthRules } from '@/composables/auth/formValidation'
 
 import { useVuelidate, type ErrorObject } from '@vuelidate/core'
-import { AuthManager } from '@/auth/AuthManager'
+import { UserManager } from '@/entities/UserManager'
 import type NetworkManager from '@/network/NetworkManager'
 import { useCompany } from '@/composables/companySelect'
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
@@ -157,7 +157,7 @@ async function onSubmit(): Promise<boolean> {
 
     //отправка данных на сервер, валидация на сервере, вывод ошибок
     try {
-        const registerRes = await AuthManager.getInstance().registerRequest(regUser.value)
+        const registerRes = await UserManager.getInstance().registerRequest(regUser.value)
         if (registerRes.error) {
             if (registerRes.message) notify.run(registerRes.message, notifyTypes.err)
             return false

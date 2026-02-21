@@ -1,6 +1,6 @@
 import type { ILoginUser } from '../../interfaces/User'
 import { StorageManager } from '@/network/LocalStorageManager'
-import { type TAuthData } from '@/interfaces/Auth'
+import { type TAuthData } from '@/interfaces/User'
 
 
 type isLoginedResultSuccess = {

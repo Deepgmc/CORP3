@@ -17,7 +17,7 @@
             <div class="row">
                 <div class="col-12">
                     <q-input
-                        :readonly="!$authManager.isDirector()"
+                        :readonly="!$userManager.isDirector()"
                         v-model="companyForm.name"
                         label="Название *"
                         :rules="[val => !!val || v_msg.REQUIRED]" dense
@@ -27,12 +27,12 @@
             <!-- company address -->
             <div class="row">
                 <div class="col-12">
-                    <q-input :readonly="!$authManager.isDirector()" v-model="companyForm.address" label="Адрес" dense />
+                    <q-input :readonly="!$userManager.isDirector()" v-model="companyForm.address" label="Адрес" dense />
                 </div>
             </div>
 
             <!-- Кнопки действий -->
-            <div class="row q-pt-md" v-if="$authManager.isDirector()">
+            <div class="row q-pt-md" v-if="$userManager.isDirector()">
                 <div class="col">
                     <q-btn label="Сохранить" type="submit" color="primary" />
                 </div>
@@ -45,13 +45,13 @@
 import { reactive } from 'vue';
 import { SAVED_SUCCESS, v_msg } from '@/utils/constants/texts.ts'
 import type { ICompanyForm } from '@/interfaces/Company';
-import { AuthManager } from '@/auth/AuthManager';
+import { UserManager } from '@/entities/UserManager';
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
 
 const notify = useNotify()
-const $authManager = AuthManager.getInstance()
+const $userManager = UserManager.getInstance()
 
-const {companyId, name, address} = $authManager.company
+const {companyId, name, address} = $userManager.company
 
 const companyForm: ICompanyForm = reactive({
     companyId,
@@ -61,7 +61,7 @@ const companyForm: ICompanyForm = reactive({
 
 async function onSubmit() {
     const saveCompanyProfile: ICompanyForm = Object.assign({}, companyForm)
-    if (await $authManager.company.saveCompanyProfile(saveCompanyProfile)) {
+    if (await $userManager.company.saveCompanyProfile(saveCompanyProfile)) {
         notify.run(SAVED_SUCCESS, notifyTypes.succ)
     }
 }

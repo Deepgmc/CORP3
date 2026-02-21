@@ -7,19 +7,19 @@
                     <div class="row">
                         <div class="col">
                             <q-input readonly v-model="CPForm.username" label="логин *"
-                                :rules="[val => !!val || v_msg.REQUIRED]" dense />
+                                     :rules="[val => !!val || v_msg.REQUIRED]" dense />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
                             <q-input v-model="CPForm.password" label="текущий пароль *"
-                                :rules="[val => !!val || v_msg.REQUIRED]" dense />
+                                     :rules="[val => !!val || v_msg.REQUIRED]" dense />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
                             <q-input v-model="CPForm.newPassword" label="новый пароль *"
-                                :rules="[val => !!val || v_msg.REQUIRED]" dense />
+                                     :rules="[val => !!val || v_msg.REQUIRED]" dense />
                         </div>
                     </div>
 
@@ -40,13 +40,8 @@
                 <div class="col-12">
                     <q-badge class="q-pa-sm" text-color="black" color="orange-5" icon="account_circle">
                         {{ form.username }}
-                        <q-icon class="q-ml-md"
-                            name="swap_horiz"
-                            size="md"
-                            @click="isCPOpen = true"
-                            style="cursor:pointer"
-                            color="green-10"
-                        />
+                        <q-icon class="q-ml-md" name="swap_horiz" size="md" @click="isCPOpen = true"
+                                style="cursor:pointer" color="green-10" />
                     </q-badge>
                 </div>
             </div>
@@ -67,7 +62,8 @@
                 </div>
 
                 <div class="col-6">
-                    <q-input v-model="form.lastName" label="Фамилия *" :rules="[val => !!val || v_msg.REQUIRED]" dense />
+                    <q-input v-model="form.lastName" label="Фамилия *" :rules="[val => !!val || v_msg.REQUIRED]"
+                             dense />
                 </div>
             </div>
 
@@ -76,15 +72,13 @@
                     <q-input v-model="form.email" label="Email *" type="email" :rules="[
                         val => !!val || v_msg.REQUIRED,
                         val => /.+@.+\..+/.test(val) || v_msg.EMAIL_FORMAT
-                        ]" dense
-                    />
+                    ]" dense />
                 </div>
                 <div class="col-6"><!-- Телефон -->
                     <q-input v-model="form.phone" label="Телефон" mask="+# (###) ###-##-##" fill-mask
-                        hint="Формат: +7 (123) 456-78-90" :rules="[
-                            val => !val || /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/.test(val) || v_msg.PHONE_FORMAT
-                        ]" dense
-                    />
+                             hint="Формат: +7 (123) 456-78-90" :rules="[
+                                val => !val || /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/.test(val) || v_msg.PHONE_FORMAT
+                            ]" dense />
                 </div>
             </div>
 
@@ -112,8 +106,7 @@
                 <div class="col-12">
                     <q-input v-model="form.bio" label="О себе" type="textarea" autogrow dense :rules="[
                         val => !val || val.length <= 500 || 'Максимум 500 символов'
-                        ]" counter
-                    />
+                    ]" counter />
                 </div>
             </div>
 
@@ -137,13 +130,8 @@
     <!-- Навыки -->
     <fieldset class="fieldset">
         <legend class="text-h5">Мои навыки</legend>
-        <user-skills
-            :skills="form.skills"
-            :needAssession="true"
-            @remove-skill="removeSkill"
-            @add-skill="addSkill"
-        >
-    </user-skills>
+        <user-skills :skills="form.skills" :needAssession="true" @remove-skill="removeSkill" @add-skill="addSkill">
+        </user-skills>
     </fieldset>
 </template>
 
@@ -160,22 +148,22 @@ export default {
 }
 */
 import { reactive, onBeforeMount, ref, watch } from 'vue'
-import { AuthManager } from '@/auth/AuthManager'
+import { UserManager } from '@/entities/UserManager'
 import { convertStrToUnixTimestamp, convertTSToStr } from '@/utils/helpers/dates'
 import type { ICPForm, IUser, TSkill } from '@/interfaces/User'
 import UserSkills from '@/components/UserSkills.vue'
 import { genderOptions } from '@/utils/constants/main'
-import { userDummy } from '@/stores/authStore'
+import { userDummy } from '@/stores/userStore'
 
 import { v_msg, SAVED_SUCCESS } from '@/utils/constants/texts.ts'
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
 import type { TResult } from '@/interfaces/Error'
 
-const $authManager = AuthManager.getInstance()
+const $userManager = UserManager.getInstance()
 const notify = useNotify()
 
 onBeforeMount(() => {
-    const user = $authManager.getUser()
+    const user = $userManager.getUser()
     assignUserToFormData(user)
 })
 
@@ -199,7 +187,7 @@ function assignUserToFormData(user: IUser) {
 
 watch(bDateStr, (newBdate) => {
     const birth: TResult = convertStrToUnixTimestamp(String(newBdate))
-    if(birth.error) {
+    if (birth.error) {
         throw new TypeError('Ошибка получения даты рождения')
     }
     form.birth = birth.res
@@ -207,18 +195,18 @@ watch(bDateStr, (newBdate) => {
 
 async function onSubmit(): Promise<void> {
     const saveProfileData: IUser = Object.assign({}, form)
-    if (await $authManager.saveUserProfile(saveProfileData)) {
+    if (await $userManager.saveUserProfile(saveProfileData)) {
         notify.run(SAVED_SUCCESS, notifyTypes.succ)
     }
 }
 
 function removeSkill(skillId: TSkill['id']): void {
-    if(!Number.isInteger(skillId)) return
-    $authManager.removeUserSkill(skillId)
+    if (!Number.isInteger(skillId)) return
+    $userManager.removeUserSkill(skillId)
 }
 
 function addSkill(skillText: string): void {
-    $authManager.addUserSkill(skillText)
+    $userManager.addUserSkill(skillText)
 }
 
 ///// CHANGE PASSWORD

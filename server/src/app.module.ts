@@ -2,7 +2,7 @@ import { join } from 'path';
 import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -15,7 +15,7 @@ import { CompanyModule } from './company/company.module';
 @Module({
   imports: [
 
-    AuthModule,
+    UserModule,
     UsersModule,
     CompanyModule,
 
