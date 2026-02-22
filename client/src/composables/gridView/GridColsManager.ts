@@ -1,6 +1,6 @@
 import type { IDepartment } from "@/interfaces/Company";
 import { UserManager } from "@/entities/UserManager";
-import { convertTSToStr } from "@/utils/helpers/dates";
+import { convertTSToStr, getAgeFromTS } from "@/utils/helpers/dates";
 import { computed, ref, type ComputedRef, type Ref } from "vue";
 import type { IUser } from "@/interfaces/User";
 import type { TSortFn } from "../../components/grid/GridColumnOptions";
@@ -191,7 +191,7 @@ export class GridCols {
                 }
             break;
             case 'birth':
-                item['birthValue'] = convertTSToStr(item.birth)
+                item['birthValue'] = `${convertTSToStr(item.birth)} (${getAgeFromTS(item.birth)})`
             break;
             case 'reg_date':
                 item['reg_dateValue'] = convertTSToStr(item.reg_date)

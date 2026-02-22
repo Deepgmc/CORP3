@@ -1,8 +1,8 @@
 import { describe, expect, test, vi } from 'vitest'
-import { convertTSToStr, convertStrToUnixTimestamp } from '@/utils/helpers/dates'
+import { convertTSToStr, convertStrToUnixTimestamp, getAgeFromTS } from '@/utils/helpers/dates'
 import type { TError } from '@/interfaces/Error'
 
-describe('Dates.ts tests', () => {
+describe('Тесты утилит: Dates.ts', () => {
 
     const dateErr: TError = {
         error: true,
@@ -28,13 +28,11 @@ describe('Dates.ts tests', () => {
         {testDate: 'gfhfgh', expected: dateErr},
         {testDate: '', expected: dateErr},
 
-    ])('Converts string to timestamp $testDate -> $expected', ({testDate, expected}) => {
-
+    ])('convertStrToUnixTimestamp, получить из строки таймстамп $testDate -> $expected', ({testDate, expected}) => {
         expect(convertStrToUnixTimestamp(testDate)).toEqual(expected)
-
     })
 
-    test('convertTSToStr, converting timestamp to string', () => {
+    test('convertTSToStr, Получить из таймстампа строку', () => {
         vi.setSystemTime(new Date('1990-01-01'))
         const ts = Date.now()
 
@@ -44,6 +42,18 @@ describe('Dates.ts tests', () => {
         expect(convertedDate).toBe('01.01.1990')
         expect(wrongConvertedDate).toBe(false)
 
+        vi.useRealTimers()
+    })
+
+    test.each([
+        {testTS: 577440000000, expected: 37},
+        {testTS: 1745053200000, expected: 0},
+        {testTS: 0, expected: 56},
+        {testTS: -100, expected: 56},
+
+    ])('Получить возраст из таймстампа $testTS -> $expected', ({testTS, expected}) => {
+        vi.setSystemTime(new Date('2026-02-22'))
+        expect(getAgeFromTS(testTS)).toBe(expected)
         vi.useRealTimers()
     })
 })
