@@ -9,13 +9,13 @@
 
 <script setup lang="ts">
 import GridViewEmployees from '../grid/GridViewEmployees.vue';
-import { AuthManager } from '@/auth/AuthManager';
+import { UserManager } from '@/entities/UserManager';
 import { employeeAvailableCols } from '@/components/grid/GridColumnOptions'
 import { GridCols } from '../grid/GridColsManager'
 
-const $authManager = AuthManager.getInstance()
+const $userManager = UserManager.getInstance()
 const needFields = ['userId', 'username', 'firstName', 'lastName', 'departmentId', 'birth', 'phone']
-const employees = $authManager.company.employees
+const employees = $userManager.company.employees
 
 const gridCols = new GridCols(
     needFields,

@@ -1,73 +1,72 @@
 import type { Router } from 'vue-router'
-import { availableStrategies, type IAuthManager } from '@/interfaces/Auth'
-import type { TStrategies } from '@/interfaces/Auth'
+import { availableStrategies, type IUserManager, type TStrategies } from '@/interfaces/User'
 import type { ILoginUser, IUser, TRegisterForm, TSkill } from '@/interfaces/User'
 import type { TAuthRenponse } from '@/interfaces/Error'
-import { jwtStrategy } from './strategies/jwt.strategy'
-import type { isLoginedResult } from './strategies/Strategy'
+import { jwtStrategy } from '../auth/strategies/jwt.strategy'
+import type { isLoginedResult } from '../auth/strategies/Strategy'
 import { ALREADY_AUTHORISED_MSG } from '@/utils/constants/texts.ts'
 import Manager from '@/entities/Manager'
 import Company from '@/entities/Company'
 
 
-export class AuthManager extends Manager implements IAuthManager {
+export class UserManager extends Manager implements IUserManager {
 
     public availableStrategies = availableStrategies
 
     _strategy: TStrategies = null
 
-    _authStore
+    _userStore
 
     private _isLogined: isLoginedResult = { isLogined: false } //авторизация, любыми стратегиями
 
-    static instance: AuthManager | null = null
+    static instance: UserManager | null = null
 
     static getInstance(
-        strategy?: IAuthManager['_strategy'],
-        authStore?: any
-    ): AuthManager {
-        if (AuthManager.instance) {
-            return AuthManager.instance
+        strategy?: IUserManager['_strategy'],
+        userStore?: any
+    ): UserManager {
+        if (UserManager.instance) {
+            return UserManager.instance
         }
-        return new AuthManager(strategy, authStore)
+        return new UserManager(strategy, userStore)
     }
 
-    protected _apiModule: string = 'auth'
+    protected _apiModule: string = 'user'
 
     public company!: Company // Инстанс объекта компании
 
     private constructor(
-        strategy?: IAuthManager['_strategy'],
-        authStore?: any
+        strategy?: IUserManager['_strategy'],
+        userStore?: any
     ) {
         super()
-        if (AuthManager.instance) throw new TypeError('Instance creation only with .getInstance()')
-        AuthManager.instance = this
+        if (UserManager.instance) throw new TypeError('Instance creation only with .getInstance()')
+        UserManager.instance = this
         if (strategy) this._strategy = strategy
-        this._authStore = authStore
+        this._userStore = userStore
         this._postData = this._post(this._apiModule)
         this._getData = this._get(this._apiModule)
 
         //при создании менеджера проверяем статус логина и разлогиниваем/убираем, если токен остался по какойто-причине старый
         void this.updateAndGetIsLogined()
             .then(async () => {
-            //после проверки статуса сессии (токена) - загружаем данные юзера
-            if (this.loginedStatus.isLogined) {
-                this.loadInitData()
-            }
-        })
+                //после проверки статуса сессии (токена) - загружаем данные юзера
+                if (this.loginedStatus.isLogined) {
+                    this.loadInitData()
+                }
+            })
     }
 
-    async loadInitData(){
-        const createdUser: IUser = await this._authStore.loadUserData()
-        if(createdUser.company === null || this.company) return
+    async loadInitData() {
+        const createdUser: IUser = await this._userStore.loadUserData()
+        if (createdUser.company === null || this.company) return
         //юзер загружен, цепляем к нему его компанию
-        this.company = Company.getInstance (
+        this.company = Company.getInstance(
             {
                 companyId: createdUser.company.companyId,
-                name     : createdUser.company.name,
-                address  : createdUser.company.address,
-                user     : createdUser
+                name: createdUser.company.name,
+                address: createdUser.company.address,
+                user: createdUser
             }
         )
     }
@@ -77,8 +76,8 @@ export class AuthManager extends Manager implements IAuthManager {
      * @param skillId id навыка юзера
      */
     async removeUserSkill(skillId: TSkill['id']) {
-        if(await this._postData('remove_user_skill')({skillId})) {
-            this._authStore.removeSkill(skillId)
+        if (await this._postData('remove_user_skill')({ skillId })) {
+            this._userStore.removeSkill(skillId)
         }
     }
     /**
@@ -90,8 +89,8 @@ export class AuthManager extends Manager implements IAuthManager {
             skillText,
             userId: this.getUser().userId
         })
-        if(res.data && Number.isInteger(res.data)) {
-            return this._authStore.addSkill(skillText, res.data)
+        if (res.data && Number.isInteger(res.data)) {
+            return this._userStore.addSkill(skillText, res.data)
         }
         return false
     }
@@ -115,7 +114,7 @@ export class AuthManager extends Manager implements IAuthManager {
     }
 
     public getUser(): IUser {
-        return this._authStore.user
+        return this._userStore.user
     }
 
     public isDirector(): boolean {
@@ -131,7 +130,7 @@ export class AuthManager extends Manager implements IAuthManager {
     }
 
     public async saveUserProfile(user: IUser): Promise<boolean> {
-        if (this._authStore.setUser(user)) {
+        if (this._userStore.setUser(user)) {
             await this._postData('save_user_profile')(user)
             return true
         }
@@ -158,7 +157,7 @@ export class AuthManager extends Manager implements IAuthManager {
             this._isLogined = { isLogined: true, userId: loginRes.data.user.userId }
             //если авторизация успешна - загружаем данные юзера
             await this.loadInitData()
-            this._authStore.timeLogined = Date.now()
+            this._userStore.timeLogined = Date.now()
         }
 
         return loginRes

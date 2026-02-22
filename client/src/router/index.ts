@@ -4,7 +4,7 @@ import Corp3Layout from '@/views/Corp3Layout.vue'
 import AuthLayout from '@/views/AuthLayout.vue'
 import AuthLogin from '@/components/auth/AuthLogin.vue'
 import AuthRegister from '@/components/auth/AuthRegister.vue'
-import { AuthManager } from '@/auth/AuthManager'
+import { UserManager } from '@/entities/UserManager'
 
 //import ProfileView from '@/views/pages/ProfileView.vue'
 // import DepartmentsView from '@/views/pages/DepartmentsView.vue'
@@ -90,11 +90,11 @@ const router = createRouter({
     routes: routes,
 })
 
-let isLogined = AuthManager.isLoginedByJWTToken()
+let isLogined = UserManager.isLoginedByJWTToken()
 
 
 router.beforeEach((to, _from, next) => {
-    isLogined = AuthManager.isLoginedByJWTToken()
+    isLogined = UserManager.isLoginedByJWTToken()
     if (!isLogined && to.name !== 'login' && to.name !== 'register') {
         next('/auth/login')
     } else {

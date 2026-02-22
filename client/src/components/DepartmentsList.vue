@@ -75,7 +75,7 @@
 <script setup lang="ts">
 import { computed, reactive, type Ref, ref } from 'vue';
 import GridViewDepartments from './grid/GridViewDepartments.vue';
-import { AuthManager } from '@/auth/AuthManager';
+import { UserManager } from '@/entities/UserManager';
 import { dragItem, dropItem } from '@/composables/dnd'
 
 import { GridCols } from './grid/GridColsManager';
@@ -85,10 +85,10 @@ import type { IAddDepartment, IDepartment } from '@/interfaces/Company';
 import type { IUser } from '@/interfaces/User';
 
 
-const $authManager = AuthManager.getInstance()
+const $userManager = UserManager.getInstance()
 
 const needFields = ['id', 'name', 'description', 'countusers']
-const departments = $authManager.company.departments
+const departments = $userManager.company.departments
 
 
 const gridCols = new GridCols(
@@ -104,14 +104,14 @@ const gridCols = new GridCols(
 const newDepartment = reactive<IAddDepartment>({
     name: '',
     description: '',
-    companyId: $authManager.company.companyId,
+    companyId: $userManager.company.companyId,
     countusers: '0'
 })
 
 
 const addDepartmentRef = ref()
 function addDepartment() {
-    $authManager.company.addNewDepartment(newDepartment)
+    $userManager.company.addNewDepartment(newDepartment)
     .then(() => {
         newDepartment.name = ''
         newDepartment.description = ''
@@ -128,7 +128,7 @@ function addDepartment() {
 
 
 // DND WIDGET
-const employees = $authManager.company.employees
+const employees = $userManager.company.employees
 /**
  * создаём итерируемый реактивный Map для вывода виджета сотрудников департаментов с перетаскиванием
  */
@@ -155,7 +155,7 @@ function dropUser(event: DragEvent){
 
     employees.value.forEach((thisEmp: IUser) => {
         if(thisEmp.userId === dragItemId && thisEmp.departmentId === dragFromId) {
-            $authManager.company.switchUserDepartmets(thisEmp, dragFromId, dropId)
+            $userManager.company.switchUserDepartmets(thisEmp, dragFromId, dropId)
             return true
         }
     })

@@ -53,11 +53,11 @@ export default {
 }
 */
 import {ref, reactive } from 'vue'
-import { AuthManager } from '@/auth/AuthManager'
+import { UserManager } from '@/entities/UserManager'
 import type { ILoginUser } from '@/interfaces/User'
 import { getAuthRules } from '@/composables/auth/formValidation'
 
-const authManager = AuthManager.getInstance()
+const $userManager = UserManager.getInstance()
 
 const $externalResults = reactive({})
 import { useVuelidate, type ErrorObject } from '@vuelidate/core'
@@ -82,12 +82,12 @@ const $v = useVuelidate(rules, loginUser, { $externalResults: $externalResults }
 
 async function onSubmit(){
   try {
-    const loginRes = await authManager.loginRequest(loginUser.value)
+    const loginRes = await $userManager.loginRequest(loginUser.value)
     if(loginRes.error){
       if(loginRes.message) notify.run(loginRes.message, notifyTypes.err)
     } else {
       notify.run('Вход завершен успешно', notifyTypes.succ)
-      authManager.setRouteAfterLogin(router)
+      $userManager.setRouteAfterLogin(router)
     }
   } catch (e: any){
     notify.run(e.response.data.message[0], notifyTypes.err)

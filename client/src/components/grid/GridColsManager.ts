@@ -1,5 +1,5 @@
 import type { IDepartment } from "@/interfaces/Company";
-import { AuthManager } from "@/auth/AuthManager";
+import { UserManager } from "@/entities/UserManager";
 import { convertTSToStr } from "@/utils/helpers/dates";
 import { computed, type ComputedRef, type Ref } from "vue";
 import type { IUser } from "@/interfaces/User";
@@ -46,7 +46,7 @@ export class GridCols {
 
     private colsMap: TColsMap = new Map()
     private modifiedColsMap: ComputedRef<GridColsData>
-    private $authManager: AuthManager
+    private $userManager: UserManager
 
     constructor(
         private requiredCols: string[],
@@ -62,7 +62,7 @@ export class GridCols {
             return this.modifyColsMap()
         })
 
-        this.$authManager = AuthManager.getInstance()
+        this.$userManager = UserManager.getInstance()
     }
 
     sortField(column: keyof GridColsDataTypes): void {
@@ -124,7 +124,7 @@ export class GridCols {
             case 'companyId':
                 if(item.companyId !== null){
                     //! тут нужно выбирать из списка компаний а не текущую!!!
-                    item['companyIdValue'] = this.$authManager.company.name
+                    item['companyIdValue'] = this.$userManager.company.name
                 }
             break;
             case 'birth':
@@ -135,7 +135,7 @@ export class GridCols {
             break;
             case 'departmentId':
                 if(item.departmentId !== null){
-                    const thisDept: IDepartment = this.$authManager.company.departments.value.find((dept: IDepartment) => dept.id === item.departmentId)
+                    const thisDept: IDepartment = this.$userManager.company.departments.value.find((dept: IDepartment) => dept.id === item.departmentId)
                     item['departmentIdValue'] = thisDept.name
                 }
             break;

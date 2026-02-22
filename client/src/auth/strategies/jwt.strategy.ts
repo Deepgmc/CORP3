@@ -1,4 +1,4 @@
-import { type TJwtToken } from '@/interfaces/Auth'
+import { type TJwtToken } from '@/interfaces/User'
 import { Strategy, type isLoginedResult } from '@/auth/strategies/Strategy';
 import { RESPONSE_STATUS_CODES } from '@/constants';
 import type { ILoginUser } from '../../interfaces/User';
@@ -8,7 +8,7 @@ import type { TAuthRenponse } from '@/interfaces/Error';
 
 export class jwtStrategy extends Strategy {
 
-  private _apiModule: string = 'auth'
+  private _apiModule: string = 'user'
   private _postData: (action: string) => any
   private _getData: (action: string) => any
 
