@@ -14,7 +14,7 @@ import { employeeAvailableCols } from '@/components/grid/GridColumnOptions'
 import { GridCols } from '../../composables/gridView/GridColsManager'
 
 const $userManager = UserManager.getInstance()
-const needFields = ['userId', 'username', 'firstName', 'lastName', 'departmentId', 'birth', 'phone']
+const needFields = ['firstName', 'lastName', 'departmentId', 'birth', 'phone', 'skills']
 const employees = $userManager.company.employees
 
 const gridCols = new GridCols(
