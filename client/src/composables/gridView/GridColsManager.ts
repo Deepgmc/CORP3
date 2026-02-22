@@ -202,6 +202,9 @@ export class GridCols {
                     item['departmentIdValue'] = thisDept.name
                 }
             break;
+            case 'skills':
+                item['skillsValue'] = item.skills.map((skill: any) => skill.skill).join(', ')
+            break;
         }
     }
 

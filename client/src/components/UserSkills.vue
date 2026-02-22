@@ -1,11 +1,17 @@
 <template>
     <div class="row">
         <template v-for="prop in props.skills" :key="prop.id">
-            <q-chip removable color="teal" text-color="white" @remove="$emit('remove-skill', prop.id)">
+            <q-chip
+                removable
+                color="teal"
+                text-color="white"
+                @remove="$emit('remove-skill', prop.id)"
+            >
                 {{ prop.skill }}
             </q-chip>
         </template>
     </div>
+
     <div class="row" v-if="needAssession">
         <q-form @submit="addSkill">
             <q-input v-model="newSkill" label="Добавить навык">
