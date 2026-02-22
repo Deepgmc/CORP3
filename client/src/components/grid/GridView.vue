@@ -25,7 +25,7 @@
                 <tbody>
                     <!-- @vue-ignore --><!-- проблема с типизацией key -->
                     <tr
-                        v-for="row in data"
+                        v-for="row in currentPageData"
                         :key="row[gridCols.idName as keyof GridColsDataTypes]"
                         :data-module="gridCols.module"
                         :data-action="gridCols.action"
@@ -56,13 +56,73 @@
                     </tr>
                 </tbody>
             </table>
+            <div class="row q-mt-xs justify-end">
+                <q-btn
+                    v-if="leftSideNums.length > 0"
+                    class="q-ma-xs"
+                    size="sm"
+                    color="secondary"
+                    text-color="warning"
+                    round
+                    icon="arrow_circle_left"
+                    @click="decreasePage"
+                />
+
+                <div v-if="leftSideNums.length === 2 && currentPage > 3" class="row items-end">...</div>
+
+                <q-btn
+                    v-for="p in leftSideNums"
+                    :key="p"
+                    class="q-ma-xs"
+                    size="sm"
+                    color="yellow-3"
+                    text-color="secondary"
+                    round
+                    :label="p"
+                    @click="clickPageBtn(p)"
+                />
+
+                <q-btn
+                    class="q-ma-xs"
+                    size="sm"
+                    color="yellow-3"
+                    text-color="red"
+                    round
+                    :label="currentPage"
+                />
+
+                <q-btn
+                    v-for="p in rightSideNums"
+                    :key="p"
+                    class="q-ma-xs"
+                    size="sm"
+                    color="yellow-3"
+                    text-color="secondary"
+                    round
+                    :label="p"
+                    @click="clickPageBtn(p)"
+                />
+
+                <div v-if="rightSideNums.length === 2 && currentPage + 2 < pagesCount" class="row items-end">...</div>
+
+                <q-btn
+                    v-if="currentPage <= pagesCount - 1"
+                    class="q-ma-xs"
+                    size="sm"
+                    color="secondary"
+                    text-color="warning"
+                    round
+                    icon="arrow_circle_right"
+                    @click="increasePage"
+                />
+            </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { useGVDialog, type TEditTypes } from '@/composables/gridView/redactFieldDialog';
-import type { GridCols, GridColsDataTypes, TColsMap } from './GridColsManager';
+import type { GridCols, GridColsDataTypes, TColsMap } from '@/composables/gridView/GridColsManager';
 
 defineEmits(['gv_sort'])
 
@@ -73,11 +133,31 @@ const props = defineProps<{
 const { openGV } = useGVDialog()
 
 const cols: TColsMap = props.gridCols.getColsMap()
-const data = props.gridCols.getModifiedColsMap()
+const currentPageData = props.gridCols.currentPageData
+
+
+
+
+
+const currentPage = props.gridCols.currentPage
+const pagesCount = props.gridCols.pagesCount
+const leftSideNums = props.gridCols.leftSideNums
+const rightSideNums = props.gridCols.rightSideNums
+
+function decreasePage(){
+    props.gridCols.setCurrentPage(currentPage.value - 1)
+}
+function increasePage(){
+    props.gridCols.setCurrentPage(currentPage.value + 1)
+}
+function clickPageBtn(page: number){
+    props.gridCols.setCurrentPage(page)
+}
+
 
 /**
  * Передаём данные из ячейки таблицы, которую хотим редактировать в компонент диалога для дальнейшего изменения
- * @param e
+ * @param e MouseEvent
  */
 function redactField(e: MouseEvent): boolean {
     const target = e.target as HTMLElement

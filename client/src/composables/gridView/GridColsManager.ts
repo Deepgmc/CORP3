@@ -1,9 +1,9 @@
 import type { IDepartment } from "@/interfaces/Company";
 import { UserManager } from "@/entities/UserManager";
 import { convertTSToStr } from "@/utils/helpers/dates";
-import { computed, type ComputedRef, type Ref } from "vue";
+import { computed, ref, type ComputedRef, type Ref } from "vue";
 import type { IUser } from "@/interfaces/User";
-import type { TSortFn } from "./GridColumnOptions";
+import type { TSortFn } from "../../components/grid/GridColumnOptions";
 
 export type TGridColMap = {
     label     ?: string,
@@ -45,8 +45,12 @@ export type TSortingColsMap = Map<string, TGridColMap>
 export class GridCols {
 
     private colsMap: TColsMap = new Map()
-    private modifiedColsMap: ComputedRef<GridColsData>
+    private modifiedData: ComputedRef<GridColsData>
     private $userManager: UserManager
+
+    public rowsPerPage = ref(3)
+    public currentPage = ref(1)
+    private thatPageIndex = 0
 
     constructor(
         private requiredCols: string[],
@@ -54,15 +58,74 @@ export class GridCols {
         private rawData: Ref<GridColsData>, // массив сырых данных компаний, департаментов и пр
         public idName: string,
         public module: string,
-        public action: string
+        public action: string,
+        perPage ?: number
     ){
         this.setBaseColsMap(this.requiredCols, this.availableCols)
 
-        this.modifiedColsMap = computed(() => {
-            return this.modifyColsMap()
+        this.modifiedData = computed(() => {
+            return this.modifyRawData()
         })
 
+        if(perPage) this.rowsPerPage.value = perPage
+
         this.$userManager = UserManager.getInstance()
+    }
+
+    /** сколько всего страниц в таблице */
+    public pagesCount: Ref<number> = computed((): number => {
+        return Math.round(this.modifiedData.value.length / this.rowsPerPage.value)
+    })
+
+    /** массив чисел - сколько всего страниц в таблице. нужен только для вычислений*/
+    private allPagesNums: ComputedRef<number[]> = computed(() => {
+        const pages: number[] = []
+        for(let p = 1; p <= this.pagesCount.value; p++){
+            if(p === this.currentPage.value) this.thatPageIndex = p - 1
+            pages.push(p)
+        }
+        return pages
+    })
+
+    /** страницы слева от текущей */
+    leftSideNums = computed(() => {
+        let thisArr: number[] = []
+        for(let p = 1; p <= 2; p++) {
+            //@ts-ignore
+            const thisLeftNum = this.allPagesNums.value[this.thatPageIndex] - p
+            if(thisLeftNum == 0) break
+            thisArr.push(thisLeftNum)
+        }
+        thisArr = thisArr.reverse()
+        return thisArr
+    })
+
+    /** страницы справа от текущей */
+    rightSideNums = computed(() => {
+        const thisArr: number[] = []
+        for(let p = 1; p <= 2; p++) {
+            //@ts-ignore
+            const thisRightNum = this.allPagesNums.value[this.thatPageIndex] + p
+            if(thisRightNum > this.allPagesNums.value.length) break
+            thisArr.push(thisRightNum)
+        }
+        return thisArr
+    })
+
+    /**
+    данные по текущей странице.
+    это массив из this.rowsPerPage строк
+    */
+    public currentPageData = computed(() => {
+        const startIndex = (this.rowsPerPage.value * this.currentPage.value) - this.rowsPerPage.value
+        return this.modifiedData.value.slice(
+            startIndex,
+            startIndex + this.rowsPerPage.value
+        )
+    })
+
+    public setCurrentPage(newPage: number): void {
+        this.currentPage.value = newPage
     }
 
     sortField(column: keyof GridColsDataTypes): void {
@@ -108,7 +171,7 @@ export class GridCols {
             - ид компаний/департаментов в названия
         * @param data массив департаментов, компаний, юзеров
     */
-    modifyColsMap(){
+    modifyRawData(){
         return this.rawData.value.map((item: any) => {
             for(const [val,] of Object.entries(item)){
                 if(this.colsMap.get(val)?.switchData) {
@@ -158,7 +221,7 @@ export class GridCols {
         return this.colsMap
     }
 
-    getModifiedColsMap(){
-        return this.modifiedColsMap
+    getModifiedData(){
+        return this.modifiedData
     }
 }

@@ -11,7 +11,7 @@
 import GridViewEmployees from '../grid/GridViewEmployees.vue';
 import { UserManager } from '@/entities/UserManager';
 import { employeeAvailableCols } from '@/components/grid/GridColumnOptions'
-import { GridCols } from '../grid/GridColsManager'
+import { GridCols } from '../../composables/gridView/GridColsManager'
 
 const $userManager = UserManager.getInstance()
 const needFields = ['userId', 'username', 'firstName', 'lastName', 'departmentId', 'birth', 'phone']

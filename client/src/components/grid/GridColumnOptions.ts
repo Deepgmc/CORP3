@@ -1,4 +1,4 @@
-import { fieldTypes, type ColsConfig, type sortOrders, type TGridColMap } from './GridColsManager';
+import { fieldTypes, type ColsConfig, type sortOrders, type TGridColMap } from '@/composables/gridView/GridColsManager';
 
 
 //настройки для вывода списка юзеров
