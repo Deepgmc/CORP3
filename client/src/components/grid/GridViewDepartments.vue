@@ -1,12 +1,22 @@
 <template>
-    <grid-view :gridCols="gridCols" @gv_sort="sortField">
+    <grid-view
+        :gridCols="gridCols"
+        @gv_sort="sortField"
+    >
         <template #actions_caption>
-            <q-icon class="gv-edit_buttons-negative" name="edit" />
+            <q-icon
+                class="gv-edit_buttons-negative"
+                name="edit"
+            />
         </template>
 
         <template #actions_buttons="slotProps">
-            <q-icon class="gv-edit_buttons-negative" name="delete_forever" @click="deleteDepartment"
-                    :data-itemId="slotProps.itemId" />
+            <q-icon
+                class="gv-edit_buttons-negative"
+                name="delete_forever"
+                @click="deleteDepartment"
+                :data-itemId="slotProps.itemId"
+            />
         </template>
     </grid-view>
 </template>
@@ -16,7 +26,7 @@ import GridView from './GridView.vue';
 import { UserManager } from '@/entities/UserManager';
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
 import { CANT_DELETE, DELETE_ERROR } from '@/utils/constants/texts';
-import type { GridCols, GridColsDataTypes } from './GridColsManager';
+import type { GridCols, GridColsDataTypes } from '@/composables/gridView/GridColsManager';
 
 defineEmits(['gv_sort'])
 

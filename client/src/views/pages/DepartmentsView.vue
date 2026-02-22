@@ -3,5 +3,5 @@
 </template>
 
 <script setup lang="ts">
-import DepartmentsList from '@/components/DepartmentsList.vue';
+import DepartmentsList from '@/components/departments/DepartmentsList.vue';
 </script>

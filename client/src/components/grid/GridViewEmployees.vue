@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import GridView from './GridView.vue';
-import type { GridCols, GridColsDataTypes } from './GridColsManager';
+import type { GridCols, GridColsDataTypes } from '@/composables/gridView/GridColsManager';
 import { useUserProfileCard } from '@/composables/userProfileCard';
 
 defineEmits(['gv_sort'])

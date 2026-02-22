@@ -74,11 +74,11 @@
 
 <script setup lang="ts">
 import { computed, reactive, type Ref, ref } from 'vue';
-import GridViewDepartments from './grid/GridViewDepartments.vue';
+import GridViewDepartments from '@/components/grid/GridViewDepartments.vue';
 import { UserManager } from '@/entities/UserManager';
 import { dragItem, dropItem } from '@/composables/dnd'
 
-import { GridCols } from './grid/GridColsManager';
+import { GridCols } from '@/composables/gridView/GridColsManager';
 import { departmentAvailableCols } from '@/components/grid/GridColumnOptions';
 import { v_msg } from '@/utils/constants/texts';
 import type { IAddDepartment, IDepartment } from '@/interfaces/Company';
@@ -98,6 +98,7 @@ const gridCols = new GridCols(
     'id',
     'company',
     'departments',
+    5
 )
 
 /** Форма добавления нового департамента */
@@ -167,7 +168,7 @@ function dropUser(event: DragEvent){
         resize: none;
     }
     .GT_block {
-        border:3px solid red;
+        border:3px solid rgb(73, 7, 7);
         width:330px;
         margin-bottom:20px;
         display:flex;
@@ -181,7 +182,7 @@ function dropUser(event: DragEvent){
             padding: 20px 0 20px 0;
             justify-content: center;
             align-items: center;
-            background: green;
+            background: rgb(18, 49, 14);
             height:150px;
         }
         .GT_users{
