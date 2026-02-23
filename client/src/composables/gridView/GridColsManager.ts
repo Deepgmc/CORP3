@@ -30,7 +30,8 @@ export const enum fieldTypes {
     textarea = 'textarea',
     number   = 'number',
     date     = 'date',
-    phone    = 'phone'
+    phone    = 'phone',
+    widget   = 'widget'
 }
 
 export type TSortingColsMap = Map<string, TGridColMap>

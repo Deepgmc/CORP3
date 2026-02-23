@@ -67,14 +67,16 @@
                 </div>
             </div>
 
+            <!-- Email -->
+            <!-- Телефон -->
             <div class="row">
-                <div class="col-6"><!-- Email -->
+                <div class="col-6">
                     <q-input v-model="form.email" label="Email *" type="email" :rules="[
                         val => !!val || v_msg.REQUIRED,
                         val => /.+@.+\..+/.test(val) || v_msg.EMAIL_FORMAT
                     ]" dense />
                 </div>
-                <div class="col-6"><!-- Телефон -->
+                <div class="col-6">
                     <q-input v-model="form.phone" label="Телефон" mask="+# (###) ###-##-##" fill-mask
                              hint="Формат: +7 (123) 456-78-90" :rules="[
                                 val => !val || /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/.test(val) || v_msg.PHONE_FORMAT

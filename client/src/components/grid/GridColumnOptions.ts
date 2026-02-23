@@ -81,7 +81,7 @@ export const employeeAvailableCols: ColsConfig = {
         label     : 'Навыки',
         switchData: true,
         align     : 'left',
-        type      : fieldTypes.text,
+        type      : fieldTypes.widget,
         editable  : false,
     },
 }

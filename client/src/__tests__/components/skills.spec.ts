@@ -4,7 +4,6 @@ import type { TSkill } from '@/interfaces/User'
 import { Quasar } from 'quasar'
 
 import UserSkills from '@/components/UserSkills.vue'
-import type { TSkill } from '@/interfaces/User'
 
 const skillsList: TSkill[] = [
     {
