@@ -19,7 +19,8 @@ export function convertStrToUnixTimestamp(dateIncome: string): TResult {
     if(Number.isNaN(parsedDate)){
         const testUSDateArr: string[] = unifiedStr.split('.')
         if(testUSDateArr.length === 3){
-            parsedDate = Date.parse(`${testUSDateArr[1]}.${testUSDateArr[0]}.${testUSDateArr[2]}`)
+            const [day, month, year] = testUSDateArr
+            parsedDate = Date.parse(`${month}.${day}.${year}`)
         }
     }
 

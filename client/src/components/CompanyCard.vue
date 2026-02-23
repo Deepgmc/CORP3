@@ -60,8 +60,7 @@ const companyForm: ICompanyForm = reactive({
 })
 
 async function onSubmit() {
-    const saveCompanyProfile: ICompanyForm = Object.assign({}, companyForm)
-    if (await $userManager.company.saveCompanyProfile(saveCompanyProfile)) {
+    if (await $userManager.company.saveCompanyProfile({...companyForm})) {
         notify.run(SAVED_SUCCESS, notifyTypes.succ)
     }
 }

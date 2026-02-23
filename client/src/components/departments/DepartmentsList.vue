@@ -11,7 +11,7 @@
     </div>
 
     <div class="row q-mt-lg">
-        <div class="col-8 offset-2">
+        <div class="col-lg-8 offset-lg-2 col-md-12">
             <q-form ref="addDepartmentRef" @submit="addDepartment">
                 <fieldset class="fieldset">
                     <legend class="text-h5">Добавить новый департамент</legend>

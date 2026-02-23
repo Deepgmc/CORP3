@@ -45,6 +45,12 @@
                             @click="redactField"
                         >
                             {{ cols.get(col)!.switchData ? row[`${col}Value` as keyof GridColsDataTypes] : row[col as keyof GridColsDataTypes] }}
+
+                            <slot
+                                name="field_components"
+                                :col="col"
+                                :value="row[col as keyof GridColsDataTypes]"
+                            ></slot>
                         </td>
 
                         <td

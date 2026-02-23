@@ -61,8 +61,9 @@ export default class Company extends Manager implements ICompany {
             this.getFullEmployeesList()
         ])
             .then((res) => {
-                this._store.setDepartments(res[0])
-                this._store.setEmployees(res[1])
+                const [departments, employees] = res
+                this._store.setDepartments(departments)
+                this._store.setEmployees(employees)
             })
     }
 
