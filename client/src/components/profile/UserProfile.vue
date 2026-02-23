@@ -130,23 +130,17 @@
     <!-- Навыки -->
     <fieldset class="fieldset">
         <legend class="text-h5">Мои навыки</legend>
-        <user-skills :skills="form.skills" :needAssession="true" @remove-skill="removeSkill" @add-skill="addSkill">
-        </user-skills>
+        <user-skills
+            :skills="form.skills"
+            :needAssession="true"
+            @remove-skill="removeSkill"
+            @add-skill="addSkill"
+            :alwaysShowAll="true"
+        ></user-skills>
     </fieldset>
 </template>
 
 <script setup lang="ts">
-/**
-export default {
-  setup() {
-    const count = ref(0)
-    function increment() {
-      count.value++
-    }
-    return { count, increment }
-  }
-}
-*/
 import { reactive, onBeforeMount, ref, watch } from 'vue'
 import { UserManager } from '@/entities/UserManager'
 import { convertStrToUnixTimestamp, convertTSToStr } from '@/utils/helpers/dates'
@@ -194,8 +188,7 @@ watch(bDateStr, (newBdate) => {
 })
 
 async function onSubmit(): Promise<void> {
-    const saveProfileData: IUser = Object.assign({}, form)
-    if (await $userManager.saveUserProfile(saveProfileData)) {
+    if (await $userManager.saveUserProfile({...form})) {
         notify.run(SAVED_SUCCESS, notifyTypes.succ)
     }
 }

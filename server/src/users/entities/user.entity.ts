@@ -46,7 +46,9 @@ export class UsersEntity {
     })
     gender: number;
 
-    @Column({ default: '' })
+    @Column({
+        type: 'text'
+    })
     bio: string;
 
     @Column({ default: '' })

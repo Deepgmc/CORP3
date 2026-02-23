@@ -1,0 +1,13 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`skills widget snapshot with assertion_block 1`] = `
+"<div class="q-chip row inline no-wrap items-center bg-teal text-white q-chip--colored" style="font-size: 14px;">
+  <div class="q-chip__content col row no-wrap items-center q-anchor--skip">Skill 2</div>
+</div>"
+`;
+
+exports[`skills widget snapshot with default settings 1`] = `
+"<div class="q-chip row inline no-wrap items-center bg-teal text-white q-chip--colored" style="font-size: 14px;">
+  <div class="q-chip__content col row no-wrap items-center q-anchor--skip">Skill 1</div>
+</div>"
+`;

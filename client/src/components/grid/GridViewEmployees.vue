@@ -15,13 +15,26 @@
             @click="redactUser"
         />
     </template>
+
+    <template #field_components="slotProps">
+        <!-- @vue-ignore --><!--skills ??? -->
+        <user-skills
+            v-if="slotProps.col === 'skills'"
+            :skills="slotProps.value"
+            :needAssession="false"
+            :maxQuantity="3"
+            :size="'sm'"
+            :removable="false"
+        ></user-skills>
+    </template>
 </grid-view>
 </template>
 
 <script setup lang="ts">
-import GridView from './GridView.vue';
-import type { GridCols, GridColsDataTypes } from '@/composables/gridView/GridColsManager';
-import { useUserProfileCard } from '@/composables/userProfileCard';
+import GridView from './GridView.vue'
+import type { GridCols, GridColsDataTypes } from '@/composables/gridView/GridColsManager'
+import { useUserProfileCard } from '@/composables/userProfileCard'
+import UserSkills from '@/components/UserSkills.vue'
 
 defineEmits(['gv_sort'])
 

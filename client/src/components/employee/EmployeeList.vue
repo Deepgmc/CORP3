@@ -24,5 +24,6 @@ const gridCols = new GridCols(
     'userId',
     'users',
     'user_field',
+    8
 )
 </script>

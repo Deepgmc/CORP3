@@ -48,7 +48,7 @@ export class GridCols {
     private modifiedData: ComputedRef<GridColsData>
     private $userManager: UserManager
 
-    public rowsPerPage = ref(3)
+    public readonly rowsPerPage = ref(3)
     public currentPage = ref(1)
     private thatPageIndex = 0
 
