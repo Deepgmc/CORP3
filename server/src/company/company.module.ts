@@ -7,6 +7,7 @@ import { CompanyEntity } from './entities/company.entity'
 import { DepartmentEntity } from './entities/departments.entity';
 import { UsersEntity } from 'src/users/entities/user.entity';
 import { UsersModule } from 'src/users/users.module';
+import { PositionsEntity } from 'src/users/entities/positions.entity';
 
 @Module({
   controllers: [CompanyController],
@@ -16,7 +17,8 @@ import { UsersModule } from 'src/users/users.module';
     TypeOrmModule.forFeature([
         CompanyEntity,
         DepartmentEntity,
-        UsersEntity
+        UsersEntity,
+        PositionsEntity
     ]),
   ],
   exports: [ CompanyService ]

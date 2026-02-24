@@ -98,7 +98,7 @@ const gridCols = new GridCols(
     'id',
     'company',
     'departments',
-    5
+    8
 )
 
 /** Форма добавления нового департамента */

@@ -1,4 +1,7 @@
 import type { IUser } from "@/interfaces/User";
+import NetworkManager, { EReqMethods } from "@/network/NetworkManager";
+import { isSuccessRequest } from "@/utils/helpers/network";
+import type { AxiosResponse } from "axios";
 import { ref } from "vue";
 
 const isUserProfileCardOpened = ref<boolean>(false)
@@ -9,11 +12,11 @@ const dialogUser = ref<IEmployeeRedactUser> ()
 
 export function useUserProfileCard() {
 
-    function userCardOpen() {
+    function openUserCard() {
         isUserProfileCardOpened.value = true
     }
 
-    function userCardClose() {
+    function closeUserCard() {
         isUserProfileCardOpened.value = false
     }
 
@@ -21,13 +24,24 @@ export function useUserProfileCard() {
         dialogUser.value = newUser
     }
 
+    async function loadUserCardData(userId: IUser['userId']): Promise<false | IUser> {
+        const res: AxiosResponse | boolean = await NetworkManager.getInstance()
+            .getApiRequestMethod(EReqMethods.get)('users')(`get_employee_data/${userId}`)() as AxiosResponse | boolean;
+        if(typeof res === 'boolean'){return false}
+        if (isSuccessRequest(res)) {
+            setDialogUser(res.data)
+            return res.data as IUser
+        }
+        return false
+    }
 
     return {
         isUserProfileCardOpened,
         dialogUser,
 
-        userCardOpen,
-        userCardClose,
+        openUserCard,
+        closeUserCard,
+        loadUserCardData,
 
         setDialogUser
     }

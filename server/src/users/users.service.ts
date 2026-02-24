@@ -69,7 +69,7 @@ export class UsersService {
         try {
             const searchObject = {
                 where: { [field]: value },
-                relations: ['company', 'skills', 'department'],
+                relations: ['company', 'skills', 'department', 'position'],
             }
             return await this.usersRepository.findOne(searchObject)
         } catch (e) {

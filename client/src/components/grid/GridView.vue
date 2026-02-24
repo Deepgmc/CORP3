@@ -58,7 +58,9 @@
                             v-if="$slots.actions_buttons"
                             class="text-center pointer"
                         >
-                            <slot name="actions_buttons" :itemId="row[gridCols.idName as keyof GridColsDataTypes]"></slot>
+                            <slot name="actions_buttons"
+                                :itemId="row[gridCols.idName as keyof GridColsDataTypes]"
+                            ></slot>
                         </td>
                     </tr>
                 </tbody>

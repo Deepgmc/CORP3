@@ -12,7 +12,7 @@
             class="gv-edit_buttons-positive"
             name="settings"
             :data-userId="slotProps.itemId"
-            @click="redactUser"
+            @click="openEmployeeCard(slotProps.itemId)"
         />
     </template>
 
@@ -43,26 +43,13 @@ defineProps<{
     sortField: (column: keyof GridColsDataTypes) => void
 }>()
 
-const { userCardOpen, setDialogUser } = useUserProfileCard()
+const { openUserCard, loadUserCardData } = useUserProfileCard()
 
-function redactUser() {
-    setDialogUser({
-        username: 'sdfsdf',
-        userId: 0,
-        birth: 0,
-        email: '',
-        companyId: null,
-        isDirector: false,
-        gender: 0,
-        bio: '',
-        firstName: '',
-        lastName: '',
-        phone: '',
-        departmentId: null,
-        company: null,
-        skills: [],
-        department: null
-    })
-    userCardOpen()
+function openEmployeeCard(userId: number | null): void {
+    if(userId === null) return
+    loadUserCardData(userId)
+        .then(() => {
+            openUserCard()
+        })
 }
 </script>

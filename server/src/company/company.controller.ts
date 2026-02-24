@@ -7,6 +7,7 @@ import { CompanyEntity } from './entities/company.entity';
 import { DepartmentEntity } from './entities/departments.entity';
 import { UsersEntity } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
+import { PositionsEntity } from 'src/users/entities/positions.entity';
 
 @Controller('company')
 export class CompanyController {
@@ -49,11 +50,23 @@ export class CompanyController {
         return await this.companyService.deleteCompanyDepartment(Number(deptid))
     }
 
-    @Post('get_full_departmets_list')
+    @Get('get_full_departmets_list/:companyId')
     async getFullDepartmentsList(
-        @Body() data: {companyId: number}
+        @Param('companyId') companyId: string
     ): Promise<DepartmentEntity[] | boolean> {
-        return await this.companyService.getFullDepartmentsList(data.companyId)
+        return await this.companyService.getFullDepartmentsList(companyId)
+    }
+
+    @Get('get_positions')
+    async getPositions(): Promise<PositionsEntity[]> {
+        return await this.companyService.getPositions()
+    }
+
+    @Get('get_full_employees_list/:companyId')
+    async getFullEmployeesList(
+        @Param('companyId') companyId: string
+    ): Promise<UsersEntity[] | boolean> {
+        return await this.companyService.getFullEmployeesList(companyId)
     }
 
     @Get('get_departments_of_company/:companyId')
@@ -61,13 +74,6 @@ export class CompanyController {
         @Param('companyId') companyId: number
     ): Promise<DepartmentEntity[]> {
         return await this.companyService.getCompanyDepartments(Number(companyId))
-    }
-
-    @Post('get_full_employees_list')
-    async getFullEmployeesList(
-        @Body() data: {companyId: number}
-    ): Promise<UsersEntity[] | boolean> {
-        return await this.companyService.getFullEmployeesList(data.companyId)
     }
 
     @UseGuards(AuthGuard('jwt'))
