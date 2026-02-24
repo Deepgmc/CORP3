@@ -2,6 +2,8 @@
     <h4>Компания</h4>
     <q-form class="q-gutter-md" @submit="onSubmit">
         <fieldset class="fieldset">
+            11{{ $userManager.can(pmEditList.EDIT_COMPANY) }}22
+            11{{ $userManager.can(pmEditList.EDIT_EMPLOYEE) }}22
             <legend class="text-h5">Редактировать компанию</legend>
             <!-- company id (readonly) -->
             <div class="row">
@@ -45,11 +47,11 @@
 import { reactive } from 'vue';
 import { SAVED_SUCCESS, v_msg } from '@/utils/constants/texts.ts'
 import type { ICompanyForm } from '@/interfaces/Company';
-import { UserManager } from '@/entities/UserManager';
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
+import { pmEditList, Rbac } from '@/entities/Rbac';
 
 const notify = useNotify()
-const $userManager = UserManager.getInstance()
+const $userManager = Rbac.getInstance()
 
 const {companyId, name, address} = $userManager.company
 

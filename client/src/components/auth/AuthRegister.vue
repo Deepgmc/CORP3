@@ -119,10 +119,10 @@ import type { TRegisterForm } from '@/interfaces/User'
 import { getAuthRules } from '@/composables/auth/formValidation'
 
 import { useVuelidate, type ErrorObject } from '@vuelidate/core'
-import { UserManager } from '@/entities/UserManager'
 import type NetworkManager from '@/network/NetworkManager'
 import { useCompany } from '@/composables/companySelect'
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
+import { Rbac } from '@/entities/Rbac'
 const $networkManager: NetworkManager | undefined = inject<NetworkManager>('$networkManager')
 
 if (!$networkManager) {
@@ -179,7 +179,7 @@ async function onSubmit(): Promise<boolean> {
 
     //отправка данных на сервер, валидация на сервере, вывод ошибок
     try {
-        const registerRes = await UserManager.getInstance().registerRequest(regUser.value)
+        const registerRes = await Rbac.getInstance().registerRequest(regUser.value)
         if (registerRes.error) {
             if (registerRes.message) notify.run(registerRes.message, notifyTypes.err)
             return false

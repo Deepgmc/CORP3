@@ -1,9 +1,9 @@
 import type { IDepartment, IPosition } from "@/interfaces/Company";
-import { UserManager } from "@/entities/UserManager";
 import { convertTSToStr, getAgeFromTS } from "@/utils/helpers/dates";
 import { computed, ref, type ComputedRef, type Ref } from "vue";
 import type { IUser } from "@/interfaces/User";
 import type { TSortFn } from "../../components/grid/GridColumnOptions";
+import { Rbac } from "@/entities/Rbac";
 
 export type TGridColMap = {
     label     ?: string,
@@ -47,7 +47,7 @@ export class GridCols {
 
     private colsMap: TColsMap = new Map()
     private modifiedData: ComputedRef<GridColsData>
-    private $userManager: UserManager
+    private $userManager: Rbac
 
     public readonly rowsPerPage = ref(5)
     public currentPage = ref(1)
@@ -70,7 +70,7 @@ export class GridCols {
 
         if(perPage) this.rowsPerPage.value = perPage
 
-        this.$userManager = UserManager.getInstance()
+        this.$userManager = Rbac.getInstance()
     }
 
     /** сколько всего страниц в таблице */

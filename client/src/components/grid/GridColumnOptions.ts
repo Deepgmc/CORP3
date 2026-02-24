@@ -7,11 +7,11 @@ export const employeeBaseMap: Map<string, TGridColMap> = new Map()
 export const employeeAvailableCols: ColsConfig = {
     userId: {
         label   : 'ID',
-        sortFn  : defaultNumSortFn,
-        order   : -1,
         align   : 'center',
         type    : fieldTypes.text,
         editable: false,
+        sortFn  : defaultNumSortFn,
+        order   : -1,
     },
     username: {
         label   : 'Логин',
@@ -57,6 +57,8 @@ export const employeeAvailableCols: ColsConfig = {
         align     : 'left',
         type      : fieldTypes.text,
         editable  : false,
+        sortFn  : defaultStringSortFn,
+        order   : -1,
     },
     birth: {
         label     : 'Дата рождения',

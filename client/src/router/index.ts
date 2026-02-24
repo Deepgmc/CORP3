@@ -6,9 +6,6 @@ import AuthLogin from '@/components/auth/AuthLogin.vue'
 import AuthRegister from '@/components/auth/AuthRegister.vue'
 import { UserManager } from '@/entities/UserManager'
 
-//import ProfileView from '@/views/pages/ProfileView.vue'
-// import DepartmentsView from '@/views/pages/DepartmentsView.vue'
-
 
 const routes: Array<RouteRecordRaw> = [
     {

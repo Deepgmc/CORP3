@@ -1,8 +1,8 @@
-import { UserManager } from '@/entities/UserManager'
 import { jwtStrategy } from '@/auth/strategies/jwt.strategy'
 import axios from 'axios'
 import type { AxiosResponse } from 'axios'
 import type { /*AxiosInstance,*/ Axios, AxiosRequestConfig /*AxiosResponse*/ } from 'axios'
+import { Rbac } from '@/entities/Rbac'
 
 export type HttpClientTypes = Axios
 
@@ -72,7 +72,7 @@ export default class NetworkManager {
     //   return config
     // })
 
-    private applyAuthorization(userManager: UserManager) {
+    private applyAuthorization(userManager: Rbac) {
         if (userManager._strategy && userManager._strategy.isHasToken()) {
             this.httpClient.defaults.headers.common['Authorization'] = `Bearer ${jwtStrategy.token}`;
             return true
@@ -89,7 +89,7 @@ export default class NetworkManager {
                 ): Promise<AxiosResponse | boolean> => {
                     if (withAuth) {
                         console.log(`%c NM: authenticated request = ${module}/${action}`, 'background:rgb(27, 122, 35); color: #bfc231; padding: 4px;')
-                        if (!this.applyAuthorization(UserManager.getInstance())) {
+                        if (!this.applyAuthorization(Rbac.getInstance())) {
                             console.warn('Apply authorization failed at NetworkManager')
                             return false
                         }

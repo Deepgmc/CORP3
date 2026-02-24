@@ -75,7 +75,6 @@
 <script setup lang="ts">
 import { computed, reactive, type Ref, ref } from 'vue';
 import GridViewDepartments from '@/components/grid/GridViewDepartments.vue';
-import { UserManager } from '@/entities/UserManager';
 import { dragItem, dropItem } from '@/composables/dnd'
 
 import { GridCols } from '@/composables/gridView/GridColsManager';
@@ -83,9 +82,10 @@ import { departmentAvailableCols } from '@/components/grid/GridColumnOptions';
 import { v_msg } from '@/utils/constants/texts';
 import type { IAddDepartment, IDepartment } from '@/interfaces/Company';
 import type { IUser } from '@/interfaces/User';
+import { Rbac } from '@/entities/Rbac';
 
 
-const $userManager = UserManager.getInstance()
+const $userManager = Rbac.getInstance()
 
 const needFields = ['id', 'name', 'description', 'countusers']
 const departments = $userManager.company.departments

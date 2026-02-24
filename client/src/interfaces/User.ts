@@ -123,7 +123,4 @@ export interface IUserManager {
      * @returns void
      */
     setRouteAfterLogin: (router: Router) => void
-
-
 }
-

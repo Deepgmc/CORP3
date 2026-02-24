@@ -79,14 +79,14 @@
 </template>
 
 <script setup lang="ts">
-import { UserManager } from '@/entities/UserManager'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import GridViewChangeDialog from '@/components/GridViewChangeDialog.vue'
 import UserProfileCard from '@/components/profile/UserProfileCard.vue'
+import { Rbac } from '@/entities/Rbac'
 
 const router = useRouter()
-const $userManager = UserManager.getInstance()
+const $userManager = Rbac.getInstance()
 const leftDrawerOpen = ref<boolean>(true)
 
 function toggleLeftDrawer() {

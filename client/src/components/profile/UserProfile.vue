@@ -144,7 +144,6 @@
 
 <script setup lang="ts">
 import { reactive, onBeforeMount, ref, watch } from 'vue'
-import { UserManager } from '@/entities/UserManager'
 import { convertStrToUnixTimestamp, convertTSToStr } from '@/utils/helpers/dates'
 import type { ICPForm, IUser, TSkill } from '@/interfaces/User'
 import UserSkills from '@/components/UserSkills.vue'
@@ -154,8 +153,9 @@ import { userDummy } from '@/stores/userStore'
 import { v_msg, SAVED_SUCCESS } from '@/utils/constants/texts.ts'
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
 import type { TResult } from '@/interfaces/Error'
+import { Rbac } from '@/entities/Rbac'
 
-const $userManager = UserManager.getInstance()
+const $userManager = Rbac.getInstance()
 const notify = useNotify()
 
 onBeforeMount(() => {
