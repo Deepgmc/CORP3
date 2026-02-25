@@ -1,14 +1,32 @@
+import { ref } from "vue";
+import type { AxiosResponse } from "axios";
 import type { IUser } from "@/interfaces/User";
 import NetworkManager, { EReqMethods } from "@/network/NetworkManager";
 import { isSuccessRequest } from "@/utils/helpers/network";
-import type { AxiosResponse } from "axios";
-import { ref } from "vue";
 
 const isUserProfileCardOpened = ref<boolean>(false)
 
-interface IEmployeeRedactUser extends IUser {}
+//interface IEmployeeRedactUser extends IUser {}
 
-const dialogUser = ref<IEmployeeRedactUser> ()
+const dialogUser = ref<IUser> ({
+    userId: 0,
+    username    : '',
+    birth       : 123,
+    email       : '',
+    companyId   : 2,
+    isDirector  : false,
+    gender      : 1,
+    bio         : '',
+    firstName   : '',
+    lastName    : '',
+    phone       : '',
+    departmentId: null,
+    positionId  : 1,
+    company   : null,
+    skills    : [],
+    department: null,
+    position  : null
+})
 
 export function useUserProfileCard() {
 

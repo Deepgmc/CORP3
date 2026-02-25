@@ -4,7 +4,7 @@
         <q-toolbar>
             <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
             <q-toolbar-title>
-                Ваша компания: {{ $userManager.getUser().company?.name }}
+                {{ thisUser.username }} : {{ thisUser.company?.name }}
             </q-toolbar-title>
             <q-btn @click="logout" class="text-blue-10">Выйти</q-btn>
         </q-toolbar>
@@ -88,6 +88,7 @@ import { Rbac } from '@/entities/Rbac'
 const router = useRouter()
 const $userManager = Rbac.getInstance()
 const leftDrawerOpen = ref<boolean>(true)
+const thisUser = $userManager.getUser()
 
 function toggleLeftDrawer() {
     leftDrawerOpen.value = !leftDrawerOpen.value

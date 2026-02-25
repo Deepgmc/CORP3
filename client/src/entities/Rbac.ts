@@ -3,11 +3,12 @@ import { UserManager } from "./UserManager"
 
 export const enum pmEditList {
     EDIT_COMPANY = 'EDIT_COMPANY',
-    EDIT_EMPLOYEE = 'EDIT_EMPLOYEE'
+    EDIT_EMPLOYEE = 'EDIT_EMPLOYEE',
+    ADD_DEPARTMENT = 'ADD_DEPARTMENT',
 }
 export const enum pmViewList {
     VIEW_COMPANY = 'VIEW_COMPANY',
-    VIEW_EMPLOYEE = 'VIEW_EMPLOYEE'
+    VIEW_EMPLOYEE = 'VIEW_EMPLOYEE',
 }
 
 /**
@@ -17,7 +18,7 @@ export class Rbac extends UserManager {
 
     static instance: Rbac | null = null
 
-    private readonly roles: TRoles[] = []
+    private readonly roles: Set<TRoles> = new Set()
     private ADMIN_ID = 1
 
     static getInstance(
@@ -40,7 +41,6 @@ export class Rbac extends UserManager {
         }
         Rbac.instance = this
 
-
         //при создании менеджера проверяем статус логина и разлогиниваем/убираем, если токен остался по какойто-причине старый
         void this.updateAndGetIsLogined()
             .then(async () => {
@@ -49,6 +49,7 @@ export class Rbac extends UserManager {
                     this.loadInitData()
                     .then(() => {
                         this.initRoles()
+                        this.printRoles()
                     })
                 }
             })
@@ -59,11 +60,20 @@ export class Rbac extends UserManager {
         if(this.isEmployee()) this.addRole(new EmployeeRole())
         const user = this.getUser()
         if(user.userId === this.ADMIN_ID) this.addRole(new AdminRole())
-        if(this.roles.length === 0) this.addRole(new GuestRole())
+        if(this.roles.size === 0) this.addRole(new GuestRole())
     }
 
     addRole(newRole: TRoles){
-        this.roles.push(newRole)
+        this.roles.add(newRole)
+    }
+
+    printRoles(){
+        console.group('Roles')
+        this.roles.forEach((role) => {
+            console.log(`%c --- ${role.name} ---`, 'background:rgb(0, 48, 4); color: #e1e43b; padding: 4px;')
+            console.log(`%c Permissions: ${role.permissions.join(', ')}`, 'color: #e1e43b; padding: 4px;')
+        })
+        console.groupEnd()
     }
 
     getRoles(){
@@ -71,9 +81,15 @@ export class Rbac extends UserManager {
     }
 
     public can(accessment: TPermissions): boolean {
-        return this.roles.some((role: TRoles) => {
-            return role.hasPermission(accessment)
+        // TS ругается что .some нет, а он есть
+        // return this.roles.values().some((role: TRoles) => {
+        //     return role.hasPermission(accessment)
+        // })
+        let hasAccess = false
+        this.roles.forEach((role) => {
+            if(role.hasPermission(accessment)) hasAccess = true
         })
+        return hasAccess
     }
 }
 
@@ -102,6 +118,7 @@ export class AdminRole extends Role {
     public readonly permissions = [
         pmEditList.EDIT_COMPANY,
         pmEditList.EDIT_EMPLOYEE,
+        pmEditList.ADD_DEPARTMENT,
 
         pmViewList.VIEW_COMPANY,
         pmViewList.VIEW_EMPLOYEE
@@ -113,6 +130,7 @@ export class ManagerRole extends Role {
     }
     public readonly permissions = [
         pmEditList.EDIT_EMPLOYEE,
+        pmEditList.ADD_DEPARTMENT,
 
         pmViewList.VIEW_COMPANY,
         pmViewList.VIEW_EMPLOYEE

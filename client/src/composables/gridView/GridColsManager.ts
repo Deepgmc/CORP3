@@ -199,13 +199,13 @@ export class GridCols {
             break;
             case 'departmentId':
                 if(item.departmentId !== null){
-                    const thisDept: IDepartment = this.$userManager.company.departments.value.find((dept: IDepartment) => dept.id === item.departmentId)
+                    const thisDept: IDepartment = this.$userManager.company.getDepartmentById(item.departmentId)
                     item['departmentIdValue'] = thisDept.name
                 }
             break;
             case 'positionId':
                 if(item.positionId !== null){
-                    const thisPosition: IPosition = this.$userManager.company.positions.value.find((pos: IPosition) => pos.id === item.positionId)
+                    const thisPosition: IPosition = this.$userManager.company.getPositionById(item.positionId)
                     item['positionIdValue'] = thisPosition.position
                 }
             break;

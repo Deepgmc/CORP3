@@ -10,7 +10,7 @@
         </div>
     </div>
 
-    <div class="row q-mt-lg">
+    <div class="row q-mt-lg" v-if="$userManager.can(pmEditList.ADD_DEPARTMENT)">
         <div class="col-lg-8 offset-lg-2 col-md-12">
             <q-form ref="addDepartmentRef" @submit="addDepartment">
                 <fieldset class="fieldset">
@@ -82,14 +82,13 @@ import { departmentAvailableCols } from '@/components/grid/GridColumnOptions';
 import { v_msg } from '@/utils/constants/texts';
 import type { IAddDepartment, IDepartment } from '@/interfaces/Company';
 import type { IUser } from '@/interfaces/User';
-import { Rbac } from '@/entities/Rbac';
+import { pmEditList, Rbac } from '@/entities/Rbac';
 
 
 const $userManager = Rbac.getInstance()
 
 const needFields = ['id', 'name', 'description', 'countusers']
 const departments = $userManager.company.departments
-
 
 const gridCols = new GridCols(
     needFields,

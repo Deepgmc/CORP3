@@ -56,4 +56,7 @@ describe('Тесты утилит: Dates.ts', () => {
         expect(getAgeFromTS(testTS)).toBe(expected)
         vi.useRealTimers()
     })
+
+
+    test.todo('getReadableFormatFromTS работает корректно')
 })

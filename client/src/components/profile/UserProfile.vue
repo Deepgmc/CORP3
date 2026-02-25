@@ -1,5 +1,126 @@
 <template>
     <h4>Мой профиль</h4>
+    <q-form @submit="onSubmit" class="q-gutter-md ">
+        <fieldset class="fieldset">
+            <legend class="text-h5">Редактировать мои данные</legend>
+
+            <!-- photo -->
+             <q-card-section class="q-gutter-y-md">
+            <div class="row q-mt-md">
+                <div class="col-12">
+                    <q-avatar size="240px" class="shadow-2">
+                        <img :src="'SRC!'" :alt="`${form.firstName} ${form.lastName}`">
+                    </q-avatar>
+                </div>
+            </div>
+            </q-card-section>
+
+            <!-- login -->
+            <div class="row q-mt-md">
+                <div class="col-12">
+                    <q-badge class="q-pa-sm" text-color="black" color="orange-5" icon="account_circle">
+                        {{ form.username }}
+                        <q-icon class="q-ml-md" name="swap_horiz" size="md" @click="isCPOpen = true"
+                                style="cursor:pointer" color="green-10" />
+                    </q-badge>
+                </div>
+            </div>
+
+            <div class="row q-mt-md">
+                <!-- Компания -->
+                <div class="col-12">
+                    <q-badge class="q-pa-sm" transparent text-color="black" color="orange-5" icon="home">
+                        {{ form.company?.name }} / {{ form.department?.name }}
+                    </q-badge>
+                </div>
+            </div>
+
+            <!-- Имя и Фамилия -->
+            <div class="row q-mt-md">
+                <div class="col-6">
+                    <q-input v-model="form.firstName" label="Имя *" :rules="[val => !!val || v_msg.REQUIRED]" dense />
+                </div>
+
+                <div class="col-6">
+                    <q-input v-model="form.lastName" label="Фамилия *" :rules="[val => !!val || v_msg.REQUIRED]"
+                             dense />
+                </div>
+            </div>
+
+            <!-- Email -->
+            <!-- Телефон -->
+            <div class="row q-mt-md">
+                <div class="col-6">
+                    <q-input v-model="form.email" label="Email *" type="email" :rules="[
+                        val => !!val || v_msg.REQUIRED,
+                        val => /.+@.+\..+/.test(val) || v_msg.EMAIL_FORMAT
+                    ]" dense />
+                </div>
+                <div class="col-6">
+                    <q-input v-model="form.phone" label="Телефон" mask="+# (###) ###-##-##" fill-mask
+                             hint="Формат: +7 (123) 456-78-90" :rules="[
+                                val => !val || /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/.test(val) || v_msg.PHONE_FORMAT
+                            ]" dense />
+                </div>
+            </div>
+
+            <!-- Дата рождения -->
+            <div class="row q-mt-md">
+                <div class="col-12">
+                    <q-input readonly v-model="bDateStr" label="Дата рождения" dense>
+                        <template #append>
+                            <q-icon name="event" class="cursor-pointer">
+                                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                                    <q-date v-model="bDateStr" mask="DD.MM.YYYY">
+                                        <div class="row items-center justify-end">
+                                            <q-btn v-close-popup label="OK" color="primary" flat />
+                                        </div>
+                                    </q-date>
+                                </q-popup-proxy>
+                            </q-icon>
+                        </template>
+                    </q-input>
+                </div>
+            </div>
+
+            <!-- О себе (текстовое поле) -->
+            <div class="row q-mt-md">
+                <div class="col-12">
+                    <q-input v-model="form.bio" label="О себе" type="textarea" autogrow dense :rules="[
+                        val => !val || val.length <= 500 || 'Максимум 500 символов'
+                    ]" counter />
+                </div>
+            </div>
+
+            <!-- Пол (радио-кнопки) -->
+            <div class="row q-mt-md">
+                <div class="col-12">
+                    <div class="q-mt-sm">
+                        <div class="q-mb-xs text-caption">Пол</div>
+                        <q-option-group v-model="form.gender" :options="genderOptions" color="primary" inline />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопки действий -->
+            <div class="row q-mt-md">
+                <q-btn label="Сохранить" type="submit" color="primary" />
+            </div>
+        </fieldset>
+    </q-form>
+
+    <!-- Навыки -->
+    <fieldset class="fieldset q-mb-lg">
+        <legend class="text-h5">Мои навыки</legend>
+        <user-skills
+            :skills="form.skills"
+            :needAssession="true"
+            @remove-skill="removeSkill"
+            @add-skill="addSkill"
+            :alwaysShowAll="true"
+        ></user-skills>
+    </fieldset>
+
     <q-dialog v-model="isCPOpen">
         <q-card>
             <q-card-section class="q-ma-xl">
@@ -31,115 +152,6 @@
             </q-card-section>
         </q-card>
     </q-dialog>
-
-    <q-form @submit="onSubmit" class="q-gutter-md ">
-        <fieldset class="fieldset">
-            <legend class="text-h5">Редактировать мои данные</legend>
-            <!-- login -->
-            <div class="row">
-                <div class="col-12">
-                    <q-badge class="q-pa-sm" text-color="black" color="orange-5" icon="account_circle">
-                        {{ form.username }}
-                        <q-icon class="q-ml-md" name="swap_horiz" size="md" @click="isCPOpen = true"
-                                style="cursor:pointer" color="green-10" />
-                    </q-badge>
-                </div>
-            </div>
-
-            <div class="row">
-                <!-- Компания -->
-                <div class="col-12">
-                    <q-badge class="q-pa-sm" transparent text-color="black" color="orange-5" icon="home">
-                        {{ form.company?.name }} / {{ form.department?.name }}
-                    </q-badge>
-                </div>
-            </div>
-
-            <!-- Имя и Фамилия -->
-            <div class="row">
-                <div class="col-6">
-                    <q-input v-model="form.firstName" label="Имя *" :rules="[val => !!val || v_msg.REQUIRED]" dense />
-                </div>
-
-                <div class="col-6">
-                    <q-input v-model="form.lastName" label="Фамилия *" :rules="[val => !!val || v_msg.REQUIRED]"
-                             dense />
-                </div>
-            </div>
-
-            <!-- Email -->
-            <!-- Телефон -->
-            <div class="row">
-                <div class="col-6">
-                    <q-input v-model="form.email" label="Email *" type="email" :rules="[
-                        val => !!val || v_msg.REQUIRED,
-                        val => /.+@.+\..+/.test(val) || v_msg.EMAIL_FORMAT
-                    ]" dense />
-                </div>
-                <div class="col-6">
-                    <q-input v-model="form.phone" label="Телефон" mask="+# (###) ###-##-##" fill-mask
-                             hint="Формат: +7 (123) 456-78-90" :rules="[
-                                val => !val || /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/.test(val) || v_msg.PHONE_FORMAT
-                            ]" dense />
-                </div>
-            </div>
-
-            <!-- Дата рождения -->
-            <div class="row">
-                <div class="col-12">
-                    <q-input readonly v-model="bDateStr" label="Дата рождения" dense>
-                        <template #append>
-                            <q-icon name="event" class="cursor-pointer">
-                                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                                    <q-date v-model="bDateStr" mask="DD.MM.YYYY">
-                                        <div class="row items-center justify-end">
-                                            <q-btn v-close-popup label="OK" color="primary" flat />
-                                        </div>
-                                    </q-date>
-                                </q-popup-proxy>
-                            </q-icon>
-                        </template>
-                    </q-input>
-                </div>
-            </div>
-
-            <!-- О себе (текстовое поле) -->
-            <div class="row">
-                <div class="col-12">
-                    <q-input v-model="form.bio" label="О себе" type="textarea" autogrow dense :rules="[
-                        val => !val || val.length <= 500 || 'Максимум 500 символов'
-                    ]" counter />
-                </div>
-            </div>
-
-            <!-- Пол (радио-кнопки) -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="q-mt-sm">
-                        <div class="q-mb-xs text-caption">Пол</div>
-                        <q-option-group v-model="form.gender" :options="genderOptions" color="primary" inline />
-                    </div>
-                </div>
-            </div>
-
-            <!-- Кнопки действий -->
-            <div class="row q-gutter-sm">
-                <q-btn label="Сохранить" type="submit" color="primary" />
-            </div>
-        </fieldset>
-    </q-form>
-
-    <!-- Навыки -->
-    <fieldset class="fieldset">
-        <legend class="text-h5">Мои навыки</legend>
-        <user-skills
-            :skills="form.skills"
-            :needAssession="true"
-            @remove-skill="removeSkill"
-            @add-skill="addSkill"
-            :alwaysShowAll="true"
-        ></user-skills>
-    </fieldset>
 </template>
 
 <script setup lang="ts">

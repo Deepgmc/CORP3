@@ -2,9 +2,7 @@
     <h4>Компания</h4>
     <q-form class="q-gutter-md" @submit="onSubmit">
         <fieldset class="fieldset">
-            11{{ $userManager.can(pmEditList.EDIT_COMPANY) }}22
-            11{{ $userManager.can(pmEditList.EDIT_EMPLOYEE) }}22
-            <legend class="text-h5">Редактировать компанию</legend>
+            <legend class="text-h5">{{ captionLabel }}</legend>
             <!-- company id (readonly) -->
             <div class="row">
                 <div class="col-12">
@@ -19,7 +17,7 @@
             <div class="row">
                 <div class="col-12">
                     <q-input
-                        :readonly="!$userManager.isDirector()"
+                        :readonly="!canEdit"
                         v-model="companyForm.name"
                         label="Название *"
                         :rules="[val => !!val || v_msg.REQUIRED]" dense
@@ -29,12 +27,12 @@
             <!-- company address -->
             <div class="row">
                 <div class="col-12">
-                    <q-input :readonly="!$userManager.isDirector()" v-model="companyForm.address" label="Адрес" dense />
+                    <q-input :readonly="!canEdit" v-model="companyForm.address" label="Адрес" dense />
                 </div>
             </div>
 
             <!-- Кнопки действий -->
-            <div class="row q-pt-md" v-if="$userManager.isDirector()">
+            <div class="row q-pt-md" v-if="canEdit">
                 <div class="col">
                     <q-btn label="Сохранить" type="submit" color="primary" />
                 </div>
@@ -54,6 +52,9 @@ const notify = useNotify()
 const $userManager = Rbac.getInstance()
 
 const {companyId, name, address} = $userManager.company
+
+const canEdit = $userManager.can(pmEditList.EDIT_COMPANY)
+const captionLabel = canEdit ? 'Редактировать данные' : 'Просмотр данных'
 
 const companyForm: ICompanyForm = reactive({
     companyId,

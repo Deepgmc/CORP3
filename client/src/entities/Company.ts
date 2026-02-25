@@ -1,4 +1,4 @@
-import type { IAddDepartment, ICompany, ICompanyForm } from "@/interfaces/Company";
+import type { IAddDepartment, ICompany, ICompanyForm, IDepartment, IPosition } from "@/interfaces/Company";
 import type { IUser } from "@/interfaces/User";
 import Manager from "./Manager";
 import type { AxiosResponse } from "axios";
@@ -86,6 +86,14 @@ export default class Company extends Manager implements ICompany {
     }
     get positions() {
         return this._store.getPositions
+    }
+
+    getDepartmentById(departmentId: number): IDepartment {
+        return this.departments.value.find((dept: IDepartment) => dept.id === departmentId)
+    }
+
+    getPositionById(positionId: number): IPosition {
+        return this.positions.value.find((pos: IPosition) => pos.id === positionId)
     }
 
     async saveCompanyProfile(company: ICompanyForm): Promise<boolean> {
