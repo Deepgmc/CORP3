@@ -140,6 +140,14 @@ export class CreateUserDto implements IUsersCreateDTO {
     @IsString()
     phone: string;
 
+    @ApiProperty({
+        description: 'Аватар профиля',
+        required: false,
+        type: String
+    })
+    @IsString()
+    avatar: string;
+
 
 
 

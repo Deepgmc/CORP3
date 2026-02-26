@@ -81,7 +81,7 @@ export class Rbac extends UserManager {
     }
 
     public can(accessment: TPermissions): boolean {
-        // TS ругается что .some нет, а он есть
+        // TS ругается что .some нет
         // return this.roles.values().some((role: TRoles) => {
         //     return role.hasPermission(accessment)
         // })

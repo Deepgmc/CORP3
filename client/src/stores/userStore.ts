@@ -31,8 +31,9 @@ export const useUserStore = defineStore('user', () => {
             const res: AxiosResponse | boolean = await NetworkManager.getInstance()
                 .getApiRequestMethod(EReqMethods.get)('user')('get_user_data')({ data: { userId } }) as AxiosResponse | boolean
             if (typeof res !== 'boolean') {
-                setUser(res.data)
-                return res.data
+                res.data.user.avatar = res.data.avatar
+                if(setUser(res.data.user)) return res.data.user
+                return userDummy
             }
         }
         return userDummy
@@ -86,6 +87,7 @@ export const userDummy: IUser = {
     phone       : '',
     departmentId: null,
     positionId  : null,
+    avatar      : null,
 
     company   : null,
     skills    : [],

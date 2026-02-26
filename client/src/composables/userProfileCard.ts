@@ -9,7 +9,7 @@ const isUserProfileCardOpened = ref<boolean>(false)
 //interface IEmployeeRedactUser extends IUser {}
 
 const dialogUser = ref<IUser> ({
-    userId: 0,
+    userId      : 0,
     username    : '',
     birth       : 123,
     email       : '',
@@ -22,10 +22,11 @@ const dialogUser = ref<IUser> ({
     phone       : '',
     departmentId: null,
     positionId  : 1,
-    company   : null,
-    skills    : [],
-    department: null,
-    position  : null
+    company     : null,
+    skills      : [],
+    department  : null,
+    position    : null,
+    avatar      : null,
 })
 
 export function useUserProfileCard() {

@@ -17,6 +17,8 @@ export interface IUser {
     phone       : string,
     departmentId: number | null,
     positionId  : number | null,
+    avatar      : string | null,
+
     //! RELATIONS
     company   : ICompany | null,
     skills    : TSkill[],

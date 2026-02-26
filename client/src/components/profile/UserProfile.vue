@@ -5,12 +5,22 @@
             <legend class="text-h5">Редактировать мои данные</legend>
 
             <!-- photo -->
-             <q-card-section class="q-gutter-y-md">
-            <div class="row q-mt-md">
-                <div class="col-12">
+             <q-card-section>
+            <div class="row">
+                <div class="col-12 justify-start">
                     <q-avatar size="240px" class="shadow-2">
-                        <img :src="'SRC!'" :alt="`${form.firstName} ${form.lastName}`">
+                        <avatar-editor
+                            :width="180"
+                            :height="180"
+                            ref="avatarEditorRef"
+                            v-model:scale="scaleVal"
+                            :border="0"
+                            :image="userAvatar"
+                        />
                     </q-avatar>
+                    <!-- <q-avatar size="240px" class="shadow-2">
+                        <img :src="userAvatar" :alt="`${form.firstName} ${form.lastName}`">
+                    </q-avatar> -->
                 </div>
             </div>
             </q-card-section>
@@ -42,8 +52,7 @@
                 </div>
 
                 <div class="col-6">
-                    <q-input v-model="form.lastName" label="Фамилия *" :rules="[val => !!val || v_msg.REQUIRED]"
-                             dense />
+                    <q-input v-model="form.lastName" label="Фамилия *" :rules="[val => !!val || v_msg.REQUIRED]" dense />
                 </div>
             </div>
 
@@ -59,8 +68,7 @@
                 <div class="col-6">
                     <q-input v-model="form.phone" label="Телефон" mask="+# (###) ###-##-##" fill-mask
                              hint="Формат: +7 (123) 456-78-90" :rules="[
-                                val => !val || /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/.test(val) || v_msg.PHONE_FORMAT
-                            ]" dense />
+                                val => !val || /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/.test(val) || v_msg.PHONE_FORMAT]" dense />
                 </div>
             </div>
 
@@ -155,23 +163,34 @@
 </template>
 
 <script setup lang="ts">
+//import "avatar-editor/dist/style.css";
 import { reactive, onBeforeMount, ref, watch } from 'vue'
+import { Rbac } from '@/entities/Rbac'
 import { convertStrToUnixTimestamp, convertTSToStr } from '@/utils/helpers/dates'
 import type { ICPForm, IUser, TSkill } from '@/interfaces/User'
 import UserSkills from '@/components/UserSkills.vue'
 import { genderOptions } from '@/utils/constants/main'
 import { userDummy } from '@/stores/userStore'
+import { AvatarEditor } from 'avatar-editor';
 
-import { v_msg, SAVED_SUCCESS } from '@/utils/constants/texts.ts'
+import { v_msg, SAVED_SUCCESS, SAVED_ERROR } from '@/utils/constants/texts.ts'
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
 import type { TResult } from '@/interfaces/Error'
-import { Rbac } from '@/entities/Rbac'
+
+
+
+const scaleVal = ref<number>(1)
+const avatarEditorRef = ref<any>(null)
 
 const $userManager = Rbac.getInstance()
 const notify = useNotify()
+const userAvatar = ref('')
 
 onBeforeMount(() => {
     const user = $userManager.getUser()
+    if(user.avatar !== null){
+        userAvatar.value = user.avatar
+    }
     assignUserToFormData(user)
 })
 
@@ -181,6 +200,19 @@ const isCPOpen = ref(false)
 const dummyCopy: IUser = Object.create(userDummy)
 const form = reactive<IUser>(dummyCopy)
 const bDateStr = ref<string>()
+
+async function onSubmit(): Promise<void> {
+    if (avatarEditorRef.value) {
+        const avatar = avatarEditorRef.value.getImageScaled().toDataURL('image/png')
+         form.avatar = avatar
+    }
+
+    if (await $userManager.saveUserProfile({...form})) {
+        notify.run(SAVED_SUCCESS, notifyTypes.succ)
+    } else {
+        notify.run(SAVED_ERROR, notifyTypes.err)
+    }
+}
 
 /**
  * Берём юзера из юзер-стора и запихиваем в форму, конвертируя нужные данные
@@ -200,12 +232,6 @@ watch(bDateStr, (newBdate) => {
     }
     form.birth = birth.res
 })
-
-async function onSubmit(): Promise<void> {
-    if (await $userManager.saveUserProfile({...form})) {
-        notify.run(SAVED_SUCCESS, notifyTypes.succ)
-    }
-}
 
 function removeSkill(skillId: TSkill['id']): void {
     if (!Number.isInteger(skillId)) return

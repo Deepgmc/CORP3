@@ -33,6 +33,8 @@ import { RequestMethod } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
+import * as bodyParser from 'body-parser';
+
 async function bootstrap() {
     //const app = await NestFactory.create(AppModule);
 
@@ -44,6 +46,10 @@ async function bootstrap() {
             compact: true
         }),
     });
+
+    //для загрузки фото аватаров нужен расширенный объем
+    app.use(bodyParser.json({limit: '30mb'}));
+    app.use(bodyParser.urlencoded({limit: '30mb', extended: true}));
 
     /**
     Переносим всё под раздел api

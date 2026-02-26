@@ -47,7 +47,13 @@ export class UserController {
         @Request() req
     ) {
         const res = await this.userService.getFullUserData('userId', req.user.userId)
-        return res
+        let avatar = ''
+        try {
+            avatar = this.userService.getUserAvatar(req.user.userId)
+        } catch {
+            console.log('Ошибка чтения файла аватара userId:', req.user.userId)
+        }
+        return {user: res, avatar: avatar}
     }
 
     /**
@@ -60,8 +66,10 @@ export class UserController {
     async saveUserProfile(
         @Body() updateUserDto: UpdateUserDto
     ) {
-        const res = await this.userService.saveProfileData(updateUserDto)
-        return res
+        if(updateUserDto.avatar !== undefined){
+            updateUserDto = this.userService.saveAvatar(updateUserDto)
+        }
+        return await this.userService.saveProfileData(updateUserDto)
     }
 
     /**
