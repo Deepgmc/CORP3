@@ -10,7 +10,7 @@ import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 export class UserController {
     constructor(
         private readonly authService: AuthService,
-        private readonly userService: UsersService,
+        private readonly usersService: UsersService,
     ) { }
 
     /**
@@ -46,10 +46,10 @@ export class UserController {
     async getUserData(
         @Request() req
     ) {
-        const res = await this.userService.getFullUserData('userId', req.user.userId)
+        const res = await this.usersService.getFullUserData('userId', req.user.userId)
         let avatar = ''
         try {
-            avatar = this.userService.getUserAvatar(req.user.userId)
+            avatar = this.usersService.getUserAvatar(req.user.userId)
         } catch {
             console.log('Ошибка чтения файла аватара userId:', req.user.userId)
         }
@@ -67,9 +67,9 @@ export class UserController {
         @Body() updateUserDto: UpdateUserDto
     ) {
         if(updateUserDto.avatar !== undefined){
-            updateUserDto = this.userService.saveAvatar(updateUserDto)
+            updateUserDto = this.usersService.saveAvatar(updateUserDto)
         }
-        return await this.userService.saveProfileData(updateUserDto)
+        return await this.usersService.saveProfileData(updateUserDto)
     }
 
     /**
@@ -82,7 +82,7 @@ export class UserController {
     async removeUserSkill(
         @Body() req: any
     ) {
-        const res = await this.userService.removeUserSkill(req.skillId)
+        const res = await this.usersService.removeUserSkill(req.skillId)
         return res
     }
 
@@ -97,7 +97,7 @@ export class UserController {
     async addUserSkill(
         @Body() req: any
     ) {
-        return await this.userService.addUserSkill(req.skillText, req.userId)
+        return await this.usersService.addUserSkill(req.skillText, req.userId)
     }
 
     /**

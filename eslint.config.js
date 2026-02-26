@@ -38,7 +38,7 @@ export default typescriptEslint.config(
       '@typescript-eslint/no-empty-object-type'   : 'warn',
       "@typescript-eslint/ban-ts-comment"         : "off",
       "@typescript-eslint/no-empty-object-type"   : "off",
-      '@typescript-eslint/no-require-imports'     : 'warn',
+      '@typescript-eslint/no-require-imports'     : 'off',
 
       'no-debugger'                               : 'warn',
 

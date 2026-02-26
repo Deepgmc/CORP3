@@ -40,7 +40,14 @@ export class UsersController {
     @Get('get_employee_data/:userId')
     async getEmployeeData(
         @Param('userId') userId: number
-    ): Promise<IUser | null> {
-        return await this.usersService.findOne('userId', userId)
+    ) {
+        let avatar = ''
+        try {
+            avatar = this.usersService.getUserAvatar(userId)
+        } catch {
+            console.log('Ошибка чтения файла аватара userId:', userId)
+        }
+        const res = await this.usersService.findOne('userId', userId)
+        return {user: res, avatar: avatar}
     }
 }

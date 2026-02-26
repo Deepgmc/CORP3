@@ -9,7 +9,7 @@
                 <!-- Фото профиля и основная информация -->
                 <div class="row items-center q-gutter-md">
                     <q-avatar size="140px" class="shadow-2">
-                        <img :src="'SRC!'" :alt="`${dialogUser.firstName} ${dialogUser.lastName}`">
+                        <img :src="avatar" :alt="`${dialogUser.firstName} ${dialogUser.lastName}`">
                     </q-avatar>
                     <div class="column justify-center q-ml-xl">
                         <div class="text-h5 text-weight-bold">
@@ -83,7 +83,8 @@ import { useUserProfileCard } from '@/composables/userProfileCard';
 import UserSkills from '@/components/UserSkills.vue'
 import { genderOptions } from '@/utils/constants/main';
 import { getAgeFromTS, getReadableFormatFromTS } from '@/utils/helpers/dates';
-const { isUserProfileCardOpened, dialogUser } = useUserProfileCard()
+
+const { isUserProfileCardOpened, dialogUser, avatar } = useUserProfileCard()
 
 </script>
 

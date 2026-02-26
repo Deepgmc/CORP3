@@ -29,6 +29,8 @@ const dialogUser = ref<IUser> ({
     avatar      : null,
 })
 
+const avatar = ref('')
+
 export function useUserProfileCard() {
 
     function openUserCard() {
@@ -43,18 +45,19 @@ export function useUserProfileCard() {
         dialogUser.value = newUser
     }
 
-    async function loadUserCardData(userId: IUser['userId']): Promise<false | IUser> {
+    async function loadUserCardData(userId: IUser['userId']): Promise<void> {
         const res: AxiosResponse | boolean = await NetworkManager.getInstance()
             .getApiRequestMethod(EReqMethods.get)('users')(`get_employee_data/${userId}`)() as AxiosResponse | boolean;
-        if(typeof res === 'boolean'){return false}
+        if(typeof res === 'boolean'){ return }
         if (isSuccessRequest(res)) {
-            setDialogUser(res.data)
-            return res.data as IUser
+            setDialogUser(res.data.user)
+            avatar.value = res.data.avatar
         }
-        return false
     }
 
     return {
+        avatar,
+
         isUserProfileCardOpened,
         dialogUser,
 
