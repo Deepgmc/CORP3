@@ -46,14 +46,14 @@ import { reactive } from 'vue';
 import { SAVED_SUCCESS, v_msg } from '@/utils/constants/texts.ts'
 import type { ICompanyForm } from '@/interfaces/Company';
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
-import { pmEditList, Rbac } from '@/entities/Rbac';
+import { R_ACTIONS, R_ENTITIES, R_FIELDS, Rbac } from '@/entities/Rbac';
 
 const notify = useNotify()
-const $userManager = Rbac.getInstance()
+const $um = Rbac.getInstance()
 
-const {companyId, name, address} = $userManager.company
+const {companyId, name, address} = $um.company
 
-const canEdit = $userManager.can(pmEditList.EDIT_COMPANY)
+const canEdit = $um.can(R_ENTITIES.COMPANY)(R_ACTIONS.EDIT)(R_FIELDS.ENTIRE)
 const captionLabel = canEdit ? 'Редактировать данные' : 'Просмотр данных'
 
 const companyForm: ICompanyForm = reactive({
@@ -63,7 +63,7 @@ const companyForm: ICompanyForm = reactive({
 })
 
 async function onSubmit() {
-    if (await $userManager.company.saveCompanyProfile({...companyForm})) {
+    if (await $um.company.saveCompanyProfile({...companyForm})) {
         notify.run(SAVED_SUCCESS, notifyTypes.succ)
     }
 }

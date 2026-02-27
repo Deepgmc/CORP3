@@ -19,18 +19,6 @@ export class UserManager extends Manager implements IUserManager {
 
     private _isLogined: isLoginedResult = { isLogined: false } //авторизация, любыми стратегиями
 
-    //static instance: UserManager | null = null
-
-    // static getInstance(
-    //     strategy?: IUserManager['_strategy'],
-    //     userStore?: any
-    // ): UserManager {
-    //     if (UserManager.instance) {
-    //         return UserManager.instance
-    //     }
-    //     return new UserManager(strategy, userStore)
-    // }
-
     protected _apiModule: string = 'user'
 
     public company!: Company // Инстанс объекта компании
@@ -40,8 +28,6 @@ export class UserManager extends Manager implements IUserManager {
         userStore?: any
     ) {
         super()
-        // if (UserManager.instance) throw new TypeError('Instance creation only with .getInstance()')
-        // UserManager.instance = this
         if (strategy) this._strategy = strategy
         this._userStore = userStore
         this._postData = this._post(this._apiModule)

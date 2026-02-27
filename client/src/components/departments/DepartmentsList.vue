@@ -10,7 +10,7 @@
         </div>
     </div>
 
-    <div class="row q-mt-lg" v-if="$um.can(R_ENTITIES.DEPARTMENT)(R_ACTIONS.EDIT)(R_FIELDS.ENTIRE)">
+    <div class="row q-mt-lg" v-if="$um.can(R_ENTITIES.DEPARTMENT)(R_ACTIONS.ADD)(R_FIELDS.ENTIRE)">
         <div class="col-lg-8 offset-lg-2 col-xs-12">
             <q-form ref="addDepartmentRef" @submit="addDepartment">
                 <fieldset class="fieldset">

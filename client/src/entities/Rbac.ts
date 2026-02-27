@@ -58,28 +58,37 @@ export class Rbac extends UserManager {
     }
 
     printRoles(){
+        //выводим в консоль всю инфу о роли и правах доступа
         console.group('Roles')
         this.roles.forEach((role) => {
             console.log(`%c --- ${role.name} ---`, 'background:rgb(0, 48, 4); color: #e1e43b; padding: 4px;')
-            //console.log(`%c Permissions: ${role.permissions.join(', ')}`, 'color: #e1e43b; padding: 4px;')
+            const permissions = []
+            for(const [entity, value1] of Object.entries(role.permissions)) {
+                permissions.push('\n' + entity.toUpperCase() + ':')
+                for(const [action, value2] of Object.entries(value1)) {
+                    permissions.push('(' + action.toUpperCase() + '):')
+                    permissions.push(value2.join(', '))
+                }
+            }
+            console.log(`%c Permissions: ${permissions.join(' ')}`, 'color: #e1e43b; padding: 4px;')
         })
         console.groupEnd()
     }
 
-    getRoles(){
-        return this.roles
-    }
-
+    /**
+     * Смотрим роли пользователя, проверяем можно ему делать что-то или нет
+       В доступах ролей есть структура, разбитая на сущности системы, на действия и конкретные поля доступа
+     * @param entity сущности системы - департаменты, пользователи, компании и т.д.
+       @param action что нельзя делать - смотреть, редактировать, вращать, красить в красный цвет и т.п.
+       @param field конкретный доступ к чему-либо (например к имени департамента)
+     * @returns boolean, можно или нельзя
+     */
     public can(entity: R_ENTITIES): (action: R_ACTIONS) => (field: R_FIELDS) => boolean {
         let hasAccess = false
         return (action: R_ACTIONS): (field: R_FIELDS) => boolean => {
             return (field: R_FIELDS): boolean => {
                 this.roles.forEach((role: TRoles) => {
-                    console.log('Role name:', role.name, 'entity:', entity, 'action:', action, 'field:', field)
-
-                    //@ts-ignore
                     if(typeof role.permissions[entity] === 'undefined' || typeof role.permissions[entity][action] === 'undefined') return
-                    //@ts-ignore
                     const accessments = role.permissions[entity][action]
 
                     if(accessments.indexOf(field) !== -1) hasAccess = true
@@ -88,7 +97,17 @@ export class Rbac extends UserManager {
             }
         }
     }
+
+    getRoles(){
+        return this.roles
+    }
 }
+
+type TRolePermissions = {
+    [entity in R_ENTITIES] ?: {
+        [action in R_ACTIONS] ?: R_FIELDS[]
+    }
+};
 
 
 export enum R_ENTITIES {
@@ -100,22 +119,15 @@ export enum R_ENTITIES {
 export enum R_ACTIONS {
     EDIT = 'edit',
     VIEW = 'view',
-    ADD = 'add',
+    ADD  = 'add',
 }
 
 export enum R_FIELDS {
-    END    = '',
     ENTIRE = 'entire',
     NAME   = 'name',
 }
 type TRoles = AdminRole | ManagerRole | EmployeeRole | GuestRole
 
-
-type TRolePermissions = {
-    [E in R_ENTITIES] ?: {
-        [A in R_ACTIONS] ?: R_FIELDS[]
-    }
-}
 export class Role {
     public readonly name: string
     public readonly priority: number
@@ -133,11 +145,26 @@ export class AdminRole extends Role {
     }
     public readonly permissions: TRolePermissions = {
         [R_ENTITIES.DEPARTMENT]: {
+            [R_ACTIONS.VIEW]: [
+                R_FIELDS.ENTIRE,
+                R_FIELDS.NAME,
+            ],
+            [R_ACTIONS.ADD]: [
+                R_FIELDS.ENTIRE
+            ]
+        },
+        [R_ENTITIES.COMPANY]: {
             [R_ACTIONS.EDIT]: [
                 R_FIELDS.ENTIRE
             ],
             [R_ACTIONS.VIEW]: [
                 R_FIELDS.ENTIRE,
+                R_FIELDS.NAME,
+            ],
+        },
+        [R_ENTITIES.EMPLOYEE]: {
+            [R_ACTIONS.VIEW]: [
+                R_FIELDS.ENTIRE
             ],
         },
     }
@@ -146,17 +173,23 @@ export class ManagerRole extends Role {
     constructor(){
         super('manager', 1)
     }
-    public readonly permissions = {}
+    public readonly permissions: TRolePermissions = {
+        [R_ENTITIES.DEPARTMENT]: {
+            [R_ACTIONS.ADD]: [
+                R_FIELDS.ENTIRE
+            ]
+        }
+    }
 }
 export class EmployeeRole extends Role {
     constructor(){
         super('employee', 2)
     }
-    public readonly permissions = {}
+    public readonly permissions: TRolePermissions = {}
 }
 export class GuestRole extends Role {
     constructor(){
         super('guest', 3)
     }
-    public readonly permissions = {}
+    public readonly permissions: TRolePermissions = {}
 }
