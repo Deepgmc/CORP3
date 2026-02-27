@@ -8,7 +8,6 @@ import { Rbac } from './entities/Rbac';
 const $networkManager = NetworkManager.getInstance()
 provide('$networkManager', $networkManager)
 
-//const $userManager = UserManager.getInstance(new jwtStrategy($networkManager), useUserStore())
 const $userManager = Rbac.getInstance(new jwtStrategy($networkManager), useUserStore())
 
 provide('$userManager', $userManager)

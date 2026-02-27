@@ -10,8 +10,8 @@
         </div>
     </div>
 
-    <div class="row q-mt-lg" v-if="$userManager.can(pmEditList.ADD_DEPARTMENT)">
-        <div class="col-lg-8 offset-lg-2 col-md-12">
+    <div class="row q-mt-lg" v-if="$um.can(R_ENTITIES.DEPARTMENT)(R_ACTIONS.EDIT)(R_FIELDS.ENTIRE)">
+        <div class="col-lg-8 offset-lg-2 col-xs-12">
             <q-form ref="addDepartmentRef" @submit="addDepartment">
                 <fieldset class="fieldset">
                     <legend class="text-h5">Добавить новый департамент</legend>
@@ -82,13 +82,13 @@ import { departmentAvailableCols } from '@/components/grid/GridColumnOptions';
 import { v_msg } from '@/utils/constants/texts';
 import type { IAddDepartment, IDepartment } from '@/interfaces/Company';
 import type { IUser } from '@/interfaces/User';
-import { pmEditList, Rbac } from '@/entities/Rbac';
+import { R_ACTIONS, R_ENTITIES, R_FIELDS, Rbac } from '@/entities/Rbac';
 
 
-const $userManager = Rbac.getInstance()
+const $um = Rbac.getInstance()
 
 const needFields = ['id', 'name', 'description', 'countusers']
-const departments = $userManager.company.departments
+const departments = $um.company.departments
 
 const gridCols = new GridCols(
     needFields,
@@ -104,14 +104,14 @@ const gridCols = new GridCols(
 const newDepartment = reactive<IAddDepartment>({
     name: '',
     description: '',
-    companyId: $userManager.company.companyId,
+    companyId: $um.company.companyId,
     countusers: '0'
 })
 
 
 const addDepartmentRef = ref()
 function addDepartment() {
-    $userManager.company.addNewDepartment(newDepartment)
+    $um.company.addNewDepartment(newDepartment)
     .then(() => {
         newDepartment.name = ''
         newDepartment.description = ''
@@ -128,7 +128,7 @@ function addDepartment() {
 
 
 // DND WIDGET
-const employees = $userManager.company.employees
+const employees = $um.company.employees
 /**
  * создаём итерируемый реактивный Map для вывода виджета сотрудников департаментов с перетаскиванием
  */
@@ -155,7 +155,7 @@ function dropUser(event: DragEvent){
 
     employees.value.forEach((thisEmp: IUser) => {
         if(thisEmp.userId === dragItemId && thisEmp.departmentId === dragFromId) {
-            $userManager.company.switchUserDepartmets(thisEmp, dragFromId, dropId)
+            $um.company.switchUserDepartmets(thisEmp, dragFromId, dropId)
             return true
         }
     })

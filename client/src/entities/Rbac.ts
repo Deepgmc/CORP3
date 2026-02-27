@@ -1,16 +1,6 @@
 import type { IUserManager } from "@/interfaces/User"
 import { UserManager } from "./UserManager"
 
-export const enum pmEditList {
-    EDIT_COMPANY = 'EDIT_COMPANY',
-    EDIT_EMPLOYEE = 'EDIT_EMPLOYEE',
-    ADD_DEPARTMENT = 'ADD_DEPARTMENT',
-}
-export const enum pmViewList {
-    VIEW_COMPANY = 'VIEW_COMPANY',
-    VIEW_EMPLOYEE = 'VIEW_EMPLOYEE',
-}
-
 /**
  * наследник юзера - расширяет его функциями ролей и доступов
  */
@@ -71,7 +61,7 @@ export class Rbac extends UserManager {
         console.group('Roles')
         this.roles.forEach((role) => {
             console.log(`%c --- ${role.name} ---`, 'background:rgb(0, 48, 4); color: #e1e43b; padding: 4px;')
-            console.log(`%c Permissions: ${role.permissions.join(', ')}`, 'color: #e1e43b; padding: 4px;')
+            //console.log(`%c Permissions: ${role.permissions.join(', ')}`, 'color: #e1e43b; padding: 4px;')
         })
         console.groupEnd()
     }
@@ -80,30 +70,56 @@ export class Rbac extends UserManager {
         return this.roles
     }
 
-    public can(accessment: TPermissions): boolean {
-        // TS ругается что .some нет
-        // return this.roles.values().some((role: TRoles) => {
-        //     return role.hasPermission(accessment)
-        // })
+    public can(entity: R_ENTITIES): (action: R_ACTIONS) => (field: R_FIELDS) => boolean {
         let hasAccess = false
-        this.roles.forEach((role) => {
-            if(role.hasPermission(accessment)) hasAccess = true
-        })
-        return hasAccess
+        return (action: R_ACTIONS): (field: R_FIELDS) => boolean => {
+            return (field: R_FIELDS): boolean => {
+                this.roles.forEach((role: TRoles) => {
+                    console.log('Role name:', role.name, 'entity:', entity, 'action:', action, 'field:', field)
+
+                    //@ts-ignore
+                    if(typeof role.permissions[entity] === 'undefined' || typeof role.permissions[entity][action] === 'undefined') return
+                    //@ts-ignore
+                    const accessments = role.permissions[entity][action]
+
+                    if(accessments.indexOf(field) !== -1) hasAccess = true
+                })
+                return hasAccess
+            }
+        }
     }
 }
 
-type TRoles = AdminRole | ManagerRole | EmployeeRole | GuestRole
-type TPermissions = pmEditList | pmViewList
 
+export enum R_ENTITIES {
+    COMPANY    = 'company',
+    DEPARTMENT = 'department',
+    EMPLOYEE   = 'employee',
+}
+
+export enum R_ACTIONS {
+    EDIT = 'edit',
+    VIEW = 'view',
+    ADD = 'add',
+}
+
+export enum R_FIELDS {
+    END    = '',
+    ENTIRE = 'entire',
+    NAME   = 'name',
+}
+type TRoles = AdminRole | ManagerRole | EmployeeRole | GuestRole
+
+
+type TRolePermissions = {
+    [E in R_ENTITIES] ?: {
+        [A in R_ACTIONS] ?: R_FIELDS[]
+    }
+}
 export class Role {
     public readonly name: string
     public readonly priority: number
-    public readonly permissions: TPermissions[] = []
-
-    hasPermission(accessment: TPermissions): boolean {
-        return this.permissions.includes(accessment)
-    }
+    public readonly permissions !: TRolePermissions
 
     constructor(name: string, priority: number) {
         this.name = name
@@ -115,39 +131,32 @@ export class AdminRole extends Role {
     constructor(){
         super('admin', 0)
     }
-    public readonly permissions = [
-        pmEditList.EDIT_COMPANY,
-        pmEditList.EDIT_EMPLOYEE,
-        pmEditList.ADD_DEPARTMENT,
-
-        pmViewList.VIEW_COMPANY,
-        pmViewList.VIEW_EMPLOYEE
-    ]
+    public readonly permissions: TRolePermissions = {
+        [R_ENTITIES.DEPARTMENT]: {
+            [R_ACTIONS.EDIT]: [
+                R_FIELDS.ENTIRE
+            ],
+            [R_ACTIONS.VIEW]: [
+                R_FIELDS.ENTIRE,
+            ],
+        },
+    }
 }
 export class ManagerRole extends Role {
     constructor(){
         super('manager', 1)
     }
-    public readonly permissions = [
-        pmEditList.EDIT_EMPLOYEE,
-        pmEditList.ADD_DEPARTMENT,
-
-        pmViewList.VIEW_COMPANY,
-        pmViewList.VIEW_EMPLOYEE
-    ]
+    public readonly permissions = {}
 }
 export class EmployeeRole extends Role {
     constructor(){
         super('employee', 2)
     }
-    public readonly permissions = [
-        pmViewList.VIEW_COMPANY,
-    ]
+    public readonly permissions = {}
 }
 export class GuestRole extends Role {
     constructor(){
         super('guest', 3)
     }
-    public readonly permissions = []
+    public readonly permissions = {}
 }
-

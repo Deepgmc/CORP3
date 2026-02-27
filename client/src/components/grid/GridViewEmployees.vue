@@ -35,8 +35,16 @@ import GridView from './GridView.vue'
 import type { GridCols, GridColsDataTypes } from '@/composables/gridView/GridColsManager'
 import { useUserProfileCard } from '@/composables/userProfileCard'
 import UserSkills from '@/components/UserSkills.vue'
+import { inject } from 'vue'
+import { R_ACTIONS, R_ENTITIES, R_FIELDS, type Rbac } from '@/entities/Rbac'
+import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
+import { ACCESS_DENIED } from '@/utils/constants/texts'
 
+
+const notify = useNotify()
 defineEmits(['gv_sort'])
+
+const $userManager = inject<Rbac>('$userManager')
 
 defineProps<{
     gridCols: GridCols,
@@ -46,7 +54,11 @@ defineProps<{
 const { openUserCard, loadUserCardData } = useUserProfileCard()
 
 function openEmployeeCard(userId: number | null): void {
-    if(userId === null) return
+    if(userId === null || $userManager === undefined) return
+    if(!$userManager.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.VIEW)(R_FIELDS.ENTIRE)) {
+        notify.run(ACCESS_DENIED, notifyTypes.err)
+        return
+    }
     loadUserCardData(userId)
         .then(() => {
             openUserCard()
