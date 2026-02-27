@@ -1,9 +1,9 @@
-import type { IDepartment } from "@/interfaces/Company";
-import { UserManager } from "@/entities/UserManager";
+import type { IDepartment, IPosition } from "@/interfaces/Company";
 import { convertTSToStr, getAgeFromTS } from "@/utils/helpers/dates";
 import { computed, ref, type ComputedRef, type Ref } from "vue";
 import type { IUser } from "@/interfaces/User";
 import type { TSortFn } from "../../components/grid/GridColumnOptions";
+import { Rbac } from "@/entities/Rbac";
 
 export type TGridColMap = {
     label     ?: string,
@@ -30,7 +30,8 @@ export const enum fieldTypes {
     textarea = 'textarea',
     number   = 'number',
     date     = 'date',
-    phone    = 'phone'
+    phone    = 'phone',
+    widget   = 'widget'
 }
 
 export type TSortingColsMap = Map<string, TGridColMap>
@@ -46,9 +47,9 @@ export class GridCols {
 
     private colsMap: TColsMap = new Map()
     private modifiedData: ComputedRef<GridColsData>
-    private $userManager: UserManager
+    private $userManager: Rbac
 
-    public readonly rowsPerPage = ref(3)
+    public readonly rowsPerPage = ref(5)
     public currentPage = ref(1)
     private thatPageIndex = 0
 
@@ -69,12 +70,12 @@ export class GridCols {
 
         if(perPage) this.rowsPerPage.value = perPage
 
-        this.$userManager = UserManager.getInstance()
+        this.$userManager = Rbac.getInstance()
     }
 
     /** сколько всего страниц в таблице */
     public pagesCount: Ref<number> = computed((): number => {
-        return Math.round(this.modifiedData.value.length / this.rowsPerPage.value)
+        return Math.ceil(this.modifiedData.value.length / this.rowsPerPage.value)
     })
 
     /** массив чисел - сколько всего страниц в таблице. нужен только для вычислений*/
@@ -198,8 +199,14 @@ export class GridCols {
             break;
             case 'departmentId':
                 if(item.departmentId !== null){
-                    const thisDept: IDepartment = this.$userManager.company.departments.value.find((dept: IDepartment) => dept.id === item.departmentId)
+                    const thisDept: IDepartment = this.$userManager.company.getDepartmentById(item.departmentId)
                     item['departmentIdValue'] = thisDept.name
+                }
+            break;
+            case 'positionId':
+                if(item.positionId !== null){
+                    const thisPosition: IPosition = this.$userManager.company.getPositionById(item.positionId)
+                    item['positionIdValue'] = thisPosition.position
                 }
             break;
             case 'skills':

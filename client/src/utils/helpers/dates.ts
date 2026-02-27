@@ -11,6 +11,19 @@ export function convertTSToStr(timestamp: number | string): boolean | string {
     return `${day < 10 ? `0${day}` : day}.${months[date.getMonth()]}.${date.getFullYear()}`
 }
 
+export function getReadableFormatFromTS(incomeDate: number): string {
+    //из 25.05.2026 в 25 мая 2026г.
+    const date = new Date(+incomeDate)
+    const formatter = new Intl.DateTimeFormat('ru-RU', {
+        weekday: undefined,
+        year   : 'numeric',
+        month  : 'long',
+        day    : 'numeric'
+    })
+    const finalDate = formatter.format(date)
+    return finalDate
+}
+
 export function convertStrToUnixTimestamp(dateIncome: string): TResult {
 
     const unifiedStr = dateIncome.replaceAll('/', '.').replaceAll('-', '.')

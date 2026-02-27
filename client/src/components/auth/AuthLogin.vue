@@ -53,17 +53,17 @@ export default {
 }
 */
 import {ref, reactive } from 'vue'
-import { UserManager } from '@/entities/UserManager'
 import type { ILoginUser } from '@/interfaces/User'
 import { getAuthRules } from '@/composables/auth/formValidation'
 
-const $userManager = UserManager.getInstance()
+const $userManager = Rbac.getInstance()
 
 const $externalResults = reactive({})
 import { useVuelidate, type ErrorObject } from '@vuelidate/core'
 import { useRouter } from 'vue-router'
 import { useNotify } from '@/composables/notifyQuasar'
 import { notifyTypes } from '@/composables/notifyQuasar'
+import { Rbac } from '@/entities/Rbac'
 
 
 const isPwd = ref<boolean>(true)

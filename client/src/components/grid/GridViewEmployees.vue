@@ -12,7 +12,7 @@
             class="gv-edit_buttons-positive"
             name="settings"
             :data-userId="slotProps.itemId"
-            @click="redactUser"
+            @click="openEmployeeCard(slotProps.itemId)"
         />
     </template>
 
@@ -35,34 +35,33 @@ import GridView from './GridView.vue'
 import type { GridCols, GridColsDataTypes } from '@/composables/gridView/GridColsManager'
 import { useUserProfileCard } from '@/composables/userProfileCard'
 import UserSkills from '@/components/UserSkills.vue'
+import { inject } from 'vue'
+import { R_ACTIONS, R_ENTITIES, R_FIELDS, type Rbac } from '@/entities/Rbac'
+import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
+import { ACCESS_DENIED } from '@/utils/constants/texts'
 
+
+const notify = useNotify()
 defineEmits(['gv_sort'])
+
+const $userManager = inject<Rbac>('$userManager')
 
 defineProps<{
     gridCols: GridCols,
     sortField: (column: keyof GridColsDataTypes) => void
 }>()
 
-const { userCardOpen, setDialogUser } = useUserProfileCard()
+const { openUserCard, loadUserCardData } = useUserProfileCard()
 
-function redactUser() {
-    setDialogUser({
-        username: 'sdfsdf',
-        userId: 0,
-        birth: 0,
-        email: '',
-        companyId: null,
-        isDirector: false,
-        gender: 0,
-        bio: '',
-        firstName: '',
-        lastName: '',
-        phone: '',
-        departmentId: null,
-        company: null,
-        skills: [],
-        department: null
-    })
-    userCardOpen()
+function openEmployeeCard(userId: number | null): void {
+    if(userId === null || $userManager === undefined) return
+    if(!$userManager.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.VIEW)(R_FIELDS.ENTIRE)) {
+        notify.run(ACCESS_DENIED, notifyTypes.err)
+        return
+    }
+    loadUserCardData(userId)
+        .then(() => {
+            openUserCard()
+        })
 }
 </script>

@@ -1,4 +1,4 @@
-import type { ICompany, ICompanySelect, IDepartment, IDeptSelect } from '@/interfaces/Company'
+import type { ICompany, ICompanySelect, IDepartment, IDeptSelect, IPosition, IPositionSelect } from '@/interfaces/Company'
 import type NetworkManager from '@/network/NetworkManager'
 import { EReqMethods } from '@/network/NetworkManager'
 import { ref } from 'vue'
@@ -13,9 +13,11 @@ export function useCompany($networkManager: NetworkManager) {
     let isLoaded = false
     const comOptions = ref([])
     const deptOptions = ref([])
+    const selectPositionOptions = ref([])
     const emptyDummy = { label: '', value: 0 }
     const selectRefModel = ref<ICompanySelect<ICompany>>(emptyDummy)
     const selectDeptModel = ref<IDeptSelect>(emptyDummy)
+    const selectPositionModel = ref<IPositionSelect>(emptyDummy)
 
     async function loadAllCompanies(): Promise<boolean> {
         if (!isLoaded) { //загружаем только один раз, это статичные данные
@@ -46,6 +48,19 @@ export function useCompany($networkManager: NetworkManager) {
         }
         return false
     }
+    async function loadPositions(): Promise<IPosition[] | boolean> {
+        const asxiosData = await $networkManager.getApiRequestMethod(EReqMethods.get)('company')(`get_positions/`)({}, false)
+        if (typeof asxiosData !== 'boolean') {
+            // selectPositionModel
+             selectPositionOptions.value = asxiosData.data.map((position: IPosition): optionsResult => {
+                return {
+                    value: position.id,
+                    label: position.position,
+                }
+            })
+        }
+        return false
+    }
 
     function filterFn(val: string, update: any, /*_abort: any*/) {
         update(() => {
@@ -61,12 +76,16 @@ export function useCompany($networkManager: NetworkManager) {
     }
 
     return {
-        selectRefModel, selectDeptModel,
+        selectRefModel,
+        selectDeptModel,
+        selectPositionModel,
         selectOptions: comOptions,
         selectDeptOptions: deptOptions,
+        selectPositionOptions,
         filterFn,
         loadAllCompanies,
         loadCompanyDepartments,
+        loadPositions,
         resetCompanySelection,
     }
 }

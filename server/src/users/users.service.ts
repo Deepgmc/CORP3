@@ -1,12 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { Repository } from 'typeorm';
+import * as fs from 'node:fs'
+const SaveBase64 = require('node-base64-to-image')
 import { InjectRepository } from '@nestjs/typeorm'
 import { UsersEntity } from './entities/user.entity'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto';
 import { SkillsEntity } from './entities/skills.entity';
-import { TSkill } from 'src/interfaces/IUser';
+import { IUser, TSkill } from 'src/interfaces/IUser';
 import { DepartmentEntity } from 'src/company/entities/departments.entity';
+
+const avatarFolderPath = '/home/deep/work/CORP3/server/avatars'
 
 @Injectable()
 export class UsersService {
@@ -23,8 +27,33 @@ export class UsersService {
     ) { }
 
     async getFullUserData(field: string, value: string | number): Promise<any> {
-        const user = await this.findOne('userId', value)
-        return user
+        return await this.findOne('userId', value)
+    }
+
+    getUserAvatar(userId: IUser['userId']): string {
+        if(!userId) return ''
+        const imgPath = `${avatarFolderPath}/${userId}/avatar.jpeg`
+        if(fs.existsSync(imgPath)){
+            const img = fs.readFileSync(imgPath)
+            return 'data:image/png;base64,' + Buffer.from(img).toString('base64')
+        }
+        return ''
+    }
+
+    saveAvatar(updateUserDto: UpdateUserDto) {
+        const imgPath = `${avatarFolderPath}/${updateUserDto.userId}`
+        const imgName = 'avatar.jpeg'
+        try {
+            if(!fs.existsSync(imgPath)){
+                fs.mkdirSync(imgPath)
+            }
+            SaveBase64(updateUserDto.avatar, `${imgPath}/${imgName}`, 'png')
+        } catch (e) {
+            console.log('Error saving avatar:', e)
+        }
+
+        delete updateUserDto.avatar
+        return updateUserDto
     }
 
     async create(createUserDto: CreateUserDto): Promise<CreateUserDto | boolean> {
@@ -69,7 +98,7 @@ export class UsersService {
         try {
             const searchObject = {
                 where: { [field]: value },
-                relations: ['company', 'skills', 'department'],
+                relations: ['company', 'skills', 'department', 'position'],
             }
             return await this.usersRepository.findOne(searchObject)
         } catch (e) {

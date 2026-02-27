@@ -19,42 +19,19 @@ export class UserManager extends Manager implements IUserManager {
 
     private _isLogined: isLoginedResult = { isLogined: false } //авторизация, любыми стратегиями
 
-    static instance: UserManager | null = null
-
-    static getInstance(
-        strategy?: IUserManager['_strategy'],
-        userStore?: any
-    ): UserManager {
-        if (UserManager.instance) {
-            return UserManager.instance
-        }
-        return new UserManager(strategy, userStore)
-    }
-
     protected _apiModule: string = 'user'
 
     public company!: Company // Инстанс объекта компании
 
-    private constructor(
+    public constructor(
         strategy?: IUserManager['_strategy'],
         userStore?: any
     ) {
         super()
-        if (UserManager.instance) throw new TypeError('Instance creation only with .getInstance()')
-        UserManager.instance = this
         if (strategy) this._strategy = strategy
         this._userStore = userStore
         this._postData = this._post(this._apiModule)
         this._getData = this._get(this._apiModule)
-
-        //при создании менеджера проверяем статус логина и разлогиниваем/убираем, если токен остался по какойто-причине старый
-        void this.updateAndGetIsLogined()
-            .then(async () => {
-                //после проверки статуса сессии (токена) - загружаем данные юзера
-                if (this.loginedStatus.isLogined) {
-                    this.loadInitData()
-                }
-            })
     }
 
     async loadInitData() {
@@ -126,7 +103,7 @@ export class UserManager extends Manager implements IUserManager {
     }
 
     public isEmployee(): boolean {
-        return !this.isDirector
+        return !this.isDirector()
     }
 
     public async saveUserProfile(user: IUser): Promise<boolean> {

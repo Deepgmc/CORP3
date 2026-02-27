@@ -84,6 +84,16 @@ export class CreateUserDto implements IUsersCreateDTO {
     departmentId: number
 
     @ApiProperty({
+        description: 'ID должности',
+        required: true,
+        type: String
+    })
+    @IsNotEmpty({message: dtoMsg.getMessage('notempty')})
+    @IsNumber()
+    @IsPositive()
+    positionId: number
+
+    @ApiProperty({
         description: 'Является ли руководителем компании',
         required: false,
         type: Boolean
@@ -129,6 +139,14 @@ export class CreateUserDto implements IUsersCreateDTO {
     })
     @IsString()
     phone: string;
+
+    @ApiProperty({
+        description: 'Аватар профиля',
+        required: false,
+        type: String
+    })
+    @IsString()
+    avatar: string;
 
 
 

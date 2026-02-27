@@ -1,4 +1,4 @@
-import { type IDepartment, type ICompany } from "@/interfaces/Company"
+import { type IDepartment, type ICompany, type IPosition } from "@/interfaces/Company"
 import type { IUser } from "@/interfaces/User"
 import { defineStore } from "pinia"
 import { computed, ref } from "vue"
@@ -14,6 +14,7 @@ export const useCompanyStore = defineStore('company', () => {
 
     const departments = ref<IDepartment[]>([])
     const employees = ref<IUser[]>([])
+    const positions = ref<IPosition[]>([])
 
     function setCompany(newCompany: ICompany): boolean {
         company.value = newCompany
@@ -25,6 +26,9 @@ export const useCompanyStore = defineStore('company', () => {
     }
     function setEmployees(newEmployees: IUser[]): void {
         employees.value = newEmployees
+    }
+    function setPositions(newPositions: IPosition[]): void {
+        positions.value = newPositions
     }
 
     function addNewDepartment(newDept: IDepartment): void {
@@ -42,6 +46,9 @@ export const useCompanyStore = defineStore('company', () => {
     })
     const getEmployees = computed(() => {
         return employees
+    })
+    const getPositions = computed(() => {
+        return positions
     })
 
     // при смене департамента у сотрудника - меняем сумму сотрудников в списке департаментов
@@ -71,10 +78,13 @@ export const useCompanyStore = defineStore('company', () => {
 
         getDepartments,
         getEmployees,
+        getPositions,
 
         setCompany,
         setDepartments,
         setEmployees,
+        setPositions,
+
         addNewDepartment,
         deleteDepartment,
         changeUserDepartment

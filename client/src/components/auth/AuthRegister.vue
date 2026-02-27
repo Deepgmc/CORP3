@@ -63,7 +63,8 @@
                 </div>
             </div>
 
-            <div v-if="isCompanySelected" class="row">
+            <!--Department-->
+            <div v-if="isCompanySelected" class="row q-pt-sm">
                 <div class="col">
                     <q-select filled
                         v-model="selectDeptModel"
@@ -71,6 +72,27 @@
                         input-debounce="0"
                         label="Выберите департамент *"
                         @update:model-value="onDeptSelect"
+                    >
+                        <template #no-option>
+                            <q-item>
+                                <q-item-section class="text-grey">
+                                    Ничего не найдено
+                                </q-item-section>
+                            </q-item>
+                        </template>
+                    </q-select>
+                </div>
+            </div>
+
+            <!--Position-->
+            <div v-if="isCompanySelected" class="row q-pt-sm">
+                <div class="col">
+                    <q-select filled
+                        v-model="selectPositionModel"
+                        :options="selectPositionOptions"
+                        input-debounce="0"
+                        label="Выберите должность"
+                        @update:model-value="onPositionSelect"
                     >
                         <template #no-option>
                             <q-item>
@@ -91,30 +113,16 @@
 
 
 <script setup lang="ts">
-/**
-export default {
-    components: {GridView},
-    setup() {
-        const aaa = ref('Test aa')
-        onMounted(() => {
-            setTimeout(() => {
-                aaa.value = 'dsfdsf'
-            }, 2000)
-        })
-        return {aaa}
-    },
-}
-*/
 import { ref, reactive, inject, onMounted, computed } from 'vue'
 
 import type { TRegisterForm } from '@/interfaces/User'
 import { getAuthRules } from '@/composables/auth/formValidation'
 
 import { useVuelidate, type ErrorObject } from '@vuelidate/core'
-import { UserManager } from '@/entities/UserManager'
 import type NetworkManager from '@/network/NetworkManager'
 import { useCompany } from '@/composables/companySelect'
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
+import { Rbac } from '@/entities/Rbac'
 const $networkManager: NetworkManager | undefined = inject<NetworkManager>('$networkManager')
 
 if (!$networkManager) {
@@ -123,7 +131,19 @@ if (!$networkManager) {
 
 const $externalResults = reactive({})
 
-const { selectRefModel, selectDeptModel, selectOptions, selectDeptOptions, filterFn, loadAllCompanies, resetCompanySelection, loadCompanyDepartments } = useCompany($networkManager)
+const {
+    selectRefModel,
+    selectDeptModel,
+    selectPositionModel,
+    selectOptions,
+    selectDeptOptions,
+    selectPositionOptions,
+    filterFn,
+    loadAllCompanies,
+    resetCompanySelection,
+    loadCompanyDepartments,
+    loadPositions,
+} = useCompany($networkManager)
 
 const isPwd = ref<boolean>(true)
 const isPwdConf = ref<boolean>(true)
@@ -134,10 +154,12 @@ const regUser = ref<TRegisterForm>({
     password       : '1234567',
     passwordConfirm: '1234567',
     email          : 'test@mail.ru',
+    bio            : '',
     birth          : 0,
     companyId      : null,
     isDirector     : false,
-    departmentId   : null
+    departmentId   : null,
+    positionId     : null,
 })
 
 onMounted(() => {
@@ -157,7 +179,7 @@ async function onSubmit(): Promise<boolean> {
 
     //отправка данных на сервер, валидация на сервере, вывод ошибок
     try {
-        const registerRes = await UserManager.getInstance().registerRequest(regUser.value)
+        const registerRes = await Rbac.getInstance().registerRequest(regUser.value)
         if (registerRes.error) {
             if (registerRes.message) notify.run(registerRes.message, notifyTypes.err)
             return false
@@ -177,12 +199,18 @@ async function onCompanySelect(): Promise<void> {
     if (selectRefModel.value === null) throw new Error('Wrong company selection')
     regUser.value.companyId = selectRefModel.value.value ?? null
     await loadCompanyDepartments(selectRefModel.value.value)
+    await loadPositions()
 }
 
 //при смене селекта департамента
 async function onDeptSelect(): Promise<void> {
     if (selectDeptModel.value === null) throw new Error('Wrong department selection')
     regUser.value.departmentId = selectDeptModel.value.value ?? null
+}
+//при смене селекта должности
+async function onPositionSelect(): Promise<void> {
+    if (selectPositionModel.value === null) throw new Error('Wrong position selection')
+    regUser.value.positionId = selectPositionModel.value.value ?? null
 }
 
 /* выбрана ли компания в зависимости от состояния */

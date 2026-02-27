@@ -1,4 +1,4 @@
-import type { ICompany, IDepartment } from './Company'
+import type { ICompany, IDepartment, IPosition } from './Company'
 import type { jwtStrategy } from '@/auth/strategies/jwt.strategy'
 import type { isLoginedResult } from '@/auth/strategies/Strategy'
 import type { Router } from 'vue-router'
@@ -16,10 +16,14 @@ export interface IUser {
     lastName    : string,
     phone       : string,
     departmentId: number | null,
+    positionId  : number | null,
+    avatar      : string | null,
+
     //! RELATIONS
     company   : ICompany | null,
     skills    : TSkill[],
-    department: IDepartment | null
+    department: IDepartment | null,
+    position  : IPosition | null
 }
 
 export interface ILoginUser extends Pick<IUser, 'username'> {
@@ -38,7 +42,7 @@ export interface ICPForm extends Pick<IUser, 'username' | 'userId'> {
     newPassword: string
 }
 
-export interface TRegisterForm extends Pick<IUser, 'username' | 'email' | 'birth' | 'companyId' | 'isDirector' | 'departmentId'> {
+export interface TRegisterForm extends Pick<IUser, 'username' | 'email' | 'birth' | 'companyId' | 'isDirector' | 'departmentId' | 'positionId' | 'bio' > {
     passwordConfirm: string,
     password: string,
 }
@@ -121,7 +125,4 @@ export interface IUserManager {
      * @returns void
      */
     setRouteAfterLogin: (router: Router) => void
-
-
 }
-

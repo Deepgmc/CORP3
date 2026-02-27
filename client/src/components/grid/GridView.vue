@@ -44,8 +44,9 @@
                             :class="{gv_editable: cols.get(col)?.editable}"
                             @click="redactField"
                         >
-                            {{ cols.get(col)!.switchData ? row[`${col}Value` as keyof GridColsDataTypes] : row[col as keyof GridColsDataTypes] }}
-
+                            <template v-if="cols.get(col)!.type !== fieldTypes.widget">
+                                {{ cols.get(col)!.switchData ? row[`${col}Value` as keyof GridColsDataTypes] : row[col as keyof GridColsDataTypes] }}
+                            </template>
                             <slot
                                 name="field_components"
                                 :col="col"
@@ -57,7 +58,9 @@
                             v-if="$slots.actions_buttons"
                             class="text-center pointer"
                         >
-                            <slot name="actions_buttons" :itemId="row[gridCols.idName as keyof GridColsDataTypes]"></slot>
+                            <slot name="actions_buttons"
+                                :itemId="row[gridCols.idName as keyof GridColsDataTypes]"
+                            ></slot>
                         </td>
                     </tr>
                 </tbody>
@@ -128,7 +131,7 @@
 
 <script setup lang="ts">
 import { useGVDialog, type TEditTypes } from '@/composables/gridView/redactFieldDialog';
-import type { GridCols, GridColsDataTypes, TColsMap } from '@/composables/gridView/GridColsManager';
+import { fieldTypes, type GridCols, type GridColsDataTypes, type TColsMap } from '@/composables/gridView/GridColsManager';
 
 defineEmits(['gv_sort'])
 

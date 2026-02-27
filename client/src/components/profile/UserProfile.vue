@@ -1,5 +1,134 @@
 <template>
     <h4>Мой профиль</h4>
+    <q-form @submit="onSubmit" class="q-gutter-md ">
+        <fieldset class="fieldset">
+            <legend class="text-h5">Редактировать мои данные</legend>
+
+            <!-- photo -->
+             <q-card-section>
+            <div class="row">
+                <div class="col-12 justify-start">
+                    <q-avatar size="240px" class="shadow-2">
+                        <avatar-editor
+                            :width="180"
+                            :height="180"
+                            ref="avatarEditorRef"
+                            v-model:scale="scaleVal"
+                            :border="0"
+                            :image="userAvatar"
+                        />
+                    </q-avatar>
+                    <!-- <q-avatar size="240px" class="shadow-2">
+                        <img :src="userAvatar" :alt="`${form.firstName} ${form.lastName}`">
+                    </q-avatar> -->
+                </div>
+            </div>
+            </q-card-section>
+
+            <!-- login -->
+            <div class="row q-mt-md">
+                <div class="col-12">
+                    <q-badge class="q-pa-sm" text-color="black" color="orange-5" icon="account_circle">
+                        {{ form.username }}
+                        <q-icon class="q-ml-md" name="swap_horiz" size="md" @click="isCPOpen = true"
+                                style="cursor:pointer" color="green-10" />
+                    </q-badge>
+                </div>
+            </div>
+
+            <div class="row q-mt-md">
+                <!-- Компания -->
+                <div class="col-12">
+                    <q-badge class="q-pa-sm" transparent text-color="black" color="orange-5" icon="home">
+                        {{ form.company?.name }} / {{ form.department?.name }}
+                    </q-badge>
+                </div>
+            </div>
+
+            <!-- Имя и Фамилия -->
+            <div class="row q-mt-md">
+                <div class="col-6">
+                    <q-input v-model="form.firstName" label="Имя *" :rules="[val => !!val || v_msg.REQUIRED]" dense />
+                </div>
+
+                <div class="col-6">
+                    <q-input v-model="form.lastName" label="Фамилия *" :rules="[val => !!val || v_msg.REQUIRED]" dense />
+                </div>
+            </div>
+
+            <!-- Email -->
+            <!-- Телефон -->
+            <div class="row q-mt-md">
+                <div class="col-6">
+                    <q-input v-model="form.email" label="Email *" type="email" :rules="[
+                        val => !!val || v_msg.REQUIRED,
+                        val => /.+@.+\..+/.test(val) || v_msg.EMAIL_FORMAT
+                    ]" dense />
+                </div>
+                <div class="col-6">
+                    <q-input v-model="form.phone" label="Телефон" mask="+# (###) ###-##-##" fill-mask
+                             hint="Формат: +7 (123) 456-78-90" :rules="[
+                                val => !val || /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/.test(val) || v_msg.PHONE_FORMAT]" dense />
+                </div>
+            </div>
+
+            <!-- Дата рождения -->
+            <div class="row q-mt-md">
+                <div class="col-12">
+                    <q-input readonly v-model="bDateStr" label="Дата рождения" dense>
+                        <template #append>
+                            <q-icon name="event" class="cursor-pointer">
+                                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                                    <q-date v-model="bDateStr" mask="DD.MM.YYYY">
+                                        <div class="row items-center justify-end">
+                                            <q-btn v-close-popup label="OK" color="primary" flat />
+                                        </div>
+                                    </q-date>
+                                </q-popup-proxy>
+                            </q-icon>
+                        </template>
+                    </q-input>
+                </div>
+            </div>
+
+            <!-- О себе (текстовое поле) -->
+            <div class="row q-mt-md">
+                <div class="col-12">
+                    <q-input v-model="form.bio" label="О себе" type="textarea" autogrow dense :rules="[
+                        val => !val || val.length <= 500 || 'Максимум 500 символов'
+                    ]" counter />
+                </div>
+            </div>
+
+            <!-- Пол (радио-кнопки) -->
+            <div class="row q-mt-md">
+                <div class="col-12">
+                    <div class="q-mt-sm">
+                        <div class="q-mb-xs text-caption">Пол</div>
+                        <q-option-group v-model="form.gender" :options="genderOptions" color="primary" inline />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопки действий -->
+            <div class="row q-mt-md">
+                <q-btn label="Сохранить" type="submit" color="primary" />
+            </div>
+        </fieldset>
+    </q-form>
+
+    <!-- Навыки -->
+    <fieldset class="fieldset q-mb-lg">
+        <legend class="text-h5">Мои навыки</legend>
+        <user-skills
+            :skills="form.skills"
+            :needAssession="true"
+            @remove-skill="removeSkill"
+            @add-skill="addSkill"
+            :alwaysShowAll="true"
+        ></user-skills>
+    </fieldset>
+
     <q-dialog v-model="isCPOpen">
         <q-card>
             <q-card-section class="q-ma-xl">
@@ -31,133 +160,37 @@
             </q-card-section>
         </q-card>
     </q-dialog>
-
-    <q-form @submit="onSubmit" class="q-gutter-md ">
-        <fieldset class="fieldset">
-            <legend class="text-h5">Редактировать мои данные</legend>
-            <!-- login -->
-            <div class="row">
-                <div class="col-12">
-                    <q-badge class="q-pa-sm" text-color="black" color="orange-5" icon="account_circle">
-                        {{ form.username }}
-                        <q-icon class="q-ml-md" name="swap_horiz" size="md" @click="isCPOpen = true"
-                                style="cursor:pointer" color="green-10" />
-                    </q-badge>
-                </div>
-            </div>
-
-            <div class="row">
-                <!-- Компания -->
-                <div class="col-12">
-                    <q-badge class="q-pa-sm" transparent text-color="black" color="orange-5" icon="home">
-                        {{ form.company?.name }} / {{ form.department?.name }}
-                    </q-badge>
-                </div>
-            </div>
-
-            <!-- Имя и Фамилия -->
-            <div class="row">
-                <div class="col-6">
-                    <q-input v-model="form.firstName" label="Имя *" :rules="[val => !!val || v_msg.REQUIRED]" dense />
-                </div>
-
-                <div class="col-6">
-                    <q-input v-model="form.lastName" label="Фамилия *" :rules="[val => !!val || v_msg.REQUIRED]"
-                             dense />
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-6"><!-- Email -->
-                    <q-input v-model="form.email" label="Email *" type="email" :rules="[
-                        val => !!val || v_msg.REQUIRED,
-                        val => /.+@.+\..+/.test(val) || v_msg.EMAIL_FORMAT
-                    ]" dense />
-                </div>
-                <div class="col-6"><!-- Телефон -->
-                    <q-input v-model="form.phone" label="Телефон" mask="+# (###) ###-##-##" fill-mask
-                             hint="Формат: +7 (123) 456-78-90" :rules="[
-                                val => !val || /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/.test(val) || v_msg.PHONE_FORMAT
-                            ]" dense />
-                </div>
-            </div>
-
-            <!-- Дата рождения -->
-            <div class="row">
-                <div class="col-12">
-                    <q-input readonly v-model="bDateStr" label="Дата рождения" dense>
-                        <template #append>
-                            <q-icon name="event" class="cursor-pointer">
-                                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                                    <q-date v-model="bDateStr" mask="DD.MM.YYYY">
-                                        <div class="row items-center justify-end">
-                                            <q-btn v-close-popup label="OK" color="primary" flat />
-                                        </div>
-                                    </q-date>
-                                </q-popup-proxy>
-                            </q-icon>
-                        </template>
-                    </q-input>
-                </div>
-            </div>
-
-            <!-- О себе (текстовое поле) -->
-            <div class="row">
-                <div class="col-12">
-                    <q-input v-model="form.bio" label="О себе" type="textarea" autogrow dense :rules="[
-                        val => !val || val.length <= 500 || 'Максимум 500 символов'
-                    ]" counter />
-                </div>
-            </div>
-
-            <!-- Пол (радио-кнопки) -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="q-mt-sm">
-                        <div class="q-mb-xs text-caption">Пол</div>
-                        <q-option-group v-model="form.gender" :options="genderOptions" color="primary" inline />
-                    </div>
-                </div>
-            </div>
-
-            <!-- Кнопки действий -->
-            <div class="row q-gutter-sm">
-                <q-btn label="Сохранить" type="submit" color="primary" />
-            </div>
-        </fieldset>
-    </q-form>
-
-    <!-- Навыки -->
-    <fieldset class="fieldset">
-        <legend class="text-h5">Мои навыки</legend>
-        <user-skills
-            :skills="form.skills"
-            :needAssession="true"
-            @remove-skill="removeSkill"
-            @add-skill="addSkill"
-            :alwaysShowAll="true"
-        ></user-skills>
-    </fieldset>
 </template>
 
 <script setup lang="ts">
+//import "avatar-editor/dist/style.css";
 import { reactive, onBeforeMount, ref, watch } from 'vue'
-import { UserManager } from '@/entities/UserManager'
+import { Rbac } from '@/entities/Rbac'
 import { convertStrToUnixTimestamp, convertTSToStr } from '@/utils/helpers/dates'
 import type { ICPForm, IUser, TSkill } from '@/interfaces/User'
 import UserSkills from '@/components/UserSkills.vue'
 import { genderOptions } from '@/utils/constants/main'
 import { userDummy } from '@/stores/userStore'
+import { AvatarEditor } from 'avatar-editor';
 
-import { v_msg, SAVED_SUCCESS } from '@/utils/constants/texts.ts'
+import { v_msg, SAVED_SUCCESS, SAVED_ERROR } from '@/utils/constants/texts.ts'
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
 import type { TResult } from '@/interfaces/Error'
 
-const $userManager = UserManager.getInstance()
+
+
+const scaleVal = ref<number>(1)
+const avatarEditorRef = ref<any>(null)
+
+const $userManager = Rbac.getInstance()
 const notify = useNotify()
+const userAvatar = ref('')
 
 onBeforeMount(() => {
     const user = $userManager.getUser()
+    if(user.avatar !== null){
+        userAvatar.value = user.avatar
+    }
     assignUserToFormData(user)
 })
 
@@ -167,6 +200,19 @@ const isCPOpen = ref(false)
 const dummyCopy: IUser = Object.create(userDummy)
 const form = reactive<IUser>(dummyCopy)
 const bDateStr = ref<string>()
+
+async function onSubmit(): Promise<void> {
+    if (avatarEditorRef.value) {
+        const avatar = avatarEditorRef.value.getImageScaled().toDataURL('image/png')
+         form.avatar = avatar
+    }
+
+    if (await $userManager.saveUserProfile({...form})) {
+        notify.run(SAVED_SUCCESS, notifyTypes.succ)
+    } else {
+        notify.run(SAVED_ERROR, notifyTypes.err)
+    }
+}
 
 /**
  * Берём юзера из юзер-стора и запихиваем в форму, конвертируя нужные данные
@@ -186,12 +232,6 @@ watch(bDateStr, (newBdate) => {
     }
     form.birth = birth.res
 })
-
-async function onSubmit(): Promise<void> {
-    if (await $userManager.saveUserProfile({...form})) {
-        notify.run(SAVED_SUCCESS, notifyTypes.succ)
-    }
-}
 
 function removeSkill(skillId: TSkill['id']): void {
     if (!Number.isInteger(skillId)) return

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Post, UseGuards } from '@nestjs/common';
 
 import { UsersService } from './users.service';
 import { UserId } from './userId.decorator'
@@ -35,5 +35,19 @@ export class UsersController {
         @Body() savingData: any
     ): Promise<UsersEntity | boolean> {
         return await this.usersService.saveOneUserField(savingData.data)
+    }
+
+    @Get('get_employee_data/:userId')
+    async getEmployeeData(
+        @Param('userId') userId: number
+    ) {
+        let avatar = ''
+        try {
+            avatar = this.usersService.getUserAvatar(userId)
+        } catch {
+            console.log('Ошибка чтения файла аватара userId:', userId)
+        }
+        const res = await this.usersService.findOne('userId', userId)
+        return {user: res, avatar: avatar}
     }
 }

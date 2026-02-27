@@ -6,6 +6,7 @@ import { UpdateCompanyDTO } from './dto/update-company.dto';
 import { DepartmentEntity } from './entities/departments.entity';
 import { UsersEntity } from 'src/users/entities/user.entity';
 import { IAddDepartment } from 'src/interfaces/ICompany';
+import { PositionsEntity } from 'src/users/entities/positions.entity';
 
 @Injectable()
 export class CompanyService {
@@ -19,6 +20,9 @@ export class CompanyService {
 
         @InjectRepository(DepartmentEntity)
         private deptRepository: Repository<DepartmentEntity>,
+
+        @InjectRepository(PositionsEntity)
+        private positionsRepository: Repository<PositionsEntity>,
     ) { }
 
     /**
@@ -36,8 +40,8 @@ export class CompanyService {
         return this.companyRepository.save(company)
     }
 
-    async getFullDepartmentsList(companyId: number): Promise<DepartmentEntity[] | boolean> {
-        if(!Number.isInteger(companyId)) throw new TypeError('Wrong company id')
+    async getFullDepartmentsList(companyId: string): Promise<DepartmentEntity[] | boolean> {
+        if( !Number.isInteger(Number.parseInt(companyId)) ) throw new TypeError('Wrong company id')
 
         // сумма юзеров рабочая
         //const a = await this.deptRepository
@@ -49,19 +53,18 @@ export class CompanyService {
         // .getMany()
 
 
-
         //рабочая сумма юзеров в департаментах
         const a = await this.deptRepository
-        .createQueryBuilder('d')
-        .leftJoinAndSelect('d.users', 'users')
-        .select('d.id', 'id')
-        .addSelect('d.companyId', 'companyId')
-        .addSelect('d.name', 'name')
-        .addSelect('d.description', 'description')
-        .addSelect('COUNT(users.userId)', 'countusers')
-        .where('d.companyId = :companyId', {companyId})
-        .groupBy('d.id')
-        .getRawMany()
+            .createQueryBuilder('d')
+            .leftJoinAndSelect('d.users', 'users')
+            .select('d.id', 'id')
+            .addSelect('d.companyId', 'companyId')
+            .addSelect('d.name', 'name')
+            .addSelect('d.description', 'description')
+            .addSelect('COUNT(users.userId)', 'countusers')
+            .where('d.companyId = :companyId', {companyId})
+            .groupBy('d.id')
+            .getRawMany()
         return a
 
         //старый общий запрос
@@ -72,10 +75,15 @@ export class CompanyService {
         return this.deptRepository.find({where: {companyId: companyId}})
     }
 
-    async getFullEmployeesList(companyId: number): Promise<UsersEntity[] | boolean> {
-        if(!Number.isInteger(companyId)) { throw new TypeError('Wrong company id') }
+    async getPositions() {
+        return this.positionsRepository.find()
+    }
+
+    async getFullEmployeesList(companyId: string): Promise<UsersEntity[] | boolean> {
+        const cId = Number.parseInt(companyId)
+        if(!Number.isInteger(cId)) { throw new TypeError('Wrong company id') }
         return this.usersRepository.find({
-            where: {companyId: companyId},
+            where: {companyId: cId},
             relations: ['skills']
         })
     }

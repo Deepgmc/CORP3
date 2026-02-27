@@ -2,6 +2,7 @@ import { CompanyEntity } from 'src/company/entities/company.entity';
 import { SkillsEntity } from './skills.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { DepartmentEntity } from 'src/company/entities/departments.entity';
+import { PositionsEntity } from './positions.entity';
 
 
 @Entity('users')
@@ -66,6 +67,12 @@ export class UsersEntity {
     })
     departmentId: number;
 
+    @Column({
+        type: 'integer',
+        default: null
+    })
+    positionId: number;
+
     //! ##############   RELATIONS
 
     @ManyToOne(() => CompanyEntity, { cascade: true })
@@ -85,4 +92,11 @@ export class UsersEntity {
         referencedColumnName: 'id'
     })
     department: DepartmentEntity;
+
+    @ManyToOne(() => PositionsEntity)
+    @JoinColumn({
+        name: 'positionId',
+        referencedColumnName: 'id'
+    })
+    position: PositionsEntity;
 }

@@ -1,4 +1,4 @@
-import type { IAddDepartment, ICompany, ICompanyForm } from "@/interfaces/Company";
+import type { IAddDepartment, ICompany, ICompanyForm, IDepartment, IPosition } from "@/interfaces/Company";
 import type { IUser } from "@/interfaces/User";
 import Manager from "./Manager";
 import type { AxiosResponse } from "axios";
@@ -58,12 +58,14 @@ export default class Company extends Manager implements ICompany {
         //загружаем связанные данные компании - департаменты и сотрудников
         Promise.all([
             this.getFullDepartmentsList(),
-            this.getFullEmployeesList()
+            this.getFullEmployeesList(),
+            this.getFullPositionsList()
         ])
             .then((res) => {
-                const [departments, employees] = res
+                const [departments, employees, positions] = res
                 this._store.setDepartments(departments)
                 this._store.setEmployees(employees)
+                this._store.setPositions(positions)
             })
     }
 
@@ -82,6 +84,17 @@ export default class Company extends Manager implements ICompany {
     get employees() {
         return this._store.getEmployees
     }
+    get positions() {
+        return this._store.getPositions
+    }
+
+    getDepartmentById(departmentId: number): IDepartment {
+        return this.departments.value.find((dept: IDepartment) => dept.id === departmentId)
+    }
+
+    getPositionById(positionId: number): IPosition {
+        return this.positions.value.find((pos: IPosition) => pos.id === positionId)
+    }
 
     async saveCompanyProfile(company: ICompanyForm): Promise<boolean> {
         const res: AxiosResponse = await this._postData('save_company_profile')(company)
@@ -96,7 +109,7 @@ export default class Company extends Manager implements ICompany {
      * @returns IDepartment[]
      */
     async getFullDepartmentsList(): Promise<AxiosResponse> {
-        const deptFullList = await this._postData('get_full_departmets_list')({ companyId: this.companyId }, false)
+        const deptFullList = await this._getData(`get_full_departmets_list/${this.companyId}`)({}, false)
         return deptFullList.data
     }
 
@@ -105,7 +118,16 @@ export default class Company extends Manager implements ICompany {
      * @returns IUser[]
      */
     async getFullEmployeesList(): Promise<AxiosResponse> {
-        const employeeList = await this._postData('get_full_employees_list')({ companyId: this.companyId }, false)
+        const employeeList = await this._getData(`get_full_employees_list/${this.companyId}`)({}, false)
+        return employeeList.data
+    }
+
+    /**
+     * Получаем список должностей, без проверок, без авторизации
+     * @returns IPosition[]
+     */
+    async getFullPositionsList(): Promise<AxiosResponse> {
+        const employeeList = await this._getData('get_positions')({}, false)
         return employeeList.data
     }
 

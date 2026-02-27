@@ -19,6 +19,7 @@ export default mergeConfig(
     test: {
       environment: 'jsdom',
       exclude: [...configDefaults.exclude, 'e2e/**'],
+      reporters: ['verbose']
       //root: fileURLToPath(new URL('./', import.meta.url)),
     },
     plugins: [

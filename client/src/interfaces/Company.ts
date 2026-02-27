@@ -21,10 +21,7 @@ export type ICompanySelect<T extends ICompany> = {
     label: T['name'],
 }
 
-export type IDeptSelect = {
-    value: number,
-    label: string
-}
+
 
 export interface IDepartment {
     id         : number,
@@ -32,6 +29,20 @@ export interface IDepartment {
     name       : string,
     description: string,
     countusers : string
+}
+
+export type IDeptSelect = {
+    value: number,
+    label: string
+}
+
+export interface IPosition {
+    id      : number,
+    position: string
+}
+export interface IPositionSelect {
+    value: number,
+    label: string
 }
 
 export interface IAddDepartment extends Pick<IDepartment, 'companyId' | 'name' | 'description' | 'countusers'> {}
