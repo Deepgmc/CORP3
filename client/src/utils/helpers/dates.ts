@@ -46,7 +46,7 @@ export function convertStrToUnixTimestamp(dateIncome: string): TResult {
 
     return {
         error: false,
-        res: parsedDate / 1000
+        res: parsedDate
     }
 }
 
