@@ -16,7 +16,7 @@
                             {{ dialogUser.firstName }} {{ dialogUser.lastName }}
                         </div>
                         <div class="text-subtitle1 text-grey-10">
-                            {{ dialogUser.position?.position }}
+                            Должность: {{ positionText }}
                         </div>
                         <div class="text-body3 text-grey-7">
                             дата рождения: {{ getReadableFormatFromTS(dialogUser.birth) }} ({{ getAgeFromTS(dialogUser.birth) }})
@@ -83,9 +83,15 @@ import { useUserProfileCard } from '@/composables/userProfileCard';
 import UserSkills from '@/components/UserSkills.vue'
 import { genderOptions } from '@/utils/constants/main';
 import { getAgeFromTS, getReadableFormatFromTS } from '@/utils/helpers/dates';
+import { computed } from 'vue';
 
 const { isUserProfileCardOpened, dialogUser, avatar } = useUserProfileCard()
-
+const positionText = computed(() => {
+    if(dialogUser.value.position?.position === undefined) {
+        return 'не указана'
+    }
+    return dialogUser.value.position.position
+})
 </script>
 
 
