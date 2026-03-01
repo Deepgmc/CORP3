@@ -8,6 +8,7 @@ import { DepartmentEntity } from './entities/departments.entity';
 import { UsersEntity } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { PositionsEntity } from 'src/users/entities/positions.entity';
+import { UpdateResult } from 'typeorm';
 
 @Controller('company')
 export class CompanyController {
@@ -89,8 +90,19 @@ export class CompanyController {
     @Patch('switch_user_department_id')
     async changeUserDepartment (
         @Body() savingData: any
-    ): Promise<UsersEntity | boolean> {
-        const usersRes = await this.usersService.changeUserDepartment(savingData)
-        return usersRes
+    ): Promise<UpdateResult | boolean> {
+        return await this.usersService.changeUserDepartment(savingData)
+    }
+
+    //меняем должность юзера
+    @UseGuards(AuthGuard('jwt'))
+    @Patch('change_user_position')
+    async changeUserPosition (
+        @Body() savingData: {
+            userId       : string,
+            newPositionId: string
+        }
+    ): Promise<UpdateResult | boolean> {
+        return await this.usersService.changeUserPosition(savingData)
     }
 }

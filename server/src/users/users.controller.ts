@@ -4,7 +4,7 @@ import { UsersService } from './users.service';
 import { UserId } from './userId.decorator'
 import { IUser } from 'src/interfaces/IUser';
 import { AuthGuard } from '@nestjs/passport';
-import { UsersEntity } from './entities/user.entity';
+import { UpdateResult } from 'typeorm';
 
 @Controller('users')
 export class UsersController {
@@ -33,7 +33,7 @@ export class UsersController {
     @Post('gv_user_field')
     async saveDepartmentsOneField(
         @Body() savingData: any
-    ): Promise<UsersEntity | boolean> {
+    ): Promise<UpdateResult | boolean> {
         return await this.usersService.saveOneUserField(savingData.data)
     }
 

@@ -1,12 +1,13 @@
 import type { Router } from 'vue-router'
 import { availableStrategies, type IUserManager, type TStrategies } from '@/interfaces/User'
 import type { ILoginUser, IUser, TRegisterForm, TSkill } from '@/interfaces/User'
-import type { TAuthRenponse } from '@/interfaces/Error'
+import type { TAuthRenponse, TResult } from '@/interfaces/Error'
 import { jwtStrategy } from '../auth/strategies/jwt.strategy'
 import type { isLoginedResult } from '../auth/strategies/Strategy'
 import { ALREADY_AUTHORISED_MSG } from '@/utils/constants/texts.ts'
 import Manager from '@/entities/Manager'
 import Company from '@/entities/Company'
+import type { IPosition } from '@/interfaces/Company'
 
 
 export class UserManager extends Manager implements IUserManager {
@@ -41,9 +42,9 @@ export class UserManager extends Manager implements IUserManager {
         this.company = Company.getInstance(
             {
                 companyId: createdUser.company.companyId,
-                name: createdUser.company.name,
-                address: createdUser.company.address,
-                user: createdUser
+                name     : createdUser.company.name,
+                address  : createdUser.company.address,
+                user     : createdUser
             }
         )
     }
@@ -171,5 +172,11 @@ export class UserManager extends Manager implements IUserManager {
     }
     setRouterAfterLogOut(router: Router): void {
         router.push({ name: 'login' })
+    }
+
+    async changeUserPosition(newPositionId: IPosition['id'], userId: IUser['userId']): Promise<TResult> {
+        const res = await this.company.changeUserPosition(newPositionId, userId)
+        if(res.error) return res
+        return res
     }
 }

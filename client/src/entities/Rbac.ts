@@ -95,12 +95,16 @@ export class Rbac extends UserManager {
                     if(typeof role.permissions[entity] === 'undefined' || typeof role.permissions[entity][action] === 'undefined') return
                     const accessments = role.permissions[entity][action]
 
+                    //если можно менять все поля - остальное не важно
+                    if(accessments.indexOf(R_FIELDS.ENTIRE) !== -1) hasAccess = true
+
+                    //проверка отдельных полей
                     if(accessments.indexOf(field) !== -1) hasAccess = true
                 })
                 return hasAccess
-            }
-        }
-    }
+            };
+        };
+    };
 
     getRoles(){
         return this.roles
@@ -128,8 +132,9 @@ export enum R_ACTIONS {
 }
 
 export enum R_FIELDS {
-    ENTIRE = 'entire',
-    NAME   = 'name',
+    ENTIRE   = 'entire',
+    NAME     = 'name',
+    POSITION = 'position',
 }
 type TRoles = AdminRole | ManagerRole | EmployeeRole | GuestRole
 
@@ -189,9 +194,14 @@ export class ManagerRole extends Role {
                 R_FIELDS.ENTIRE
             ]
         },
+        [R_ENTITIES.EMPLOYEE]: {
+            [R_ACTIONS.VIEW]: [
+                R_FIELDS.ENTIRE
+            ]
+        },
         [R_ENTITIES.USER]: {
             [R_ACTIONS.EDIT]: [
-                R_FIELDS.ENTIRE
+                R_FIELDS.NAME
             ]
         },
     };

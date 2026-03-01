@@ -50,9 +50,9 @@ export const useUserStore = defineStore('user', () => {
 
     function addSkill(skillText: TSkill['skill'], addedSkillId: TSkill['id']): boolean {
         user.value.skills.push({
-            id: addedSkillId,
+            id         : addedSkillId,
             skillUserId: user.value.userId,
-            skill: skillText
+            skill      : skillText
         })
         return true
     }
@@ -87,11 +87,11 @@ export const userDummy: IUser = {
     phone       : '',
     departmentId: null,
     positionId  : null,
+    position    : null,
     avatar      : null,
 
     company   : null,
     skills    : [],
     department: null,
-    position : null
 }
 

@@ -16,7 +16,17 @@
                             {{ dialogUser.firstName }} {{ dialogUser.lastName }}
                         </div>
                         <div class="text-subtitle1 text-grey-10">
-                            Должность: {{ positionText }}
+                            <template v-if="!$um.can(R_ENTITIES.USER)(R_ACTIONS.EDIT)(R_FIELDS.POSITION)">Должность: {{ positionText }}</template>
+                            <template v-else>
+                                <q-select
+                                    dense
+                                    filled
+                                    v-model="selectPositionModel"
+                                    :options="selectPositionOptions"
+                                    input-debounce="0"
+                                    @update:model-value="onPositionSelect"
+                                ></q-select>
+                            </template>
                         </div>
                         <div class="text-body3 text-grey-7">
                             дата рождения: {{ getReadableFormatFromTS(dialogUser.birth) }} ({{ getAgeFromTS(dialogUser.birth) }})
@@ -79,19 +89,48 @@
 
 
 <script lang="ts" setup>
+import { computed, ref } from 'vue';
+import { R_ACTIONS, R_ENTITIES, R_FIELDS, Rbac } from '@/entities/Rbac';
 import { useUserProfileCard } from '@/composables/userProfileCard';
 import UserSkills from '@/components/UserSkills.vue'
 import { genderOptions } from '@/utils/constants/main';
 import { getAgeFromTS, getReadableFormatFromTS } from '@/utils/helpers/dates';
-import { computed } from 'vue';
+import { getSelectOptionsFromDataArray } from '@/utils/helpers/components';
+import type { IPosition } from '@/interfaces/Company';
+import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
+import { SAVED_SUCCESS } from '@/utils/constants/texts';
+import type { TResult } from '@/interfaces/Error';
+const notify = useNotify()
+const $um = Rbac.getInstance()
 
 const { isUserProfileCardOpened, dialogUser, avatar } = useUserProfileCard()
+
+const selectPositionModel = ref({
+    label: dialogUser.value?.position?.position,
+    value: dialogUser.value?.position?.id
+})
+
+const selectPositionOptions = computed(() => {
+    return getSelectOptionsFromDataArray<IPosition>($um.company.positions.value, {
+        idField: 'id',
+        labelField: 'position'
+    })
+})
 const positionText = computed(() => {
     if(dialogUser.value.position?.position === undefined) {
         return 'не указана'
     }
     return dialogUser.value.position.position
 })
+async function onPositionSelect(): Promise<void> {
+    if(!selectPositionModel.value.value) return
+    const res: TResult = await $um.changeUserPosition(selectPositionModel.value.value, dialogUser.value.userId)
+    if(res.error) {
+        notify.run(res.errorMessage, notifyTypes.err)
+        return
+    }
+    notify.run(SAVED_SUCCESS, notifyTypes.succ)
+}
 </script>
 
 

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import * as fs from 'node:fs'
 const SaveBase64 = require('node-base64-to-image')
 import { InjectRepository } from '@nestjs/typeorm'
@@ -9,6 +9,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { SkillsEntity } from './entities/skills.entity';
 import { IUser, TSkill } from 'src/interfaces/IUser';
 import { DepartmentEntity } from 'src/company/entities/departments.entity';
+import { PositionsEntity } from './entities/positions.entity';
 
 const avatarFolderPath = '/home/deep/work/CORP3/server/avatars'
 
@@ -24,6 +25,9 @@ export class UsersService {
 
         @InjectRepository(DepartmentEntity)
         private deptRepository: Repository<DepartmentEntity>,
+
+        @InjectRepository(PositionsEntity)
+        private deptPositions: Repository<PositionsEntity>,
     ) { }
 
     async getFullUserData(field: string, value: string | number): Promise<any> {
@@ -148,11 +152,15 @@ export class UsersService {
         fieldName: string,
         itemId   : string,
         val      : string
-    }){
-        return await this.usersRepository.save({
-            'userId': Number(savingData.itemId),
-            [savingData.fieldName]: savingData.val
-        })
+    }): Promise<UpdateResult> {
+        const res = await this.usersRepository.update(
+            {
+                userId: Number(savingData.itemId)
+            }, {
+                [savingData.fieldName]: savingData.val
+            }
+        )
+        return res
     }
 
     async changeUserDepartment(savingData: {
@@ -160,10 +168,22 @@ export class UsersService {
         departmentFrom: string,
         departmentTo  : string
     }) {
-        return this.saveOneUserField({
+        return await this.saveOneUserField({
             fieldName: 'departmentId',
             itemId   : savingData.userId,
             val      : savingData.departmentTo
         })
+    }
+
+    async changeUserPosition(savingData: {
+        userId       : string,
+        newPositionId: string
+    }) {
+        const res = await this.saveOneUserField({
+            fieldName: 'positionId',
+            itemId   : savingData.userId,
+            val      : savingData.newPositionId
+        })
+        return res
     }
 }

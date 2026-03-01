@@ -45,6 +45,13 @@
                 </div>
             </div>
 
+            <div class="row q-mt-md" v-if="form.position">
+                <!-- должность -->
+                <div class="col-12">
+                    Должность: <span>{{ form.position.position }}</span> (меняется только по согласованию с HR)
+                </div>
+            </div>
+
             <!-- Имя и Фамилия -->
             <div class="row q-mt-md">
                 <div class="col-6">
@@ -105,7 +112,7 @@
                 <div class="col-12">
                     <div class="q-mt-sm">
                         <div class="q-mb-xs text-caption">Пол</div>
-                        <q-option-group v-model="form.gender" :options="genderOptions" color="primary" inline />
+                        <q-option-group v-model="form.gender" :options="genderOptions.reverse()" color="primary" inline />
                     </div>
                 </div>
             </div>
@@ -182,12 +189,12 @@ import type { TResult } from '@/interfaces/Error'
 const scaleVal = ref<number>(1)
 const avatarEditorRef = ref<any>(null)
 
-const $userManager = Rbac.getInstance()
+const $um = Rbac.getInstance()
 const notify = useNotify()
 const userAvatar = ref('')
 
 onBeforeMount(() => {
-    const user = $userManager.getUser()
+    const user = $um.getUser()
     if(user.avatar !== null){
         userAvatar.value = user.avatar
     }
@@ -207,7 +214,7 @@ async function onSubmit(): Promise<void> {
          form.avatar = avatar
     }
 
-    if (await $userManager.saveUserProfile({...form})) {
+    if (await $um.saveUserProfile({...form})) {
         notify.run(SAVED_SUCCESS, notifyTypes.succ)
     } else {
         notify.run(SAVED_ERROR, notifyTypes.err)
@@ -235,11 +242,11 @@ watch(bDateStr, (newBdate) => {
 
 function removeSkill(skillId: TSkill['id']): void {
     if (!Number.isInteger(skillId)) return
-    $userManager.removeUserSkill(skillId)
+    $um.removeUserSkill(skillId)
 }
 
 function addSkill(skillText: string): void {
-    $userManager.addUserSkill(skillText)
+    $um.addUserSkill(skillText)
 }
 
 ///// CHANGE PASSWORD
