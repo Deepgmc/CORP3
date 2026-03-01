@@ -25,15 +25,25 @@ export class UsersEntity {
     @Column({ select: false })
     password: string;
 
-    @Column({
+    @Column({//д.р.
         type: 'bigint',
     })
     birth: number;
 
-    @Column({
+    @Column({//регистрация в системе
         type: 'bigint',
     })
     reg_date: number;
+
+    @Column({//приём на работу
+        type: 'bigint',
+    })
+    hire_date: number;
+
+    @Column({//увольнение
+        type: 'bigint',
+    })
+    fire_date: number;
 
     @Column()
     companyId: number;

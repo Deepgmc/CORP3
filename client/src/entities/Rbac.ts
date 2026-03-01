@@ -201,7 +201,7 @@ export class ManagerRole extends Role {
         },
         [R_ENTITIES.USER]: {
             [R_ACTIONS.EDIT]: [
-                R_FIELDS.NAME
+                R_FIELDS.ENTIRE
             ]
         },
     };

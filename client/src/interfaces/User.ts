@@ -7,6 +7,9 @@ export interface IUser {
     userId      : number,
     username    : string,
     birth       : number,          //timestamp
+    reg_date    : number,          //timestamp
+    hire_date   : number,          //timestamp
+    fire_date   : number,          //timestamp
     email       : string,
     companyId   : number | null,
     isDirector  : boolean,
