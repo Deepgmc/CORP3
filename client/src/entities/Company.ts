@@ -40,13 +40,13 @@ export default class Company extends Manager implements ICompany {
 
     private constructor(
         companyId: number,
-        name: string,
-        address: string,
-        user: IUser
+        name     : string,
+        address  : string,
+        user     : IUser
     ) {
         if (Company.instance) throw new TypeError('Instance creation only with .getInstance()')
         super()
-        this.user = user
+        this.user = user //CURRENT USER, not Employee
 
         this._postData = this._post(this._apiModule)
         this._getData = this._get(this._apiModule)
