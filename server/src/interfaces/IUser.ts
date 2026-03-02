@@ -3,6 +3,9 @@ export interface IUser {
     username    : string,
     password    : string,
     birth       : number,          //timestamp
+    reg_date    : number,          //timestamp
+    hire_date   : number,          //timestamp
+    fire_date   : number,          //timestamp
     email       : string,
     companyId   : number | null,
     departmentId: number | null,

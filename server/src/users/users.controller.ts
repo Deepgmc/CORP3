@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Logger, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Patch, Post, UseGuards } from '@nestjs/common';
 
 import { UsersService } from './users.service';
 import { UserId } from './userId.decorator'
 import { IUser } from 'src/interfaces/IUser';
 import { AuthGuard } from '@nestjs/passport';
-import { UsersEntity } from './entities/user.entity';
+import { UpdateResult } from 'typeorm';
 
 @Controller('users')
 export class UsersController {
@@ -33,7 +33,7 @@ export class UsersController {
     @Post('gv_user_field')
     async saveDepartmentsOneField(
         @Body() savingData: any
-    ): Promise<UsersEntity | boolean> {
+    ): Promise<UpdateResult | boolean> {
         return await this.usersService.saveOneUserField(savingData.data)
     }
 
@@ -49,5 +49,17 @@ export class UsersController {
         }
         const res = await this.usersService.findOne('userId', userId)
         return {user: res, avatar: avatar}
+    }
+
+    //меняем должность юзера
+    @UseGuards(AuthGuard('jwt'))
+    @Patch('change_user_position')
+    async changeUserPosition (
+        @Body() savingData: {
+            userId       : string,
+            newPositionId: string
+        }
+    ): Promise<UpdateResult | boolean> {
+        return await this.usersService.changeUserPosition(savingData)
     }
 }

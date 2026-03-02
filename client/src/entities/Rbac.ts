@@ -87,16 +87,24 @@ export class Rbac extends UserManager {
         let hasAccess = false
         return (action: R_ACTIONS): (field: R_FIELDS) => boolean => {
             return (field: R_FIELDS): boolean => {
+                if(this.getUser().userId === this.ADMIN_ID){
+                    //! админу можно всё
+                    return true
+                }
                 this.roles.forEach((role: TRoles) => {
                     if(typeof role.permissions[entity] === 'undefined' || typeof role.permissions[entity][action] === 'undefined') return
                     const accessments = role.permissions[entity][action]
 
+                    //если можно менять все поля - остальное не важно
+                    if(accessments.indexOf(R_FIELDS.ENTIRE) !== -1) hasAccess = true
+
+                    //проверка отдельных полей
                     if(accessments.indexOf(field) !== -1) hasAccess = true
                 })
                 return hasAccess
-            }
-        }
-    }
+            };
+        };
+    };
 
     getRoles(){
         return this.roles
@@ -114,6 +122,7 @@ export enum R_ENTITIES {
     COMPANY    = 'company',
     DEPARTMENT = 'department',
     EMPLOYEE   = 'employee',
+    USER       = 'user'
 }
 
 export enum R_ACTIONS {
@@ -123,8 +132,9 @@ export enum R_ACTIONS {
 }
 
 export enum R_FIELDS {
-    ENTIRE = 'entire',
-    NAME   = 'name',
+    ENTIRE   = 'entire',
+    NAME     = 'name',
+    POSITION = 'position',
 }
 type TRoles = AdminRole | ManagerRole | EmployeeRole | GuestRole
 
@@ -167,8 +177,13 @@ export class AdminRole extends Role {
                 R_FIELDS.ENTIRE
             ],
         },
-    }
-}
+        [R_ENTITIES.USER]: {
+            [R_ACTIONS.EDIT]: [
+                R_FIELDS.ENTIRE
+            ]
+        },
+    };
+};
 export class ManagerRole extends Role {
     constructor(){
         super('manager', 1)
@@ -178,9 +193,19 @@ export class ManagerRole extends Role {
             [R_ACTIONS.ADD]: [
                 R_FIELDS.ENTIRE
             ]
-        }
-    }
-}
+        },
+        [R_ENTITIES.EMPLOYEE]: {
+            [R_ACTIONS.VIEW]: [
+                R_FIELDS.ENTIRE
+            ]
+        },
+        [R_ENTITIES.USER]: {
+            [R_ACTIONS.EDIT]: [
+                R_FIELDS.ENTIRE
+            ]
+        },
+    };
+};
 export class EmployeeRole extends Role {
     constructor(){
         super('employee', 2)

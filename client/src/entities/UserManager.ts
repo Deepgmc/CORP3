@@ -41,9 +41,9 @@ export class UserManager extends Manager implements IUserManager {
         this.company = Company.getInstance(
             {
                 companyId: createdUser.company.companyId,
-                name: createdUser.company.name,
-                address: createdUser.company.address,
-                user: createdUser
+                name     : createdUser.company.name,
+                address  : createdUser.company.address,
+                user     : createdUser
             }
         )
     }

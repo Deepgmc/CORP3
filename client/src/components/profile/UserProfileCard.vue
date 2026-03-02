@@ -15,11 +15,11 @@
                         <div class="text-h5 text-weight-bold">
                             {{ dialogUser.firstName }} {{ dialogUser.lastName }}
                         </div>
-                        <div class="text-subtitle1 text-grey-10">
-                            {{ dialogUser.position?.position }}
-                        </div>
                         <div class="text-body3 text-grey-7">
                             дата рождения: {{ getReadableFormatFromTS(dialogUser.birth) }} ({{ getAgeFromTS(dialogUser.birth) }})
+                        </div>
+                        <div class="text-body3 text-grey-7" v-if="dialogUser.reg_date">
+                            дата регистрации: {{ getReadableFormatFromTS(dialogUser.reg_date) }}
                         </div>
                         <div class="text-body3 text-grey-7">
                             пол: {{ genderOptions[dialogUser.gender]?.label }}
@@ -29,48 +29,83 @@
 
                 <!-- Информация о компании -->
                 <div class="row q-mt-lg">
-                    <div class="col-auto">
+                    <div class="col-4 q-pa-xs">
+                        <div class="text-subtitle1 text-grey-10">
+                            <template v-if="!$um.can(R_ENTITIES.USER)(R_ACTIONS.EDIT)(R_FIELDS.POSITION)">Должность: {{ positionText }}</template>
+                            <template v-else>
+                                <q-select
+                                    dense
+                                    filled
+                                    v-model="selectPositionModel"
+                                    :options="selectPositionOptions"
+                                    input-debounce="0"
+                                    @update:model-value="onPositionSelect"
+                                ></q-select>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="col-4 q-pa-xs">
                         <q-icon name="business" class="text-primary" />
                         <span class="text-body1 q-ml-xs">{{ dialogUser.company?.name }}</span>
-                        <span v-if="dialogUser.isDirector" class="subcaption">(руководитель)</span>
+                        <span v-if="dialogUser.isDirector" class="subcaption"> (руководитель)</span>
                     </div>
-                    <div class="col-auto">
+                    <div class="col-4 q-pa-xs">
                         <q-icon name="work" class="text-primary q-ml-md" />
                         <span class="text-body1 q-ml-xs">{{ dialogUser.department?.name }}</span>
                     </div>
                 </div>
 
                 <!-- Краткое описание -->
-                <q-card v-if="dialogUser.bio.trim()" flat bordered class="bg-grey-2">
-                    <q-card-section>
-                        <div class="text-body1">
-                            {{ dialogUser.bio }}
-                        </div>
-                    </q-card-section>
-                </q-card>
-
-                <!-- Контактный телефон -->
-                <div v-if="dialogUser.phone">
-                    <q-icon name="phone" class="text-primary" />
-                    <span class="text-body2 q-ml-sm">{{ dialogUser.phone }}</span>
+                <div class="row">
+                    <q-card v-if="dialogUser.bio.trim()" flat bordered class="bg-grey-2">
+                        <q-card-section>
+                            <div class="text-body1">
+                                {{ dialogUser.bio }}
+                            </div>
+                        </q-card-section>
+                    </q-card>
                 </div>
-                <!-- email -->
-                <div v-if="dialogUser.email">
-                    <q-icon name="email" class="text-primary" />
-                    <span class="text-bod2 q-ml-sm">{{ dialogUser.email }}</span>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <!-- Контактный телефон -->
+                            <div class="col-6">
+                                <q-icon name="phone" class="text-primary" />
+                                <span class="text-body2 q-ml-sm">{{ dialogUser.phone }}</span>
+                            </div>
+                            <!-- email -->
+                            <div class="col-6">
+                                <q-icon name="email" class="text-primary" />
+                                <span class="text-bod2 q-ml-sm">{{ dialogUser.email }}</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Навыки -->
-                <div v-if="dialogUser.skills.length > 0">
-                    <q-icon name="school" class="text-primary" />
-                    <span class="text-body2 q-ml-sm q-mb-sm">Навыки:</span>
-                    <user-skills
-                        :skills="dialogUser.skills"
-                        :needAssession="false"
-                        :removable="false"
-                        :alwaysShowAll="true"
-                        size="md"
-                    ></user-skills>
+                <div class="row" v-if="dialogUser.skills.length > 0">
+                    <div class="col-12 wrap">
+                        <q-icon name="school" class="text-primary" />
+                        <span class="text-body2 q-ml-sm q-mb-sm">Навыки:</span>
+                        <user-skills
+                            :skills="dialogUser.skills"
+                            :needAssession="false"
+                            :removable="false"
+                            :alwaysShowAll="true"
+                            size="md"
+                        ></user-skills>
+                    </div>
+                </div>
+
+                <!--Admin controls-->
+                <div class="row">
+                    <div class="col-12 flex justify-end">
+                        <q-icon name="star_rate" size="md" class="q-ml-sm pointer text-secondary" />
+                        <q-icon name="thumb_up" size="md" class="q-ml-sm pointer text-secondary" />
+                        <q-icon name="calendar_month" size="md" class="q-ml-sm pointer text-info" />
+                        <q-icon name="highlight_off" size="md" class="q-ml-sm pointer text-negative" />
+                    </div>
                 </div>
             </q-card-section>
         </q-card>
@@ -79,13 +114,48 @@
 
 
 <script lang="ts" setup>
+import { computed, ref } from 'vue';
+import { R_ACTIONS, R_ENTITIES, R_FIELDS, Rbac } from '@/entities/Rbac';
 import { useUserProfileCard } from '@/composables/userProfileCard';
 import UserSkills from '@/components/UserSkills.vue'
 import { genderOptions } from '@/utils/constants/main';
 import { getAgeFromTS, getReadableFormatFromTS } from '@/utils/helpers/dates';
+import { getSelectOptionsFromDataArray } from '@/utils/helpers/components';
+import type { IPosition } from '@/interfaces/Company';
+import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
+import { SAVED_SUCCESS } from '@/utils/constants/texts';
+import type { TResult } from '@/interfaces/Error';
+const notify = useNotify()
+const $um = Rbac.getInstance()
 
 const { isUserProfileCardOpened, dialogUser, avatar } = useUserProfileCard()
 
+const selectPositionModel = ref({
+    label: dialogUser.value?.position?.position,
+    value: dialogUser.value?.position?.id
+})
+
+const selectPositionOptions = computed(() => {
+    return getSelectOptionsFromDataArray<IPosition>($um.company.positions.value, {
+        idField: 'id',
+        labelField: 'position'
+    })
+})
+const positionText = computed(() => {
+    if(dialogUser.value.position?.position === undefined) {
+        return 'не указана'
+    }
+    return dialogUser.value.position.position
+})
+async function onPositionSelect(): Promise<void> {
+    if(!selectPositionModel.value.value) return
+    const res: TResult = await $um.company.changeEmployeePosition(selectPositionModel.value.value, dialogUser.value.userId)
+    if(res.error) {
+        notify.run(res.errorMessage, notifyTypes.err)
+        return
+    }
+    notify.run(SAVED_SUCCESS, notifyTypes.succ)
+}
 </script>
 
 
@@ -93,7 +163,6 @@ const { isUserProfileCardOpened, dialogUser, avatar } = useUserProfileCard()
 <style scoped>
 .employee-card {
     max-width: 900px;
-    min-width: 600px;
     min-height: 400px;
 }
 
@@ -105,16 +174,19 @@ const { isUserProfileCardOpened, dialogUser, avatar } = useUserProfileCard()
     .employee-card {
         max-width: 100%;
     }
-
     .row.items-center {
         flex-direction: column;
         text-align: center;
     }
-
     .col-auto {
         width: 100%;
         text-align: center;
         margin-bottom: 8px;
+    }
+}
+@media (min-width: 800px) {
+    .employee-card {
+        min-width: 800px;
     }
 }
 </style>

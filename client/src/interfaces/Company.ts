@@ -2,8 +2,8 @@ import type { AxiosResponse } from "axios"
 
 export interface ICompany {
     companyId: number,
-    name: string,
-    address: string,
+    name     : string,
+    address  : string,
 }
 
 export interface ICompanyManager extends ICompany {

@@ -27,14 +27,12 @@ export const useUserStore = defineStore('user', () => {
 
     const loadUserData = async (): Promise<IUser> => {
         const userId = jwtStrategy.userId
-        if (userId && userId > 0) {
-            const res: AxiosResponse | boolean = await NetworkManager.getInstance()
-                .getApiRequestMethod(EReqMethods.get)('user')('get_user_data')({ data: { userId } }) as AxiosResponse | boolean
-            if (typeof res !== 'boolean') {
-                res.data.user.avatar = res.data.avatar
-                if(setUser(res.data.user)) return res.data.user
-                return userDummy
-            }
+        if(!userId || userId <= 0) return userDummy
+        const res: AxiosResponse | boolean = await NetworkManager.getInstance()
+            .getApiRequestMethod(EReqMethods.get)('user')('get_user_data')({ data: { userId } }) as AxiosResponse | boolean
+        if (typeof res !== 'boolean') {
+            res.data.user.avatar = res.data.avatar
+            if(setUser(res.data.user)) return res.data.user
         }
         return userDummy
     }
@@ -50,18 +48,31 @@ export const useUserStore = defineStore('user', () => {
 
     function addSkill(skillText: TSkill['skill'], addedSkillId: TSkill['id']): boolean {
         user.value.skills.push({
-            id: addedSkillId,
+            id         : addedSkillId,
             skillUserId: user.value.userId,
-            skill: skillText
+            skill      : skillText
         })
         return true
     }
+
+    const isFired = computed((): boolean => {
+        if(user.value.fire_date > 0) return true
+        return false
+    })
+
+    const isHired = computed(() => {
+        if(isFired.value) return false
+        if(user.value.hire_date > 0) return true
+        return true
+    })
 
     return {
         user,
         timeLogined,
 
         isDirector,
+        isFired,
+        isHired,
 
         setUser,
         loadUserData,
@@ -87,11 +98,14 @@ export const userDummy: IUser = {
     phone       : '',
     departmentId: null,
     positionId  : null,
+    position    : null,
     avatar      : null,
+    reg_date    : 0,
+    hire_date   : 0,
+    fire_date   : 0,
 
     company   : null,
     skills    : [],
     department: null,
-    position : null
 }
 

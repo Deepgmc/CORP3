@@ -75,7 +75,7 @@
     </q-page-container>
 </q-layout>
 
-<user-profile-card></user-profile-card>
+<user-profile-card v-if="isUserProfileCardOpened"></user-profile-card>
 </template>
 
 <script setup lang="ts">
@@ -84,6 +84,9 @@ import { ref } from 'vue'
 import GridViewChangeDialog from '@/components/GridViewChangeDialog.vue'
 import UserProfileCard from '@/components/profile/UserProfileCard.vue'
 import { Rbac } from '@/entities/Rbac'
+import { useUserProfileCard } from '@/composables/userProfileCard'
+
+const { isUserProfileCardOpened } = useUserProfileCard()
 
 const router = useRouter()
 const $userManager = Rbac.getInstance()

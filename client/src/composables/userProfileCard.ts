@@ -6,12 +6,13 @@ import { isSuccessRequest } from "@/utils/helpers/network";
 
 const isUserProfileCardOpened = ref<boolean>(false)
 
-//interface IEmployeeRedactUser extends IUser {}
-
 const dialogUser = ref<IUser> ({
     userId      : 0,
     username    : '',
     birth       : 123,
+    reg_date    : 123,
+    hire_date   : 123,
+    fire_date   : 123,
     email       : '',
     companyId   : 2,
     isDirector  : false,
@@ -22,10 +23,10 @@ const dialogUser = ref<IUser> ({
     phone       : '',
     departmentId: null,
     positionId  : 1,
+    position    : null,
     company     : null,
     skills      : [],
     department  : null,
-    position    : null,
     avatar      : null,
 })
 

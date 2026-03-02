@@ -1,6 +1,7 @@
 import type { ICompany, ICompanySelect, IDepartment, IDeptSelect, IPosition, IPositionSelect } from '@/interfaces/Company'
 import type NetworkManager from '@/network/NetworkManager'
 import { EReqMethods } from '@/network/NetworkManager'
+import { getSelectOptionsFromDataArray } from '@/utils/helpers/components'
 import { ref } from 'vue'
 
 export type optionsResult = {
@@ -11,9 +12,9 @@ export type optionsResult = {
 export function useCompany($networkManager: NetworkManager) {
 
     let isLoaded = false
-    const comOptions = ref([])
-    const deptOptions = ref([])
-    const selectPositionOptions = ref([])
+    const comOptions = ref<IPositionSelect[]>()
+    const deptOptions = ref<IPositionSelect[]>()
+    const selectPositionOptions = ref<IPositionSelect[]>()
     const emptyDummy = { label: '', value: 0 }
     const selectRefModel = ref<ICompanySelect<ICompany>>(emptyDummy)
     const selectDeptModel = ref<IDeptSelect>(emptyDummy)
@@ -24,11 +25,9 @@ export function useCompany($networkManager: NetworkManager) {
             const asxiosData = await $networkManager.getApiRequestMethod(EReqMethods.get)('company')('get_all')({}, false)
             isLoaded = true
             if (typeof asxiosData !== 'boolean') {
-                comOptions.value = asxiosData.data.map((company: ICompany): optionsResult => {
-                    return {
-                        value: company.companyId,
-                        label: company.name,
-                    }
+                comOptions.value = getSelectOptionsFromDataArray<ICompany>(asxiosData.data, {
+                    idField: 'companyId',
+                    labelField: 'name'
                 })
             }
         }
@@ -38,12 +37,9 @@ export function useCompany($networkManager: NetworkManager) {
     async function loadCompanyDepartments(companyId: number): Promise<IDepartment[] | boolean> {
         const asxiosData = await $networkManager.getApiRequestMethod(EReqMethods.get)('company')(`get_departments_of_company/${companyId}`)({}, false)
         if (typeof asxiosData !== 'boolean') {
-            // selectDeptModel
-             deptOptions.value = asxiosData.data.map((dept: IDepartment): optionsResult => {
-                return {
-                    value: dept.id,
-                    label: dept.name,
-                }
+            deptOptions.value = getSelectOptionsFromDataArray<IDepartment>(asxiosData.data, {
+                idField: 'id',
+                labelField: 'name'
             })
         }
         return false
@@ -52,11 +48,9 @@ export function useCompany($networkManager: NetworkManager) {
         const asxiosData = await $networkManager.getApiRequestMethod(EReqMethods.get)('company')(`get_positions/`)({}, false)
         if (typeof asxiosData !== 'boolean') {
             // selectPositionModel
-             selectPositionOptions.value = asxiosData.data.map((position: IPosition): optionsResult => {
-                return {
-                    value: position.id,
-                    label: position.position,
-                }
+            selectPositionOptions.value = getSelectOptionsFromDataArray<IPosition>(asxiosData.data, {
+                idField: 'id',
+                labelField: 'position'
             })
         }
         return false
@@ -65,9 +59,11 @@ export function useCompany($networkManager: NetworkManager) {
     function filterFn(val: string, update: any, /*_abort: any*/) {
         update(() => {
             const needle = val.toLowerCase()
-            comOptions.value = comOptions.value.filter((com: ICompanySelect<ICompany>) => {
+            if(comOptions.value !== undefined) {
+                comOptions.value = comOptions.value.filter((com: ICompanySelect<ICompany>) => {
                 return com.label.toLowerCase().indexOf(needle) > -1
             })
+            }
         })
     }
 

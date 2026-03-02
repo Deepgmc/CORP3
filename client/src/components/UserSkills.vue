@@ -1,5 +1,5 @@
 <template>
-    <div class="row">
+    <div class="row wrap">
         <template v-for="prop in skillsToRender" :key="prop.id">
             <q-chip
                 :removable="removable"

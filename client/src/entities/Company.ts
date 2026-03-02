@@ -4,6 +4,8 @@ import Manager from "./Manager";
 import type { AxiosResponse } from "axios";
 import { useCompanyStore } from "@/stores/companyStore";
 import { isSuccessRequest } from "@/utils/helpers/network";
+import type { Employee } from "./Employee";
+import type { TResult } from "@/interfaces/Error";
 
 type TCompanyData = {
     companyId: number,
@@ -39,13 +41,13 @@ export default class Company extends Manager implements ICompany {
 
     private constructor(
         companyId: number,
-        name: string,
-        address: string,
-        user: IUser
+        name     : string,
+        address  : string,
+        user     : IUser
     ) {
         if (Company.instance) throw new TypeError('Instance creation only with .getInstance()')
         super()
-        this.user = user
+        this.user = user //CURRENT USER, not Employee
 
         this._postData = this._post(this._apiModule)
         this._getData = this._get(this._apiModule)
@@ -147,7 +149,7 @@ export default class Company extends Manager implements ICompany {
     }
 
     /**
-     * ОТкрепляем от компании и удаляем департамент
+     * Открепляем от компании и удаляем департамент
      * @returns AxiosResponse
      */
     async deleteDepartment(departmentId: number): Promise<boolean> {
@@ -167,11 +169,20 @@ export default class Company extends Manager implements ICompany {
      * @param departmentTo в какой департамент назначаем
      */
     public async switchUserDepartmets(user: IUser, departmentFrom: number, departmentTo: number) {
-        await this._patchData(`switch_user_department_id`)({
+        await this._patchData('switch_user_department_id')({
             userId: user.userId,
             departmentFrom,
             departmentTo
         }, true)
         this._store.changeUserDepartment(user.userId, departmentFrom, departmentTo)
+    }
+
+    async changeEmployeePosition(newPositionId: IPosition['id'], userId: IUser['userId']): Promise<TResult> {
+        const employee = this.employees.value.find((emp: Employee) => emp.userId === userId)
+        if(employee){
+            const res = await employee.changeEmployeePosition(newPositionId, userId)
+            return res
+        }
+        return {error: true, errorMessage: 'Unhandled error'}
     }
 }
