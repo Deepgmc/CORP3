@@ -18,6 +18,7 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "types": ["node"],
+    "noEmitOnError": true,
     "paths": {
       "@root/*": ["./src"]
     }

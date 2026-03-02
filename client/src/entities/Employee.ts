@@ -2,6 +2,8 @@ import type { IUser, TSkill } from "@/interfaces/User";
 import Manager from "./Manager";
 import type { ICompany, IDepartment, IPosition } from "@/interfaces/Company";
 import type { TResult } from "@/interfaces/Error";
+import { computed } from "vue";
+import { Rbac } from "./Rbac";
 
 export class Employee extends Manager implements Partial<IUser> {
 
@@ -21,6 +23,7 @@ export class Employee extends Manager implements Partial<IUser> {
     public     phone     : string   = ''
     public     departmentId: number = 0
     public     positionId  : number = 0
+    public     isDirector  : boolean= false
     public     avatar      : string = ''
     company    : ICompany | null    = null
     skills     : TSkill[]           = []
@@ -45,9 +48,16 @@ export class Employee extends Manager implements Partial<IUser> {
         this.bio                                        = employeeData.bio
         this.gender                                     = employeeData.gender
         this.phone                                      = employeeData.phone
+        this.isDirector                                 = employeeData.isDirector
+         if(employeeData.avatar) this.avatar            = employeeData.avatar
         if(employeeData.departmentId) this.departmentId = employeeData.departmentId
         if(employeeData.positionId) this.positionId     = employeeData.positionId
-        if(employeeData.avatar) this.avatar             = employeeData.avatar
+
+        if(employeeData.company) this.company       = employeeData.company
+        if(employeeData.skills) this.skills         = employeeData.skills
+        if(employeeData.department) this.department = employeeData.department
+        if(employeeData.position) this.position     = employeeData.position
+
     }
 
     public async changeEmployeePosition(newPositionId: IPosition['id'], userId: IUser['userId']): Promise<TResult> {
@@ -62,18 +72,31 @@ export class Employee extends Manager implements Partial<IUser> {
         return { error: true, errorMessage: 'Не обновлено ни одной записи' }
     }
 
-    // const isFired = computed((): boolean => {
-    //     if(user.value.fire_date > 0) return true
-    //     return false
-    // })
+    /** Еще не назначен на должность, не нанят и не работал */
+    public isNewEmployee(): boolean {
+        return !this.isHired() && !this.isFired()
+    }
 
-    // const isHired = computed(() => {
-    //     if(isFired.value) return false
-    //     if(user.value.hire_date > 0) return true
-    //     return true
-    // })
+    /** Работал раньше но был уволен */
+    public isFired(): boolean {
+        if(this.fire_date > 0) return true
+        return false
+    }
 
-    // const isDirector = computed(() => {
-    //         return user.value.isDirector
-    //     })
+    /** Сейчас работает */
+    public isHired (): boolean {
+        if(this.isFired()) return false
+        console.log('%c hire/ fire:', 'color:rgb(182, 86, 158);', this.hire_date,this.fire_date)
+        if(this.hire_date > 0 && this.fire_date === 0) return true
+        return false
+    }
+
+    public isManager() {
+        return computed(() => {
+            if(Rbac.getInstance().checkIsAdmin(this.userId)){
+                return true
+            }
+            return !!this.isDirector
+        })
+    }
 }

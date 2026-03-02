@@ -110,6 +110,10 @@ export class Rbac extends UserManager {
     getRoles(){
         return this.roles
     }
+
+    public checkIsAdmin(userId: number): boolean{
+        return this.ADMIN_ID === userId
+    }
 }
 
 type TRolePermissions = {

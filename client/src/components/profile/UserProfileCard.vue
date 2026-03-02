@@ -9,20 +9,20 @@
                 <!-- Фото профиля и основная информация -->
                 <div class="row items-center q-gutter-md">
                     <q-avatar size="140px" class="shadow-2">
-                        <img :src="avatar" :alt="`${dialogUser.firstName} ${dialogUser.lastName}`">
+                        <img :src="avatar" :alt="`${dialogEmployee.firstName} ${dialogEmployee.lastName}`">
                     </q-avatar>
                     <div class="column justify-center q-ml-xl">
                         <div class="text-h5 text-weight-bold">
-                            {{ dialogUser.firstName }} {{ dialogUser.lastName }}
+                            {{ dialogEmployee.firstName }} {{ dialogEmployee.lastName }}
                         </div>
                         <div class="text-body3 text-grey-7">
-                            дата рождения: {{ getReadableFormatFromTS(dialogUser.birth) }} ({{ getAgeFromTS(dialogUser.birth) }})
+                            дата рождения: {{ getReadableFormatFromTS(dialogEmployee.birth) }} ({{ getAgeFromTS(dialogEmployee.birth) }})
                         </div>
-                        <div class="text-body3 text-grey-7" v-if="dialogUser.reg_date">
-                            дата регистрации: {{ getReadableFormatFromTS(dialogUser.reg_date) }}
+                        <div class="text-body3 text-grey-7" v-if="dialogEmployee.reg_date">
+                            дата регистрации: {{ getReadableFormatFromTS(dialogEmployee.reg_date) }}
                         </div>
                         <div class="text-body3 text-grey-7">
-                            пол: {{ genderOptions[dialogUser.gender]?.label }}
+                            пол: {{ genderOptions[dialogEmployee.gender]?.label }}
                         </div>
                     </div>
                 </div>
@@ -34,6 +34,7 @@
                             <template v-if="!$um.can(R_ENTITIES.USER)(R_ACTIONS.EDIT)(R_FIELDS.POSITION)">Должность: {{ positionText }}</template>
                             <template v-else>
                                 <q-select
+                                    class="profile-card_select"
                                     dense filled input-debounce="0"
                                     v-model="selectPositionModel"
                                     :options="selectPositionOptions"
@@ -44,21 +45,21 @@
                     </div>
                     <div class="col-4 q-pa-xs">
                         <q-icon name="business" class="text-primary" />
-                        <span class="text-body1 q-ml-xs">{{ dialogUser.company?.name }}</span>
-                        <span v-if="dialogUser.isDirector" class="subcaption"> (руководитель)</span>
+                        <span class="text-body1 q-ml-xs">{{ dialogEmployee.company?.name }}</span>
+                        <span v-if="dialogEmployee.isManager()" class="subcaption"> (руководитель)</span>
                     </div>
                     <div class="col-4 q-pa-xs">
                         <q-icon name="work" class="text-primary q-ml-md" />
-                        <span class="text-body1 q-ml-xs">{{ dialogUser.department?.name }}</span>
+                        <span class="text-body1 q-ml-xs">{{ dialogEmployee.department?.name }}</span>
                     </div>
                 </div>
 
                 <!-- Краткое описание -->
                 <div class="row">
-                    <q-card v-if="dialogUser.bio.trim()" flat bordered class="bg-grey-2">
+                    <q-card v-if="dialogEmployee.bio.trim()" flat bordered class="bg-grey-2">
                         <q-card-section>
                             <div class="text-body1">
-                                {{ dialogUser.bio }}
+                                {{ dialogEmployee.bio }}
                             </div>
                         </q-card-section>
                     </q-card>
@@ -70,24 +71,24 @@
                             <!-- Контактный телефон -->
                             <div class="col-6">
                                 <q-icon name="phone" class="text-primary" />
-                                <span class="text-body2 q-ml-sm">{{ dialogUser.phone }}</span>
+                                <span class="text-body2 q-ml-sm">{{ dialogEmployee.phone }}</span>
                             </div>
                             <!-- email -->
                             <div class="col-6">
                                 <q-icon name="email" class="text-primary" />
-                                <span class="text-bod2 q-ml-sm">{{ dialogUser.email }}</span>
+                                <span class="text-bod2 q-ml-sm">{{ dialogEmployee.email }}</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Навыки -->
-                <div class="row" v-if="dialogUser.skills.length > 0">
+                <div class="row" v-if="dialogEmployee.skills.length > 0">
                     <div class="col-12 wrap">
                         <q-icon name="school" class="text-primary" />
                         <span class="text-body2 q-ml-sm q-mb-sm">Навыки:</span>
                         <user-skills
-                            :skills="dialogUser.skills"
+                            :skills="dialogEmployee.skills"
                             :needAssession="false"
                             :removable="false"
                             :alwaysShowAll="true"
@@ -100,16 +101,19 @@
                 <div class="row">
                     <div class="col-12 flex justify-end">
                         <q-icon
-                            v-if="$um.can(R_ENTITIES.USER)(R_ACTIONS.EDIT)(R_FIELDS.HIRE)"
+                            v-if="
+                                $um.can(R_ENTITIES.USER)(R_ACTIONS.EDIT)(R_FIELDS.HIRE)
+                            "
                             name="thumb_up" size="md" class="q-ml-sm pointer text-secondary"
                         />
 
                         <q-icon
-                            v-if="$um.can(R_ENTITIES.USER)(R_ACTIONS.EDIT)(R_FIELDS.FIRE)"
+                            v-if="
+                                $um.can(R_ENTITIES.USER)(R_ACTIONS.EDIT)(R_FIELDS.FIRE)
+                            "
                             name="highlight_off" size="md" class="q-ml-sm pointer text-negative"
                         />
 
-                        <!-- <q-icon name="star_rate" size="md" class="q-ml-sm pointer text-secondary" /> -->
                         <q-icon
                             v-if="$um.can(R_ENTITIES.USER)(R_ACTIONS.VIEW)(R_FIELDS.ENTIRE)"
                             name="calendar_month" size="md" class="q-ml-sm pointer text-info"
@@ -137,11 +141,11 @@ import type { TResult } from '@/interfaces/Error';
 const notify = useNotify()
 const $um = Rbac.getInstance()
 
-const { isUserProfileCardOpened, dialogUser, avatar } = useUserProfileCard()
+const { isUserProfileCardOpened, dialogEmployee, avatar } = useUserProfileCard()
 
 const selectPositionModel = ref({
-    label: dialogUser.value?.position?.position,
-    value: dialogUser.value?.position?.id
+    label: dialogEmployee.value?.position?.position,
+    value: dialogEmployee.value?.position?.id
 })
 
 const selectPositionOptions = computed(() => {
@@ -151,14 +155,14 @@ const selectPositionOptions = computed(() => {
     })
 })
 const positionText = computed(() => {
-    if(dialogUser.value.position?.position === undefined) {
+    if(dialogEmployee.value === undefined || dialogEmployee.value.position?.position === undefined){
         return 'не указана'
     }
-    return dialogUser.value.position.position
+    return dialogEmployee.value.position.position
 })
 async function onPositionSelect(): Promise<void> {
     if(!selectPositionModel.value.value) return
-    const res: TResult = await $um.company.changeEmployeePosition(selectPositionModel.value.value, dialogUser.value.userId)
+    const res: TResult = await $um.company.changeEmployeePosition(selectPositionModel.value.value, dialogEmployee.value.userId)
     if(res.error) {
         notify.run(res.errorMessage, notifyTypes.err)
         return
@@ -169,10 +173,13 @@ async function onPositionSelect(): Promise<void> {
 
 
 
-<style scoped>
+<style lang="scss" scoped>
 .employee-card {
     max-width: 900px;
     min-height: 400px;
+    .profile-card_select {
+        width:250px;
+    }
 }
 
 .employee-card .q-card__section {

@@ -13,5 +13,6 @@
   ],
   "compilerOptions": {
     "module": "NodeNext",
+    "noEmitOnError": true
   }
 }

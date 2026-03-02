@@ -3,32 +3,12 @@ import type { AxiosResponse } from "axios";
 import type { IUser } from "@/interfaces/User";
 import NetworkManager, { EReqMethods } from "@/network/NetworkManager";
 import { isSuccessRequest } from "@/utils/helpers/network";
+import { Employee } from "@/entities/Employee";
+import { userDummy } from '@/stores/userStore'
 
 const isUserProfileCardOpened = ref<boolean>(false)
 
-const dialogUser = ref<IUser> ({
-    userId      : 0,
-    username    : '',
-    birth       : 123,
-    reg_date    : 123,
-    hire_date   : 123,
-    fire_date   : 123,
-    email       : '',
-    companyId   : 2,
-    isDirector  : false,
-    gender      : 1,
-    bio         : '',
-    firstName   : '',
-    lastName    : '',
-    phone       : '',
-    departmentId: null,
-    positionId  : 1,
-    position    : null,
-    company     : null,
-    skills      : [],
-    department  : null,
-    avatar      : null,
-})
+const dialogEmployee = ref<Employee>(new Employee(userDummy))
 
 const avatar = ref('')
 
@@ -42,8 +22,8 @@ export function useUserProfileCard() {
         isUserProfileCardOpened.value = false
     }
 
-    function setDialogUser(newUser: IUser) {
-        dialogUser.value = newUser
+    function setDialogEmployee(newUser: IUser) {
+        dialogEmployee.value = new Employee(newUser)
     }
 
     async function loadUserCardData(userId: IUser['userId']): Promise<void> {
@@ -51,7 +31,7 @@ export function useUserProfileCard() {
             .getApiRequestMethod(EReqMethods.get)('users')(`get_employee_data/${userId}`)() as AxiosResponse | boolean;
         if(typeof res === 'boolean'){ return }
         if (isSuccessRequest(res)) {
-            setDialogUser(res.data.user)
+            setDialogEmployee(res.data.user)
             avatar.value = res.data.avatar
         }
     }
@@ -60,12 +40,12 @@ export function useUserProfileCard() {
         avatar,
 
         isUserProfileCardOpened,
-        dialogUser,
+        dialogEmployee,
 
         openUserCard,
         closeUserCard,
         loadUserCardData,
 
-        setDialogUser
+        setDialogEmployee
     }
 }
