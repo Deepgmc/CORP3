@@ -1,14 +1,12 @@
 import type { Router } from 'vue-router'
 import { availableStrategies, type IUserManager, type TStrategies } from '@/interfaces/User'
 import type { ILoginUser, IUser, TRegisterForm, TSkill } from '@/interfaces/User'
-import type { TAuthRenponse, TResult } from '@/interfaces/Error'
+import type { TAuthRenponse } from '@/interfaces/Error'
 import { jwtStrategy } from '../auth/strategies/jwt.strategy'
 import type { isLoginedResult } from '../auth/strategies/Strategy'
 import { ALREADY_AUTHORISED_MSG } from '@/utils/constants/texts.ts'
 import Manager from '@/entities/Manager'
 import Company from '@/entities/Company'
-import type { IPosition } from '@/interfaces/Company'
-import type { Employee } from './Employee'
 
 
 export class UserManager extends Manager implements IUserManager {
@@ -173,14 +171,5 @@ export class UserManager extends Manager implements IUserManager {
     }
     setRouterAfterLogOut(router: Router): void {
         router.push({ name: 'login' })
-    }
-
-    async changeEmployeePosition(newPositionId: IPosition['id'], userId: IUser['userId']): Promise<TResult> {
-        const employee = this.company.employees.value.find((emp: Employee) => emp.userId === userId)
-        if(employee){
-            const res = await employee.changeEmployeePosition(newPositionId, userId)
-            return res
-        }
-        return {error: true, errorMessage: 'Unhandled error'}
     }
 }
