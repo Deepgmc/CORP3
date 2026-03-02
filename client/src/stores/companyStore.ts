@@ -1,3 +1,4 @@
+import { Employee } from "@/entities/Employee"
 import { type IDepartment, type ICompany, type IPosition } from "@/interfaces/Company"
 import type { IUser } from "@/interfaces/User"
 import { defineStore } from "pinia"
@@ -13,8 +14,8 @@ export const useCompanyStore = defineStore('company', () => {
     const company = ref<ICompany>(companyDummy)
 
     const departments = ref<IDepartment[]>([])
-    const employees = ref<IUser[]>([])
-    const positions = ref<IPosition[]>([])
+    const employees   = ref<Employee[]>([])
+    const positions   = ref<IPosition[]>([])
 
     function setCompany(newCompany: ICompany): boolean {
         company.value = newCompany
@@ -25,7 +26,7 @@ export const useCompanyStore = defineStore('company', () => {
         departments.value = newDepts
     }
     function setEmployees(newEmployees: IUser[]): void {
-        employees.value = newEmployees
+        employees.value = newEmployees.map((employee: IUser) => new Employee(employee))
     }
     function setPositions(newPositions: IPosition[]): void {
         positions.value = newPositions
@@ -63,7 +64,9 @@ export const useCompanyStore = defineStore('company', () => {
     }
 
     function changeUserDepartment(userId: number, fromDepartmentId: number, newDepartmentId: number): boolean {
-        const thisEmp = employees.value.find((emp: IUser) => emp.userId === userId)
+        const thisEmp = employees.value.find((employee) => {
+            return employee.userId === userId
+        })
         if(thisEmp) {
             thisEmp.departmentId = newDepartmentId
             changeCountsInDepartments(fromDepartmentId, -1) // откуда перенесли сотрудника - вычитаем

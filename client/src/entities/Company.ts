@@ -4,7 +4,6 @@ import Manager from "./Manager";
 import type { AxiosResponse } from "axios";
 import { useCompanyStore } from "@/stores/companyStore";
 import { isSuccessRequest } from "@/utils/helpers/network";
-import type { TResult } from "@/interfaces/Error";
 
 type TCompanyData = {
     companyId: number,
@@ -148,7 +147,7 @@ export default class Company extends Manager implements ICompany {
     }
 
     /**
-     * ОТкрепляем от компании и удаляем департамент
+     * Открепляем от компании и удаляем департамент
      * @returns AxiosResponse
      */
     async deleteDepartment(departmentId: number): Promise<boolean> {
@@ -174,17 +173,5 @@ export default class Company extends Manager implements ICompany {
             departmentTo
         }, true)
         this._store.changeUserDepartment(user.userId, departmentFrom, departmentTo)
-    }
-
-    public async changeUserPosition(newPositionId: IPosition['id'], userId: IUser['userId']): Promise<TResult> {
-        if(!Number.isInteger(newPositionId) || !Number.isInteger(userId)) return { error: true, errorMessage: 'Передан неверный id' }
-        const res = await this._patchData('change_user_position')({
-            userId,
-            newPositionId,
-        })
-        if(res.data.affected !== 0) {
-            return { error: false, res: true }
-        }
-        return { error: true, errorMessage: 'Не обновлено ни одной записи' }
     }
 }

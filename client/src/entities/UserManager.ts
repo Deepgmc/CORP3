@@ -8,6 +8,7 @@ import { ALREADY_AUTHORISED_MSG } from '@/utils/constants/texts.ts'
 import Manager from '@/entities/Manager'
 import Company from '@/entities/Company'
 import type { IPosition } from '@/interfaces/Company'
+import type { Employee } from './Employee'
 
 
 export class UserManager extends Manager implements IUserManager {
@@ -174,9 +175,12 @@ export class UserManager extends Manager implements IUserManager {
         router.push({ name: 'login' })
     }
 
-    async changeUserPosition(newPositionId: IPosition['id'], userId: IUser['userId']): Promise<TResult> {
-        const res = await this.company.changeUserPosition(newPositionId, userId)
-        if(res.error) return res
-        return res
+    async changeEmployeePosition(newPositionId: IPosition['id'], userId: IUser['userId']): Promise<TResult> {
+        const employee = this.company.employees.value.find((emp: Employee) => emp.userId === userId)
+        if(employee){
+            const res = await employee.changeEmployeePosition(newPositionId, userId)
+            return res
+        }
+        return {error: true, errorMessage: 'Unhandled error'}
     }
 }

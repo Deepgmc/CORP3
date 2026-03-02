@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Patch, Post, UseGuards } from '@nestjs/common';
 
 import { UsersService } from './users.service';
 import { UserId } from './userId.decorator'
@@ -49,5 +49,17 @@ export class UsersController {
         }
         const res = await this.usersService.findOne('userId', userId)
         return {user: res, avatar: avatar}
+    }
+
+    //меняем должность юзера
+    @UseGuards(AuthGuard('jwt'))
+    @Patch('change_user_position')
+    async changeUserPosition (
+        @Body() savingData: {
+            userId       : string,
+            newPositionId: string
+        }
+    ): Promise<UpdateResult | boolean> {
+        return await this.usersService.changeUserPosition(savingData)
     }
 }

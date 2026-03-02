@@ -149,7 +149,7 @@ const positionText = computed(() => {
 })
 async function onPositionSelect(): Promise<void> {
     if(!selectPositionModel.value.value) return
-    const res: TResult = await $um.changeUserPosition(selectPositionModel.value.value, dialogUser.value.userId)
+    const res: TResult = await $um.changeEmployeePosition(selectPositionModel.value.value, dialogUser.value.userId)
     if(res.error) {
         notify.run(res.errorMessage, notifyTypes.err)
         return

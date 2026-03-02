@@ -93,16 +93,4 @@ export class CompanyController {
     ): Promise<UpdateResult | boolean> {
         return await this.usersService.changeUserDepartment(savingData)
     }
-
-    //меняем должность юзера
-    @UseGuards(AuthGuard('jwt'))
-    @Patch('change_user_position')
-    async changeUserPosition (
-        @Body() savingData: {
-            userId       : string,
-            newPositionId: string
-        }
-    ): Promise<UpdateResult | boolean> {
-        return await this.usersService.changeUserPosition(savingData)
-    }
 }
