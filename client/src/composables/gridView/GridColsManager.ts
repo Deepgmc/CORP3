@@ -199,12 +199,20 @@ export class GridCols {
             break;
             case 'departmentId':
                 if(item.departmentId !== null){
+                    if(item.departmentId === 0 || item.departmentId === undefined){
+                        item['departmentIdValue'] = ''
+                        break;
+                    }
                     const thisDept: IDepartment = this.$userManager.company.getDepartmentById(item.departmentId)
                     item['departmentIdValue'] = thisDept.name
                 }
             break;
             case 'positionId':
                 if(item.positionId !== null){
+                    if(item.positionId === 0 || item.positionId === undefined){
+                        item['positionIdValue'] = ''
+                        break;
+                    }
                     const thisPosition: IPosition = this.$userManager.company.getPositionById(item.positionId)
                     item['positionIdValue'] = thisPosition.position
                 }

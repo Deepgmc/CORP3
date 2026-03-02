@@ -1,8 +1,8 @@
 return {
-  framework: {
-    plugins: [ 'Notify' ],
-    config: {
-      notify
+    framework: {
+        plugins: ['Notify'],
+        config: {
+            notify
+        }
     }
-  }
 }
