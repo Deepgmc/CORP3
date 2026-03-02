@@ -28,17 +28,15 @@
                 </div>
 
                 <!-- Информация о компании -->
-                <div class="row q-mt-lg">
-                    <div class="col-4 q-pa-xs">
+                <div class="row q-mt-lg items-center">
+                    <div class="col-4 q-pa-xs flex">
                         <div class="text-subtitle1 text-grey-10">
                             <template v-if="!$um.can(R_ENTITIES.USER)(R_ACTIONS.EDIT)(R_FIELDS.POSITION)">Должность: {{ positionText }}</template>
                             <template v-else>
                                 <q-select
-                                    dense
-                                    filled
+                                    dense filled input-debounce="0"
                                     v-model="selectPositionModel"
                                     :options="selectPositionOptions"
-                                    input-debounce="0"
                                     @update:model-value="onPositionSelect"
                                 ></q-select>
                             </template>
@@ -101,10 +99,21 @@
                 <!--Admin controls-->
                 <div class="row">
                     <div class="col-12 flex justify-end">
-                        <q-icon name="star_rate" size="md" class="q-ml-sm pointer text-secondary" />
-                        <q-icon name="thumb_up" size="md" class="q-ml-sm pointer text-secondary" />
-                        <q-icon name="calendar_month" size="md" class="q-ml-sm pointer text-info" />
-                        <q-icon name="highlight_off" size="md" class="q-ml-sm pointer text-negative" />
+                        <q-icon
+                            v-if="$um.can(R_ENTITIES.USER)(R_ACTIONS.EDIT)(R_FIELDS.HIRE)"
+                            name="thumb_up" size="md" class="q-ml-sm pointer text-secondary"
+                        />
+
+                        <q-icon
+                            v-if="$um.can(R_ENTITIES.USER)(R_ACTIONS.EDIT)(R_FIELDS.FIRE)"
+                            name="highlight_off" size="md" class="q-ml-sm pointer text-negative"
+                        />
+
+                        <!-- <q-icon name="star_rate" size="md" class="q-ml-sm pointer text-secondary" /> -->
+                        <q-icon
+                            v-if="$um.can(R_ENTITIES.USER)(R_ACTIONS.VIEW)(R_FIELDS.ENTIRE)"
+                            name="calendar_month" size="md" class="q-ml-sm pointer text-info"
+                        />
                     </div>
                 </div>
             </q-card-section>

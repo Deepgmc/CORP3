@@ -50,6 +50,7 @@ export class Rbac extends UserManager {
         if(this.isEmployee()) this.addRole(new EmployeeRole())
         const user = this.getUser()
         if(user.userId === this.ADMIN_ID) this.addRole(new AdminRole())
+
         if(this.roles.size === 0) this.addRole(new GuestRole())
     }
 
@@ -135,6 +136,8 @@ export enum R_FIELDS {
     ENTIRE   = 'entire',
     NAME     = 'name',
     POSITION = 'position',
+    HIRE     = 'hire',
+    FIRE     = 'fire',
 }
 type TRoles = AdminRole | ManagerRole | EmployeeRole | GuestRole
 
@@ -153,36 +156,7 @@ export class AdminRole extends Role {
     constructor(){
         super('admin', 0)
     }
-    public readonly permissions: TRolePermissions = {
-        [R_ENTITIES.DEPARTMENT]: {
-            [R_ACTIONS.VIEW]: [
-                R_FIELDS.ENTIRE,
-                R_FIELDS.NAME,
-            ],
-            [R_ACTIONS.ADD]: [
-                R_FIELDS.ENTIRE
-            ]
-        },
-        [R_ENTITIES.COMPANY]: {
-            [R_ACTIONS.EDIT]: [
-                R_FIELDS.ENTIRE
-            ],
-            [R_ACTIONS.VIEW]: [
-                R_FIELDS.ENTIRE,
-                R_FIELDS.NAME,
-            ],
-        },
-        [R_ENTITIES.EMPLOYEE]: {
-            [R_ACTIONS.VIEW]: [
-                R_FIELDS.ENTIRE
-            ],
-        },
-        [R_ENTITIES.USER]: {
-            [R_ACTIONS.EDIT]: [
-                R_FIELDS.ENTIRE
-            ]
-        },
-    };
+    public readonly permissions: TRolePermissions = {}//админу права не нужны, может всё
 };
 export class ManagerRole extends Role {
     constructor(){
@@ -201,8 +175,13 @@ export class ManagerRole extends Role {
         },
         [R_ENTITIES.USER]: {
             [R_ACTIONS.EDIT]: [
-                R_FIELDS.ENTIRE
-            ]
+                R_FIELDS.HIRE,
+                R_FIELDS.FIRE,
+                R_FIELDS.POSITION,
+            ],
+            [R_ACTIONS.VIEW]: [
+                R_FIELDS.ENTIRE,
+            ],
         },
     };
 };

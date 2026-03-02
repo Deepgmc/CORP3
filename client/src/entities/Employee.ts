@@ -61,4 +61,19 @@ export class Employee extends Manager implements Partial<IUser> {
         }
         return { error: true, errorMessage: 'Не обновлено ни одной записи' }
     }
+
+    // const isFired = computed((): boolean => {
+    //     if(user.value.fire_date > 0) return true
+    //     return false
+    // })
+
+    // const isHired = computed(() => {
+    //     if(isFired.value) return false
+    //     if(user.value.hire_date > 0) return true
+    //     return true
+    // })
+
+    // const isDirector = computed(() => {
+    //         return user.value.isDirector
+    //     })
 }
