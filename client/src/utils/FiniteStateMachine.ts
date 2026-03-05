@@ -1,4 +1,4 @@
-import Manager from "./Manager";
+import Manager from "../entities/Manager";
 
 export class FiniteStateMachine extends Manager {
 
@@ -22,7 +22,7 @@ export class FiniteStateMachine extends Manager {
         if(typeof thisActions !== 'undefined' && typeof thisActions[actionName] !== 'undefined'){
             const action = thisActions[actionName]
             if (action) {
-                action.call(this)
+                action()
             }
         } else {
             console.log(`Transition ${actionName} undefined`)

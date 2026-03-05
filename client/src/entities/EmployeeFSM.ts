@@ -3,18 +3,16 @@ import type { ICompany, IDepartment, IPosition } from "@/interfaces/Company";
 import type { TResult } from "@/interfaces/Error";
 import { computed } from "vue";
 import { Rbac } from "./Rbac";
-import Manager from "./Manager";
+import { FiniteStateMachine } from "../utils/FiniteStateMachine";
 
 export interface ITransition {
     [key: string]: {
         [key: string]: () => any
     }
 }
-export class Employee extends Manager {
+export class Employee extends FiniteStateMachine {
 
     protected _apiModule: string = 'users'
-
-    //private allStates = ['init', 'hired', 'fired']
 
     public     userId       : number    = 0
     public     username     : string    = ''
@@ -38,49 +36,45 @@ export class Employee extends Manager {
     department  : IDepartment | null    = null
     position    : IPosition | null      = null
 
-    public state = 'init'
-    transitions: ITransition = {
-        init: {
-            initState: function() {
-                console.log(`initState@init`)
-            },
-            hire: function() {
-                this.changeStateTo('hired')
-                    .dispatch('initState')
-            }
-        },
-        hired: {
-            initState: function() {
-                console.log(`initState@hired`)
-                this.hire_date = Date.now()
-            },
-            fire: function() {
-                this.changeStateTo('fired')
-                    .dispatch('initState')
-            }
-        },
-        fired: {
-            initState: function() {
-                console.log(`initState@fired`)
-                this.hire_date = 0
-                this.fire_date = Date.now()
-            },
-            back: function() {
-                this.changeStateTo('hired')
-                    .dispatch('initState')
-                this.fire_date = Date.now()
-                this.hire_date = 0
-            }
-        },
-    }
+    state = 'init'
 
     constructor(incomeIUser: IUser, isDummy: boolean = false) {
-        super()
-        Object.assign(this, incomeIUser)
-        this.initNetwork(this._apiModule)
+        const transitions = {
+            init: {
+                initState: () => {
+                    console.log(`initState@${this.state}`)
+                    this.hire_date = Date.now()
+                },
+                hire: () => {
+                    this.changeStateTo('hired')
+                        .dispatch('initState')
+                }
+            },
+            hired: {
+                initState: () => {
+                    console.log(`initState@${this.state}`)
+                    this.hire_date = Date.now()
+                },
+                fire: () => {
+                    this.changeStateTo('fired')
+                        .dispatch('initState')
+                }
+            },
+            fired: {
+                initState: () => {
+                    console.log(`initState@${this.state}`)
+                    this.hire_date = 0
+                    this.fire_date = Date.now()
+                },
+                fire: () => {
+                    this.fire_date = 0
+                    console.log('Firing! State: ', this.state)
+                }
+            }
+        }
         let initState = 'init'
         if(!isDummy){
-            if(isNewEmployee.call(incomeIUser)){
+            if(isNewEmployee.call(incomeIUser)) {
                 initState = 'init'
             } else if(isHired.call(incomeIUser)){
                 initState = 'hired'
@@ -88,23 +82,32 @@ export class Employee extends Manager {
                 initState = 'fired'
             }
         }
+
+        const allStates = ['init', 'hired', 'fired']
+
+
+        super(initState, transitions, allStates)
+
+        Object.assign(this, incomeIUser)
+        this.initNetwork(this._apiModule)
+
         this.changeStateTo(initState)
             .dispatch('initState')
     }
 
     dispatch (actionName: string) {
         const thisActions = this.transitions[this.state]
-        if(typeof thisActions === 'undefined' || typeof thisActions[actionName] === 'undefined'){
-            console.log(`!! Not found transition: ${actionName}`)
-            return
+        if(typeof thisActions !== 'undefined' && typeof thisActions[actionName] !== 'undefined'){
+            const action = thisActions[actionName]
+            if (action) {
+                action.call(this)
+            }
+        } else {
+            console.log(`Transition ${actionName} undefined`)
         }
-        console.log('Dispatching action:', actionName)
-        thisActions[actionName].call(this)
-
     }
 
     changeStateTo (newState: string) {
-        console.log(`Changing state from ${this.state} to ${newState}`)
         this.state = newState
         return this
     }
