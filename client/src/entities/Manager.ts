@@ -4,21 +4,21 @@ export default class Manager {
 
     protected _apiModule: string = ''
     protected networkManager: NetworkManager
-    protected _post: (action: string) => any
-    protected _get: (action: string) => any
-    protected _delete: (action: string) => any
-    protected _patch: (action: string) => any
 
-    protected _postData!: (module: string) => any
-    protected _getData!: (module: string) => any
+    protected _postData!  : (module: string) => any
+    protected _getData!   : (module: string) => any
     protected _deleteData!: (module: string) => any
-    protected _patchData!: (module: string) => any
+    protected _patchData! : (module: string) => any
 
     constructor(){
         this.networkManager = NetworkManager.getInstance()
-        this._post = this.networkManager.getApiRequestMethod(EReqMethods.post)
-        this._get = this.networkManager.getApiRequestMethod(EReqMethods.get)
-        this._delete = this.networkManager.getApiRequestMethod(EReqMethods.delete)
-        this._patch = this.networkManager.getApiRequestMethod(EReqMethods.patch)
+    }
+
+    protected initNetwork(apiModule: string){
+        this._apiModule = apiModule
+        this._postData   = this.networkManager.getApiRequestMethod(EReqMethods.post)(this._apiModule)
+        this._getData    = this.networkManager.getApiRequestMethod(EReqMethods.get)(this._apiModule)
+        this._deleteData = this.networkManager.getApiRequestMethod(EReqMethods.delete)(this._apiModule)
+        this._patchData  = this.networkManager.getApiRequestMethod(EReqMethods.patch)(this._apiModule)
     }
 }

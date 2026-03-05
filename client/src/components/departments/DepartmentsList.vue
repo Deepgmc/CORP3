@@ -134,8 +134,8 @@ const employees = $um.company.employees
  */
 const deptsDndList: Ref<Map<IDepartment, IUser[]>> = computed(() => {
     const list = new Map()
-    departments.value.forEach((dept: IDepartment) => {
-        const emps = employees.value.filter((emp: IUser) => emp.departmentId === dept.id)
+    departments.forEach((dept: IDepartment) => {
+        const emps = employees.filter((emp: IUser) => emp.departmentId === dept.id)
         list.set(dept, emps)
     })
     return list
@@ -153,7 +153,7 @@ function dropUser(event: DragEvent){
     }
     const {dropId, dragItemId, dragFromId} = dropResult
 
-    employees.value.forEach((thisEmp: IUser) => {
+    employees.forEach((thisEmp: IUser) => {
         if(thisEmp.userId === dragItemId && thisEmp.departmentId === dragFromId) {
             $um.company.switchUserDepartmets(thisEmp, dragFromId, dropId)
             return true

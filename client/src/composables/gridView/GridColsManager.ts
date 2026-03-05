@@ -56,7 +56,7 @@ export class GridCols {
     constructor(
         private requiredCols: string[],
         private availableCols: ColsConfig, //общий конфиг столбцов разных таблиц департаментов, юзеров, компаний и т.д.
-        private rawData: Ref<GridColsData>, // массив сырых данных компаний, департаментов и пр
+        private rawData: GridColsData, // массив сырых данных компаний, департаментов и пр
         public idName: string,
         public module: string,
         public action: string,
@@ -140,7 +140,7 @@ export class GridCols {
         this.resetColsSorting(sortingColsMap)
         this.switchColSortOrder(order, sortingColsMap, thisCol, column)
 
-        this.rawData.value.sort((
+        this.rawData.sort((
             entity1: GridColsDataTypes,
             entity2: GridColsDataTypes
         ): number => {
@@ -173,7 +173,7 @@ export class GridCols {
         * @param data массив департаментов, компаний, юзеров
     */
     modifyRawData(){
-        return this.rawData.value.map((item: any) => {
+        return this.rawData.map((item: any) => {
             for(const [val,] of Object.entries(item)){
                 if(this.colsMap.get(val)?.switchData) {
                     this.switchGridValue(item, val)

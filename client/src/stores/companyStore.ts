@@ -32,16 +32,6 @@ export const useCompanyStore = defineStore('company', () => {
         positions.value = newPositions
     }
 
-    function addNewDepartment(newDept: IDepartment): void {
-        departments.value.push(newDept)
-    }
-
-    function deleteDepartment(depertmentId: number): boolean {
-        if(!Number.isInteger(depertmentId)) return false
-        departments.value.splice(departments.value.findIndex(dept => dept.id === depertmentId), 1)
-        return true
-    }
-
     const getDepartments = computed(() => {
         return departments
     })
@@ -51,6 +41,17 @@ export const useCompanyStore = defineStore('company', () => {
     const getPositions = computed(() => {
         return positions
     })
+
+
+    function addNewDepartment(newDept: IDepartment): void {
+        departments.value.push(newDept)
+    }
+
+    function deleteDepartment(depertmentId: number): boolean {
+        if(!Number.isInteger(depertmentId)) return false
+        departments.value.splice(departments.value.findIndex(dept => dept.id === depertmentId), 1)
+        return true
+    }
 
     // при смене департамента у сотрудника - меняем сумму сотрудников в списке департаментов
     // с сервера это значение приходит из count(*) sql, не хотелось бы перегружать весь список департаментов с сервера ради этого
@@ -64,9 +65,7 @@ export const useCompanyStore = defineStore('company', () => {
     }
 
     function changeUserDepartment(userId: number, fromDepartmentId: number, newDepartmentId: number): boolean {
-        const thisEmp = employees.value.find((employee) => {
-            return employee.userId === userId
-        })
+        const thisEmp = employees.value.find(employee => employee.userId === userId)
         if(thisEmp) {
             thisEmp.departmentId = newDepartmentId
             changeCountsInDepartments(fromDepartmentId, -1) // откуда перенесли сотрудника - вычитаем
@@ -76,8 +75,13 @@ export const useCompanyStore = defineStore('company', () => {
         return false
     }
 
+
+
     return {
         company,
+        employees,
+        departments,
+        positions,
 
         getDepartments,
         getEmployees,

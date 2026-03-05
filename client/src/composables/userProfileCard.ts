@@ -5,12 +5,14 @@ import NetworkManager, { EReqMethods } from "@/network/NetworkManager";
 import { isSuccessRequest } from "@/utils/helpers/network";
 import { Employee } from "@/entities/Employee";
 import { userDummy } from '@/stores/userStore'
+import { Rbac } from "@/entities/Rbac";
 
 const isUserProfileCardOpened = ref<boolean>(false)
 
-const dialogEmployee = ref<Employee>(new Employee(userDummy))
+const dialogEmployee = ref<Employee>(new Employee(userDummy, true))
 
 const avatar = ref('')
+const $um = Rbac.getInstance()
 
 export function useUserProfileCard() {
 
@@ -22,8 +24,8 @@ export function useUserProfileCard() {
         isUserProfileCardOpened.value = false
     }
 
-    function setDialogEmployee(newUser: IUser) {
-        dialogEmployee.value = new Employee(newUser)
+    function setDialogEmployee(newEmployee: Employee) {
+        dialogEmployee.value = newEmployee
     }
 
     async function loadUserCardData(userId: IUser['userId']): Promise<void> {
@@ -31,8 +33,12 @@ export function useUserProfileCard() {
             .getApiRequestMethod(EReqMethods.get)('users')(`get_employee_data/${userId}`)() as AxiosResponse | boolean;
         if(typeof res === 'boolean'){ return }
         if (isSuccessRequest(res)) {
-            setDialogEmployee(res.data.user)
-            avatar.value = res.data.avatar
+            const foundEmployee = $um.company.getEmployeeById(res.data.user.userId)
+            if(foundEmployee){
+                setDialogEmployee(foundEmployee)
+                avatar.value = res.data.avatar
+            }
+            throw new Error('Не найден сотрудник при открытии карточки сотрудника')
         }
     }
 
@@ -45,7 +51,5 @@ export function useUserProfileCard() {
         openUserCard,
         closeUserCard,
         loadUserCardData,
-
-        setDialogEmployee
     }
 }

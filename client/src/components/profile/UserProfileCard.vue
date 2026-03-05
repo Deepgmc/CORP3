@@ -100,11 +100,13 @@
                 <!--Admin controls-->
                 <div class="row">
                     <div class="col-12 flex justify-end">
+                        HD:{{ dialogEmployee.hire_date }}
                         <q-icon
                             v-if="
                                 $um.can(R_ENTITIES.USER)(R_ACTIONS.EDIT)(R_FIELDS.HIRE)
                             "
-                            name="thumb_up" size="md" class="q-ml-sm pointer text-secondary"
+                            @click="hireEmployee()"
+                            :name="thumbIcon" size="md" class="q-ml-sm pointer text-secondary"
                         />
 
                         <q-icon
@@ -149,7 +151,7 @@ const selectPositionModel = ref({
 })
 
 const selectPositionOptions = computed(() => {
-    return getSelectOptionsFromDataArray<IPosition>($um.company.positions.value, {
+    return getSelectOptionsFromDataArray<IPosition>($um.company.positions, {
         idField: 'id',
         labelField: 'position'
     })
@@ -169,6 +171,24 @@ async function onPositionSelect(): Promise<void> {
     }
     notify.run(SAVED_SUCCESS, notifyTypes.succ)
 }
+
+function hireEmployee() {
+    dialogEmployee.value.dispatch('hire')
+    dialogEmployee.value.hire_date = Date.now()
+}
+
+// watch(dialogEmployee.value, (updatedEmployee) => {
+//     console.log(updatedEmployee)
+//     console.log('watch dialogEmployee hire_date:', dialogEmployee.value.hire_date)
+//     console.log('watch updatedEmployee hire_date:', updatedEmployee.hire_date)
+// })
+
+const thumbIcon = computed(() => {
+    console.log('dialogEmployee.value.state:', dialogEmployee.value.state)
+    console.log('dialogEmployee.value.hire_date:', dialogEmployee.value.hire_date)
+    return dialogEmployee.value.state === 'hired' ? 'thumb_down' : 'thumb_up'
+})
+
 </script>
 
 

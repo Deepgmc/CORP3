@@ -5,8 +5,8 @@ import type { TAuthRenponse } from '@/interfaces/Error'
 import { jwtStrategy } from '../auth/strategies/jwt.strategy'
 import type { isLoginedResult } from '../auth/strategies/Strategy'
 import { ALREADY_AUTHORISED_MSG } from '@/utils/constants/texts.ts'
-import Manager from '@/entities/Manager'
 import Company from '@/entities/Company'
+import Manager from './Manager'
 
 
 export class UserManager extends Manager implements IUserManager {
@@ -30,8 +30,7 @@ export class UserManager extends Manager implements IUserManager {
         super()
         if (strategy) this._strategy = strategy
         this._userStore = userStore
-        this._postData = this._post(this._apiModule)
-        this._getData = this._get(this._apiModule)
+        this.initNetwork(this._apiModule)
     }
 
     async loadInitData() {
@@ -43,7 +42,6 @@ export class UserManager extends Manager implements IUserManager {
                 companyId: createdUser.company.companyId,
                 name     : createdUser.company.name,
                 address  : createdUser.company.address,
-                user     : createdUser
             }
         )
     }

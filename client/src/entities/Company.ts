@@ -1,17 +1,16 @@
-import type { IAddDepartment, ICompany, ICompanyForm, IDepartment, IPosition } from "@/interfaces/Company";
+import { departmentDummy, positionDummy, type IAddDepartment, type ICompany, type ICompanyForm, type IDepartment, type IPosition } from "@/interfaces/Company";
 import type { IUser } from "@/interfaces/User";
-import Manager from "./Manager";
 import type { AxiosResponse } from "axios";
 import { useCompanyStore } from "@/stores/companyStore";
 import { isSuccessRequest } from "@/utils/helpers/network";
 import type { Employee } from "./Employee";
 import type { TResult } from "@/interfaces/Error";
+import Manager from "./Manager";
 
 type TCompanyData = {
     companyId: number,
     name: string,
     address: string,
-    user: IUser
 }
 
 /**
@@ -23,9 +22,9 @@ export default class Company extends Manager implements ICompany {
 
     protected _apiModule: string = 'company'
 
-    _store: any
+    //_store: any
+    _store: ReturnType<typeof useCompanyStore>
 
-    user: IUser
 
     static getInstance(
         companyData?: TCompanyData
@@ -36,23 +35,18 @@ export default class Company extends Manager implements ICompany {
         if (typeof companyData === 'undefined') {
             throw new TypeError('No Company instance created. Create with .getInstance + parameters')
         }
-        return new Company(companyData.companyId, companyData.name, companyData.address, companyData.user)
+        return new Company(companyData.companyId, companyData.name, companyData.address)
     }
 
-    private constructor(
+    private constructor (
         companyId: number,
         name     : string,
         address  : string,
-        user     : IUser
     ) {
         if (Company.instance) throw new TypeError('Instance creation only with .getInstance()')
         super()
-        this.user = user //CURRENT USER, not Employee
 
-        this._postData = this._post(this._apiModule)
-        this._getData = this._get(this._apiModule)
-        this._deleteData = this._delete(this._apiModule)
-        this._patchData = this._patch(this._apiModule)
+        this.initNetwork(this._apiModule)
 
         this._store = useCompanyStore()
         this._store.setCompany({ companyId, name, address })
@@ -63,10 +57,17 @@ export default class Company extends Manager implements ICompany {
             this.getFullEmployeesList(),
             this.getFullPositionsList()
         ])
-            .then((res) => {
-                const [departments, employees, positions] = res
+            .then((res: any) => {
+                const [
+                    departments,
+                    employees,
+                    positions
+                ]:
+                    [IDepartment[], IUser[], IPosition[]]
+                 = res;
+
                 this._store.setDepartments(departments)
-                this._store.setEmployees(employees)
+                this._store.setEmployees(employees.slice(0, 3))
                 this._store.setPositions(positions)
             })
     }
@@ -80,22 +81,25 @@ export default class Company extends Manager implements ICompany {
     get address() {
         return this._store.company.address
     }
-    get departments() {
-        return this._store.getDepartments
+    get departments(): IDepartment[] {
+        return this._store.getDepartments.value
     }
-    get employees() {
-        return this._store.getEmployees
+    get employees(): Employee[] {
+        //@ts-ignore
+        return this._store.getEmployees.value
     }
-    get positions() {
-        return this._store.getPositions
+    get positions(): IPosition[] {
+        return this._store.getPositions.value
     }
 
     getDepartmentById(departmentId: number): IDepartment {
-        return this.departments.value.find((dept: IDepartment) => dept.id === departmentId)
+        const foundDepartment: IDepartment | undefined = this.departments.find((dept: IDepartment) => dept.id === departmentId)
+        return typeof foundDepartment === 'undefined' ? departmentDummy : foundDepartment
     }
 
     getPositionById(positionId: number): IPosition {
-        return this.positions.value.find((pos: IPosition) => pos.id === positionId)
+        const foundPosition = this.positions.find((pos: IPosition) => pos.id === positionId)
+        return typeof foundPosition === 'undefined' ? positionDummy : foundPosition
     }
 
     async saveCompanyProfile(company: ICompanyForm): Promise<boolean> {
@@ -178,11 +182,17 @@ export default class Company extends Manager implements ICompany {
     }
 
     async changeEmployeePosition(newPositionId: IPosition['id'], userId: IUser['userId']): Promise<TResult> {
-        const employee = this.employees.value.find((emp: Employee) => emp.userId === userId)
+        const employee = this.employees.find((emp: Employee) => emp.userId === userId)
         if(employee){
             const res = await employee.changeEmployeePosition(newPositionId, userId)
             return res
         }
         return {error: true, errorMessage: 'Unhandled error'}
+    }
+
+    public getEmployeeById(id: number): Employee | null {
+        const foundEmployee = this.employees.find(emp => emp.userId === id)
+        if(foundEmployee) return foundEmployee
+        return null
     }
 }

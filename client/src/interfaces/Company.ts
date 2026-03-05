@@ -22,7 +22,13 @@ export type ICompanySelect<T extends ICompany> = {
 }
 
 
-
+export const departmentDummy = {
+    id         : 0,
+    companyId  : 0,
+    name       : '',
+    description: '',
+    countusers : ''
+}
 export interface IDepartment {
     id         : number,
     companyId  : ICompany['companyId'],
@@ -36,6 +42,10 @@ export type IDeptSelect = {
     label: string
 }
 
+export const positionDummy = {
+    id: 0,
+    position: ''
+}
 export interface IPosition {
     id      : number,
     position: string

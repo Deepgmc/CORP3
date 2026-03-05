@@ -11,6 +11,7 @@
         <q-icon
             class="gv-edit_buttons-positive"
             name="settings"
+            size="md"
             :data-userId="slotProps.itemId"
             @click="openEmployeeCard(slotProps.itemId)"
         />
