@@ -84,7 +84,7 @@ export class CompanyService {
         if(!Number.isInteger(cId)) { throw new TypeError('Wrong company id') }
         return this.usersRepository.find({
             where: {companyId: cId},
-            relations: ['skills']
+            relations: ['company', 'skills', 'department', 'position']
         })
     }
 

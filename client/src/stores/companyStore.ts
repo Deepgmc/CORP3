@@ -25,7 +25,7 @@ export const useCompanyStore = defineStore('company', () => {
     function setDepartments(newDepts: IDepartment[]): void {
         departments.value = newDepts
     }
-    function setEmployees(newEmployees: IUser[]): void {
+    function setEmployees(newEmployees: Employee[]): void {
         employees.value = newEmployees.map((employee: IUser) => new Employee(employee))
     }
     function setPositions(newPositions: IPosition[]): void {

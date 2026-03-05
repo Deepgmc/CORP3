@@ -12,7 +12,6 @@ const isUserProfileCardOpened = ref<boolean>(false)
 const dialogEmployee = ref<Employee>(new Employee(userDummy, true))
 
 const avatar = ref('')
-const $um = Rbac.getInstance()
 
 export function useUserProfileCard() {
 
@@ -30,15 +29,15 @@ export function useUserProfileCard() {
 
     async function loadUserCardData(userId: IUser['userId']): Promise<void> {
         const res: AxiosResponse | boolean = await NetworkManager.getInstance()
-            .getApiRequestMethod(EReqMethods.get)('users')(`get_employee_data/${userId}`)() as AxiosResponse | boolean;
+            .getApiRequestMethod(EReqMethods.get)('users')(`get_employee_avatar/${userId}`)() as AxiosResponse | boolean;
         if(typeof res === 'boolean'){ return }
         if (isSuccessRequest(res)) {
-            const foundEmployee = $um.company.getEmployeeById(res.data.user.userId)
-            if(foundEmployee){
-                setDialogEmployee(foundEmployee)
-                avatar.value = res.data.avatar
+            const foundEmployee = Rbac.getInstance().company.getEmployeeById(userId)
+            if(!foundEmployee){
+                throw new Error('Не найден сотрудник при открытии карточки сотрудника')
             }
-            throw new Error('Не найден сотрудник при открытии карточки сотрудника')
+            setDialogEmployee(foundEmployee)
+            avatar.value = res.data.avatar
         }
     }
 

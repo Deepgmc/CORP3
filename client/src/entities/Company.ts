@@ -63,11 +63,11 @@ export default class Company extends Manager implements ICompany {
                     employees,
                     positions
                 ]:
-                    [IDepartment[], IUser[], IPosition[]]
+                    [IDepartment[], Employee[], IPosition[]]
                  = res;
 
                 this._store.setDepartments(departments)
-                this._store.setEmployees(employees.slice(0, 3))
+                this._store.setEmployees(employees)
                 this._store.setPositions(positions)
             })
     }
@@ -81,26 +81,27 @@ export default class Company extends Manager implements ICompany {
     get address() {
         return this._store.company.address
     }
+
     get departments(): IDepartment[] {
-        return this._store.getDepartments.value
+        return this._store.departments
     }
     get employees(): Employee[] {
         //@ts-ignore
-        return this._store.getEmployees.value
+        return this._store.employees
     }
     get positions(): IPosition[] {
-        return this._store.getPositions.value
+        return this._store.positions
     }
 
-    getDepartmentById(departmentId: number): IDepartment {
-        const foundDepartment: IDepartment | undefined = this.departments.find((dept: IDepartment) => dept.id === departmentId)
-        return typeof foundDepartment === 'undefined' ? departmentDummy : foundDepartment
-    }
-
-    getPositionById(positionId: number): IPosition {
-        const foundPosition = this.positions.find((pos: IPosition) => pos.id === positionId)
-        return typeof foundPosition === 'undefined' ? positionDummy : foundPosition
-    }
+    // get departments() {
+    //     return this._store.getDepartments
+    // }
+    // get employees() {
+    //     return this._store.getEmployees
+    // }
+    // get positions() {
+    //     return this._store.getPositions
+    // }
 
     async saveCompanyProfile(company: ICompanyForm): Promise<boolean> {
         const res: AxiosResponse = await this._postData('save_company_profile')(company)
@@ -194,5 +195,15 @@ export default class Company extends Manager implements ICompany {
         const foundEmployee = this.employees.find(emp => emp.userId === id)
         if(foundEmployee) return foundEmployee
         return null
+    }
+
+    getDepartmentById(departmentId: number): IDepartment {
+        const foundDepartment: IDepartment | undefined = this.departments.find((dept: IDepartment) => dept.id === departmentId)
+        return typeof foundDepartment === 'undefined' ? departmentDummy : foundDepartment
+    }
+
+    getPositionById(positionId: number): IPosition {
+        const foundPosition = this.positions.find((pos: IPosition) => pos.id === positionId)
+        return typeof foundPosition === 'undefined' ? positionDummy : foundPosition
     }
 }

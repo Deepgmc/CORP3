@@ -37,7 +37,7 @@ export class UsersController {
         return await this.usersService.saveOneUserField(savingData.data)
     }
 
-    @Get('get_employee_data/:userId')
+    @Get('get_employee_avatar/:userId')
     async getEmployeeData(
         @Param('userId') userId: number
     ) {
@@ -47,8 +47,7 @@ export class UsersController {
         } catch {
             console.log('Ошибка чтения файла аватара userId:', userId)
         }
-        const res = await this.usersService.findOne('userId', userId)
-        return {user: res, avatar: avatar}
+        return {avatar: avatar}
     }
 
     //меняем должность юзера
