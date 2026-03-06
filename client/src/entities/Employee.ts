@@ -22,7 +22,6 @@ export class Employee extends FiniteStateMachine {
     public     reg_date     : number    = 0
     public     hire_date    : number    = 0
     public     fire_date    : number    = 0
-    public     vacation_date: number    = 0
     public     email        : string    = ''
     public     bio          : string    = ''
     public     gender       : number    = 1 | 0
@@ -56,21 +55,6 @@ export class Employee extends FiniteStateMachine {
                 fire: function() {
                     this.changeStateTo('fired').dispatch('initState')
                 },
-                go_to_vacation: function(){
-                    this.changeStateTo('vacation').dispatch('initState')
-                },
-                back_from_vacation: function(){
-                    this.vacation_date = 0
-                }
-            },
-            vacation: {//в отпуске. может быть только нанятым. но в отпуске не высчитывается зарплата, не назначаются сделки и проекты
-                initState: function() {
-                    //console.log(`initState@vacation`)
-                    this.vacation_date = Date.now()
-                },
-                back_to_work: function() {
-                    this.changeStateTo('hired').dispatch('back_from_vacation')
-                }
             },
             fired: {//уволен. по сути тоже что init, привязан к компании, но имеет статус уволен
                 initState: function() {
@@ -122,8 +106,6 @@ function getInitState(incomeIUser: IUser): string{
         return 'hired'
     } else if(isFired.call(incomeIUser)){
         return 'fired'
-    } else if(isVacation.call(incomeIUser)){
-        return 'vacation'
     }
     return 'init'
 }
@@ -143,9 +125,4 @@ function isFired(): boolean {
 function isHired (): boolean {
     if(+this.hire_date > 0 && +this.fire_date === 0) return true
     return false
-}
-
-/** В отпуске */
-function isVacation (): boolean {
-    return +this.vacation_date > 0
 }

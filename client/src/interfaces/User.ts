@@ -10,7 +10,6 @@ export interface IUser {
     reg_date     : number,          //timestamp
     hire_date    : number,          //timestamp
     fire_date    : number,          //timestamp
-    vacation_date: number,          //timestamp
     email        : string,
     companyId    : number | null,
     isDirector   : boolean,
