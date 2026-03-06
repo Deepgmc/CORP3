@@ -100,7 +100,8 @@
                 <!--Admin controls-->
                 <div class="row">
                     <div class="col-12 flex justify-end">
-                        (HD: {{ dialogEmployee.hire_date }}) (FD: {{ dialogEmployee.fire_date }}) State: {{ dialogEmployee.state }}
+                        (HireD: {{ dialogEmployee.hire_date }}) (FireD: {{ dialogEmployee.fire_date }}) (VacD: {{ dialogEmployee.vacation_date }})
+                        <br>State: {{ dialogEmployee.state }}
                         <q-icon
                             v-if="
                                 $um.can(R_ENTITIES.USER)(R_ACTIONS.EDIT)(R_FIELDS.HIRE) &&
@@ -118,6 +119,14 @@
                             @click="dialogEmployee.dispatch('fire')"
                             name="highlight_off" size="md" class="q-ml-sm pointer text-negative"
                         />
+                        <q-icon
+                            v-if="
+                                $um.can(R_ENTITIES.USER)(R_ACTIONS.EDIT)(R_FIELDS.FIRE) &&
+                                dialogEmployee.state === 'hired'
+                            "
+                            @click="dialogEmployee.dispatch('go_to_vacation')"
+                            name="event" size="md" class="q-ml-sm pointer text-negative"
+                        />
 
                         <q-icon
                             v-if="
@@ -125,7 +134,16 @@
                                 dialogEmployee.state === 'fired'
                             "
                             @click="dialogEmployee.dispatch('back')"
-                            name="thumb_down" size="md" class="q-ml-sm pointer text-info"
+                            name="autorenew" size="md" class="q-ml-sm pointer text-info"
+                        />
+
+                        <q-icon
+                            v-if="
+                                $um.can(R_ENTITIES.USER)(R_ACTIONS.VIEW)(R_FIELDS.ENTIRE) &&
+                                dialogEmployee.state === 'vacation'
+                            "
+                            @click="dialogEmployee.dispatch('back_to_work')"
+                            name="event" color="green" size="md" class="q-ml-sm pointer text-info"
                         />
                     </div>
                 </div>

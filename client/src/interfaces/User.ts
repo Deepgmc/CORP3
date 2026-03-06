@@ -4,23 +4,24 @@ import type { isLoginedResult } from '@/auth/strategies/Strategy'
 import type { Router } from 'vue-router'
 
 export interface IUser {
-    userId      : number,
-    username    : string,
-    birth       : number,          //timestamp
-    reg_date    : number,          //timestamp
-    hire_date   : number,          //timestamp
-    fire_date   : number,          //timestamp
-    email       : string,
-    companyId   : number | null,
-    isDirector  : boolean,
-    gender      : number,
-    bio         : string;
-    firstName   : string,
-    lastName    : string,
-    phone       : string,
-    departmentId: number | null,
-    positionId  : number | null,
-    avatar      : string | null,
+    userId       : number,
+    username     : string,
+    birth        : number,          //timestamp
+    reg_date     : number,          //timestamp
+    hire_date    : number,          //timestamp
+    fire_date    : number,          //timestamp
+    vacation_date: number,          //timestamp
+    email        : string,
+    companyId    : number | null,
+    isDirector   : boolean,
+    gender       : number,
+    bio          : string;
+    firstName    : string,
+    lastName     : string,
+    phone        : string,
+    departmentId : number | null,
+    positionId   : number | null,
+    avatar       : string | null,
 
     //! RELATIONS
     company   : ICompany | null,
@@ -55,7 +56,6 @@ export type TUserId = IUser['userId'];
 export type IUsersCreateDTO = Omit<IUser, 'userId'>
 export type IUsersUpdateDTO = Partial<IUser>
 export type TUserWithoutPassword = Omit<IUser, 'password'>
-
 
 
 

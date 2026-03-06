@@ -3,18 +3,16 @@ import type { ICompany, IDepartment, IPosition } from "@/interfaces/Company";
 import type { TResult } from "@/interfaces/Error";
 import { computed } from "vue";
 import { Rbac } from "./Rbac";
-import Manager from "./Manager";
+import { FiniteStateMachine } from "@/utils/FiniteStateMachine";
 
 export interface ITransition {
     [key: string]: {
         [key: string]: () => any
     }
 }
-export class Employee extends Manager {
+export class Employee extends FiniteStateMachine {
 
     protected _apiModule: string = 'users'
-
-    //private allStates = ['init', 'hired', 'fired']
 
     public     userId       : number    = 0
     public     username     : string    = ''
@@ -24,6 +22,7 @@ export class Employee extends Manager {
     public     reg_date     : number    = 0
     public     hire_date    : number    = 0
     public     fire_date    : number    = 0
+    public     vacation_date: number    = 0
     public     email        : string    = ''
     public     bio          : string    = ''
     public     gender       : number    = 1 | 0
@@ -38,80 +37,61 @@ export class Employee extends Manager {
     department  : IDepartment | null    = null
     position    : IPosition | null      = null
 
-    public state = 'init'
-    transitions: ITransition = {
-        init: {
-            initState: function() {
-                console.log(`initState@init`)
-            },
-            hire: function() {
-                this.changeStateTo('hired')
-                    .dispatch('initState')
-            }
-        },
-        hired: {
-            initState: function() {
-                console.log(`initState@hired`)
-                this.hire_date = Date.now()
-            },
-            fire: function() {
-                this.changeStateTo('fired')
-                    .dispatch('initState')
-            }
-        },
-        fired: {
-            initState: function() {
-                console.log(`initState@fired`)
-                this.hire_date = 0
-                this.fire_date = Date.now()
-            },
-            back: function() {
-                this.changeStateTo('hired')
-                    .dispatch('initState')
-                this.fire_date = Date.now()
-                this.hire_date = 0
-            }
-        },
-    }
-
     constructor(incomeIUser: IUser, isDummy: boolean = false) {
-        super()
+        let initState = 'init'
+        const transitions: ITransition = {
+            init: {//новый, зареганный, привязан к компании при регистрации, но еще не сотрудник по сути
+                initState: function() {
+                    //console.log(`initState@init`)
+                },
+                hire: function() {
+                    this.changeStateTo('hired').dispatch('initState')
+                }
+            },
+            hired: {//нанят на работу, полноценный сотрудник, имеет должность, департамент и т.п.
+                initState: function() {
+                    //console.log(`initState@hired`)
+                    this.hire_date = Date.now()
+                },
+                fire: function() {
+                    this.changeStateTo('fired').dispatch('initState')
+                },
+                go_to_vacation: function(){
+                    this.changeStateTo('vacation').dispatch('initState')
+                },
+                back_from_vacation: function(){
+                    this.vacation_date = 0
+                }
+            },
+            vacation: {//в отпуске. может быть только нанятым. но в отпуске не высчитывается зарплата, не назначаются сделки и проекты
+                initState: function() {
+                    //console.log(`initState@vacation`)
+                    this.vacation_date = Date.now()
+                },
+                back_to_work: function() {
+                    this.changeStateTo('hired').dispatch('back_from_vacation')
+                }
+            },
+            fired: {//уволен. по сути тоже что init, привязан к компании, но имеет статус уволен
+                initState: function() {
+                    //console.log(`initState@fired`)
+                    this.hire_date = 0
+                    this.fire_date = Date.now()
+                },
+                back: function() {
+                    this.changeStateTo('hired').dispatch('initState')
+                    this.fire_date = 0
+                }
+            },
+        }
+        if(!isDummy){
+            initState = getInitState(incomeIUser)
+        }
+        super(initState, transitions)
+
         Object.assign(this, incomeIUser)
         this.initNetwork(this._apiModule)
-        let initState = 'init'
-        if(!isDummy){
-            if(isNewEmployee.call(incomeIUser)){
-                initState = 'init'
-            } else if(isHired.call(incomeIUser)){
-                initState = 'hired'
-            } else if(isFired.call(incomeIUser)){
-                initState = 'fired'
-            }
-        }
-        this.changeStateTo(initState)
-            .dispatch('initState')
     }
-
-    dispatch (actionName: string) {
-        const thisActions = this.transitions[this.state]
-        if(typeof thisActions === 'undefined' || typeof thisActions[actionName] === 'undefined'){
-            console.log(`!! Not found transition: ${actionName}`)
-            return
-        }
-        console.log('Dispatching action:', actionName)
-        thisActions[actionName].call(this)
-
-    }
-
-    changeStateTo (newState: string) {
-        console.log(`Changing state from ${this.state} to ${newState}`)
-        this.state = newState
-        return this
-    }
-
-
-
-
 
     public async changeEmployeePosition(newPositionId: IPosition['id'], userId: IUser['userId']): Promise<TResult> {
         if(!Number.isInteger(newPositionId) || !Number.isInteger(userId)) return { error: true, errorMessage: 'Передан неверный id' }
@@ -133,26 +113,20 @@ export class Employee extends Manager {
             return !!this.isDirector
         })
     }
+};
 
-    /** Еще не назначен на должность, не нанят и не работал */
-    isNewEmployee(): boolean {
-        return !isHired() && !isFired()
+function getInitState(incomeIUser: IUser): string{
+    if(isNewEmployee.call(incomeIUser)){
+        return 'init'
+    } else if(isHired.call(incomeIUser)){
+        return 'hired'
+    } else if(isFired.call(incomeIUser)){
+        return 'fired'
+    } else if(isVacation.call(incomeIUser)){
+        return 'vacation'
     }
-
-    /** Работал раньше но был уволен */
-    isFired(): boolean {
-        if(+this.fire_date > 0) return true
-        return false
-    }
-
-    /** Сейчас работает */
-    isHired (): boolean {
-        //if(isFired.call(this)) return false
-        if(+this.hire_date > 0 && +this.fire_date === 0) return true
-        return false
-    }
+    return 'init'
 }
-
 
 /** Еще не назначен на должность, не нанят и не работал */
 function isNewEmployee(): boolean {
@@ -167,34 +141,11 @@ function isFired(): boolean {
 
 /** Сейчас работает */
 function isHired (): boolean {
-    //if(isFired.call(this)) return false
     if(+this.hire_date > 0 && +this.fire_date === 0) return true
     return false
 }
 
-
-
-
-
-
-// this.userId                                     = employeeData.userId
-        // this.username                                   = employeeData.username
-        // this.lastName                                   = employeeData.lastName
-        // this.firstName                                  = employeeData.firstName
-        // this.birth                                      = employeeData.birth
-        // this.reg_date                                   = employeeData.reg_date
-        // this.hire_date                                  = employeeData.hire_date
-        // this.fire_date                                  = employeeData.fire_date
-        // this.email                                      = employeeData.email
-        // this.bio                                        = employeeData.bio
-        // this.gender                                     = employeeData.gender
-        // this.phone                                      = employeeData.phone
-        // this.isDirector                                 = employeeData.isDirector
-        //  if(employeeData.avatar) this.avatar            = employeeData.avatar
-        // if(employeeData.departmentId) this.departmentId = employeeData.departmentId
-        // if(employeeData.positionId) this.positionId     = employeeData.positionId
-
-        // if(employeeData.company) this.company       = employeeData.company
-        // if(employeeData.skills) this.skills         = employeeData.skills
-        // if(employeeData.department) this.department = employeeData.department
-        // if(employeeData.position) this.position     = employeeData.position
+/** В отпуске */
+function isVacation (): boolean {
+    return +this.vacation_date > 0
+}
