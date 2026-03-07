@@ -1,9 +1,9 @@
 {
   "files": [],
   "references": [
-    {
-      "path": "./tsconfig.node.json"
-    },
+    // {
+    //   "path": "./tsconfig.node.json"
+    // },
     {
       "path": "./tsconfig.app.json"
     },
@@ -14,7 +14,8 @@
   "compilerOptions": {
     "module": "NodeNext",
     "noEmitOnError": true,
-    "target": "es2020",
+    "target": "es2022",
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
   }
 }

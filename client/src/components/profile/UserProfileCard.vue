@@ -105,7 +105,7 @@
                         <q-icon
                             v-if="
                                 $um.can(R_ENTITIES.USER)(R_ACTIONS.EDIT)(R_FIELDS.HIRE) &&
-                                dialogEmployee.state === 'init'
+                                dialogEmployee.state.name === employeeStateNames.INIT
                             "
                             @click="dialogEmployee.dispatch('hire')"
                             name="thumb_up" size="md" class="q-ml-sm pointer text-secondary"
@@ -114,7 +114,7 @@
                         <q-icon
                             v-if="
                                 $um.can(R_ENTITIES.USER)(R_ACTIONS.EDIT)(R_FIELDS.FIRE) &&
-                                dialogEmployee.state === 'hired'
+                                dialogEmployee.state.name === employeeStateNames.HIRED
                             "
                             @click="dialogEmployee.dispatch('fire')"
                             name="highlight_off" size="md" class="q-ml-sm pointer text-negative"
@@ -123,7 +123,7 @@
                         <q-icon
                             v-if="
                                 $um.can(R_ENTITIES.USER)(R_ACTIONS.VIEW)(R_FIELDS.ENTIRE) &&
-                                dialogEmployee.state === 'fired'
+                                dialogEmployee.state.name === employeeStateNames.FIRED
                             "
                             @click="dialogEmployee.dispatch('back')"
                             name="autorenew" size="md" class="q-ml-sm pointer text-info"
@@ -148,6 +148,7 @@ import type { IPosition } from '@/interfaces/Company';
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
 import { SAVED_SUCCESS } from '@/utils/constants/texts';
 import type { TResult } from '@/interfaces/Error';
+import { employeeStateNames } from '@/entities/Employee';
 const notify = useNotify()
 const $um = Rbac.getInstance()
 

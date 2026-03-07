@@ -3,12 +3,36 @@ import type { ICompany, IDepartment, IPosition } from "@/interfaces/Company";
 import type { TResult } from "@/interfaces/Error";
 import { computed } from "vue";
 import { Rbac } from "./Rbac";
-import { FiniteStateMachine } from "@/utils/FiniteStateMachine";
+import { FiniteStateMachine, type TState } from "@/utils/FiniteStateMachine";
 
 export interface ITransition {
     [key: string]: {
         [key: string]: () => any
     }
+}
+
+export const enum employeeStateNames {
+    INIT  = 'init',
+    HIRED = 'hired',
+    FIRED = 'fired'
+}
+
+const employeeStates: TState[] = [
+    {
+        name: employeeStateNames.INIT,
+        isActive: isNewEmployee
+    },
+    {
+        name: employeeStateNames.HIRED,
+        isActive: isHired
+    },
+    {
+        name: employeeStateNames.FIRED,
+        isActive: isFired
+    }
+];
+function getStateObject(name: employeeStateNames){
+    return employeeStates.find((state: TState) => state.name === name)
 }
 export class Employee extends FiniteStateMachine {
 
@@ -37,41 +61,37 @@ export class Employee extends FiniteStateMachine {
     position    : IPosition | null      = null
 
     constructor(incomeIUser: IUser, isDummy: boolean = false) {
-        let initState = 'init'
-        const transitions: ITransition = {
+        isDummy = true;if(isDummy){isDummy = false};//чтоб не бесил ts
+        const FSMTransitions: ITransition = {
             init: {//новый, зареганный, привязан к компании при регистрации, но еще не сотрудник по сути
                 initState: function() {
-                    //console.log(`initState@init`)
                 },
                 hire: function() {
-                    this.changeStateTo('hired').dispatch('initState')
+                    this.changeStateTo(getStateObject(employeeStateNames.HIRED)).dispatch('initState')
                 }
             },
             hired: {//нанят на работу, полноценный сотрудник, имеет должность, департамент и т.п.
                 initState: function() {
-                    //console.log(`initState@hired`)
                     this.hire_date = Date.now()
                 },
                 fire: function() {
-                    this.changeStateTo('fired').dispatch('initState')
+                    this.changeStateTo(getStateObject(employeeStateNames.FIRED)).dispatch('initState')
                 },
             },
             fired: {//уволен. по сути тоже что init, привязан к компании, но имеет статус уволен
                 initState: function() {
-                    //console.log(`initState@fired`)
                     this.hire_date = 0
                     this.fire_date = Date.now()
                 },
                 back: function() {
-                    this.changeStateTo('hired').dispatch('initState')
+                    this.changeStateTo(getStateObject(employeeStateNames.HIRED)).dispatch('initState')
                     this.fire_date = 0
                 }
             },
         }
-        if(!isDummy){
-            initState = getInitState(incomeIUser)
-        }
-        super(initState, transitions)
+        const initState: TState = getInitState(incomeIUser)
+        if(initState === null) throw new TypeError(`Не определён начальный статус сотрудника: ${incomeIUser.userId}`)
+        super(initState, FSMTransitions)
 
         Object.assign(this, incomeIUser)
         this.initNetwork(this._apiModule)
@@ -97,17 +117,24 @@ export class Employee extends FiniteStateMachine {
             return !!this.isDirector
         })
     }
+
+    public isNewEmployee(): boolean {
+        return isNewEmployee.call(this)
+    }
+    public isHired(): boolean {
+        return isHired.call(this)
+    }
+    public isFired(): boolean {
+        return isFired.call(this)
+    }
 };
 
-function getInitState(incomeIUser: IUser): string{
-    if(isNewEmployee.call(incomeIUser)){
-        return 'init'
-    } else if(isHired.call(incomeIUser)){
-        return 'hired'
-    } else if(isFired.call(incomeIUser)){
-        return 'fired'
-    }
-    return 'init'
+function getInitState(incomeIUser: IUser): TState {
+    const initState: TState = employeeStates.reduce((acc: TState, state: TState) => {
+        if(state.isActive.call(incomeIUser)) acc = state
+        return acc
+    }, { name: employeeStateNames.INIT, isActive: isNewEmployee })
+    return initState
 }
 
 /** Еще не назначен на должность, не нанят и не работал */
@@ -115,14 +142,12 @@ function isNewEmployee(): boolean {
     return !isHired.call(this) && !isFired.call(this)
 }
 
-/** Работал раньше но был уволен */
-function isFired(): boolean {
-    if(+this.fire_date > 0) return true
-    return false
-}
-
 /** Сейчас работает */
 function isHired (): boolean {
-    if(+this.hire_date > 0 && +this.fire_date === 0) return true
-    return false
+    return +this.hire_date > 0 && +this.fire_date === 0
+}
+
+/** Работал раньше но был уволен */
+function isFired(): boolean {
+    return +this.fire_date > 0
 }

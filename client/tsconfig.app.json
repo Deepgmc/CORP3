@@ -5,6 +5,8 @@
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "noImplicitThis": false,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
     "strict": true,
     "strictNullChecks": true,
     "noUnusedParameters": true,
@@ -12,7 +14,7 @@
     "target": "es2022",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "lib": ["dom", "es2021"],
+    "lib": ["dom", "es2022"],
 
     "paths": {
       "@/*": ["./src/*"]
