@@ -60,8 +60,8 @@ export class Employee extends FiniteStateMachine {
     department  : IDepartment | null    = null
     position    : IPosition | null      = null
 
-    constructor(incomeIUser: IUser, isDummy: boolean = false) {
-        isDummy = true;if(isDummy){isDummy = false};//чтоб не бесил ts
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    constructor(incomeIUser: IUser, _isDummy: boolean = false) {
         const FSMTransitions: ITransition = {
             init: {//новый, зареганный, привязан к компании при регистрации, но еще не сотрудник по сути
                 initState: function() {

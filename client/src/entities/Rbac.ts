@@ -175,6 +175,9 @@ export class ManagerRole extends Role {
         [R_ENTITIES.EMPLOYEE]: {
             [R_ACTIONS.VIEW]: [
                 R_FIELDS.ENTIRE
+            ],
+            [R_ACTIONS.EDIT]: [
+                R_FIELDS.ENTIRE
             ]
         },
         [R_ENTITIES.USER]: {

@@ -1,11 +1,11 @@
 export default function logParameter(
-    callerClass: any,
+    _callerClass: any,
     methodName: string,
     descriptor: PropertyDescriptor
 ) {
     const original = descriptor.value
     descriptor.value = function (...args: any[]) {
-        if(true){
+        if(false){
             if(methodName === 'dispatch'){
                 console.log(`Dispatching action: "${args[0]}" at state "${this.state.name}"`)
                 const thisActions = this.transitions[this.state.name]
