@@ -13,16 +13,16 @@ export class FiniteStateMachine extends Manager {
         this.state = initState
         this.transitions = transitions
 
-        this.changeStateTo(initState).dispatch('initState')
+        this.changeStateTo(initState).dispatch('initState', true) //initialize state
     }
 
     @logParameter
-    dispatch (actionName: string) {
+    dispatch (actionName: string, isInitialization = false) {
         const thisActions = this.transitions[this.state.name]
         if(typeof thisActions === 'undefined' || typeof thisActions[actionName] === 'undefined'){
             return
         }
-        thisActions[actionName].call(this)
+        thisActions[actionName].call(this, isInitialization)
 
     }
 
@@ -36,11 +36,12 @@ export class FiniteStateMachine extends Manager {
 
 export interface ITransition {
     [key: string]: {
-        [key: string]: () => any
+        [key: string]: (isInitialization: boolean) => any
     }
 }
 
 export type TState = {
     name: string,
+    label: string,
     isActive: (...args: any[]) => boolean
 }

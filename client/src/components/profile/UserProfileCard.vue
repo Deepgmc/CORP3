@@ -6,42 +6,46 @@
             </q-card-section>
 
             <q-card-section class="q-gutter-y-md row">
-                <div class="col-6 items-center q-gutter-md">
+                <div class="col-7 items-center q-gutter-md">
                     <!-- Фото профиля и основная информация -->
-                    <div class="row items-center q-gutter-md">
-                        <q-avatar size="140px" class="shadow-2">
-                            <img :src="avatar" :alt="`${dialogEmployee.firstName} ${dialogEmployee.lastName}`">
-                        </q-avatar>
-                        <div class="column justify-center q-ml-xl">
-                            <div class="text-h5 text-weight-bold">
-                                {{ dialogEmployee.firstName }} {{ dialogEmployee.lastName }}
-                            </div>
-                            <div class="text-body3 text-grey-7">
-                                <span class="text-weight-medium">дата рождения:</span>
-                                <span class="text-weight-light q-ml-xs">{{ getReadableFormatFromTS(dialogEmployee.birth) }} ({{ getAgeFromTS(dialogEmployee.birth) }})</span>
-                            </div>
-                            <div class="text-body3 text-grey-7" v-if="dialogEmployee.reg_date">
-                                <span class="text-weight-medium">дата регистрации:</span>
-                                <span class="text-weight-light q-ml-xs">{{ getReadableFormatFromTS(dialogEmployee.reg_date) }}</span>
-                            </div>
-                            <div class="text-body3 text-grey-7">
-                                <span class="text-weight-medium">пол:</span>
-                                <span class="text-weight-light q-ml-xs">{{ genderOptions[dialogEmployee.gender]?.label.toLocaleLowerCase() }}</span>
+                    <div class="row items-center">
+                        <div class="col-4">
+                            <q-avatar size="140px" class="shadow-2">
+                                <img :src="avatar" :alt="`${cardEmployee.firstName} ${cardEmployee.lastName}`">
+                            </q-avatar>
+                        </div>
+                        <div class="col-8">
+                            <div class="column justify-center q-ml-xl">
+                                <div class="text-h5 text-weight-bold">
+                                    {{ cardEmployee.firstName }} {{ cardEmployee.lastName }}
+                                </div>
+                                <div class="text-body3 text-grey-7">
+                                    <span class="text-weight-medium">дата рождения:</span>
+                                    <span class="text-weight-light q-ml-xs">{{ getReadableFormatFromTS(cardEmployee.birth) }} ({{ getAgeFromTS(cardEmployee.birth) }})</span>
+                                </div>
+                                <div class="text-body3 text-grey-7" v-if="cardEmployee.reg_date">
+                                    <span class="text-weight-medium">дата регистрации:</span>
+                                    <span class="text-weight-light q-ml-xs">{{ getReadableFormatFromTS(cardEmployee.reg_date) }}</span>
+                                </div>
+                                <div class="text-body3 text-grey-7">
+                                    <span class="text-weight-medium">пол:</span>
+                                    <span class="text-weight-light q-ml-xs">{{ genderOptions[cardEmployee.gender]?.label.toLocaleLowerCase() }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-6 column items-end justify-around">
+                <div class="col-5 column items-end justify-around">
                     <!-- Контактный телефон -->
                     <div class="row flex justify-center">
                         <q-icon size="md" name="phone" class="text-primary" />
-                        <span class="text-body1 q-ml-sm">{{ dialogEmployee.phone }}</span>
+                        <span class="text-body1 q-ml-sm">{{ cardEmployee.phone }}</span>
                     </div>
                     <!-- email -->
                     <div class="row flex justify-center">
                         <q-icon size="md" name="email" class="text-primary" />
-                        <span class="text-body1 q-ml-sm">{{ dialogEmployee.email }}</span>
+                        <span class="text-body1 q-ml-sm">{{ cardEmployee.email }}</span>
                     </div>
                 </div>
             </q-card-section>
@@ -53,12 +57,12 @@
                 <div class="row items-center">
                     <div class="col-4 q-pa-xs flex justify-center items-center">
                         <q-icon name="business" class="text-primary" />
-                        <span class="text-body1 q-ml-md">{{ dialogEmployee.company?.name }}</span>
-                        <span v-if="dialogEmployee.isManager()" class="subcaption q-ml-xs q-mt-xs">(руководитель)</span>
+                        <span class="text-body1 q-ml-md">{{ cardEmployee.company?.name }}</span>
+                        <span v-if="cardEmployee.isManager()" class="subcaption q-ml-xs q-mt-xs">(руководитель)</span>
                     </div>
                     <div class="col-4 q-pa-xs flex justify-center items-center">
                         <q-icon name="work" class="text-primary q-ml-md" />
-                        <span class="text-body1 q-ml-md">{{ dialogEmployee.department?.name }}</span>
+                        <span class="text-body1 q-ml-md">{{ cardEmployee.department?.name }}</span>
                     </div>
                     <div class="col-4 q-pa-xs flex justify-center items-center">
                         <div class="text-subtitle1 text-grey-10">
@@ -79,12 +83,12 @@
 
             <q-separator color="lightgrey" />
 
-            <q-card-section v-if="dialogEmployee.bio.trim()">
+            <q-card-section v-if="cardEmployee.bio.trim()">
                 <!-- Краткое описание -->
                 <div class="row">
                     <div class="col-12 q-pa-md text-italic">
                         <div class="text-body1">
-                            {{ dialogEmployee.bio }}
+                            {{ cardEmployee.bio }}
                         </div>
                     </div>
                 </div>
@@ -94,12 +98,12 @@
 
             <q-card-section>
                 <!-- Навыки -->
-                <div class="row" v-if="dialogEmployee.skills.length > 0">
+                <div class="row" v-if="cardEmployee.skills.length > 0">
                     <div class="col-12 wrap">
                         <q-icon name="school" class="text-primary" />
                         <span class="text-body2 q-ml-sm q-mb-sm">Навыки:</span>
                         <user-skills
-                            :skills="dialogEmployee.skills"
+                            :skills="cardEmployee.skills"
                             :needAssession="false"
                             :removable="false"
                             :alwaysShowAll="true"
@@ -120,7 +124,7 @@
                     <q-splitter v-model="splitterModel" style="height: 250px; width:100%;">
                         <template #before>
                             <q-tabs v-model="tab" vertical class="text-teal">
-                                <q-tab name="hire" icon="done" label="Статус" />
+                                <q-tab name="hire" icon="done" label="Статус сотрудника" />
                                 <q-tab name="vacation" icon="event" label="Отпуска" />
                                 <q-tab name="notes" icon="edit" label="Заметки" />
                             </q-tabs>
@@ -131,32 +135,32 @@
                                 <q-tab-panel name="hire">
                                     <div class="text-h4 q-mb-md">Статус</div>
                                     <div>
-                                        (HireD: {{ dialogEmployee.hire_date }}) (FireD: {{ dialogEmployee.fire_date }})
-                                        <br>State: {{ dialogEmployee.state }}
+                                        (HireD: {{ cardEmployee.hire_date }}) (FireD: {{ cardEmployee.fire_date }})
+                                        <br>State: {{ cardEmployee.state }}
                                         <q-icon
                                             v-if="
                                                 $um.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.EDIT)(R_FIELDS.HIRE) &&
-                                                dialogEmployee.state.name === employeeStateNames.INIT
+                                                cardEmployee.state.name === employeeStateNames.INIT
                                             "
-                                            @click="dialogEmployee.dispatch('hire')"
+                                            @click="cardEmployee.dispatch('hire', false)"
                                             name="thumb_up" size="md" class="q-ml-sm pointer text-secondary"
                                         />
 
                                         <q-icon
                                             v-if="
                                                 $um.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.EDIT)(R_FIELDS.FIRE) &&
-                                                dialogEmployee.state.name === employeeStateNames.HIRED
+                                                cardEmployee.state.name === employeeStateNames.HIRED
                                             "
-                                            @click="dialogEmployee.dispatch('fire')"
+                                            @click="cardEmployee.dispatch('fire', false)"
                                             name="highlight_off" size="md" class="q-ml-sm pointer text-negative"
                                         />
 
                                         <q-icon
                                             v-if="
                                                 $um.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.VIEW)(R_FIELDS.ENTIRE) &&
-                                                dialogEmployee.state.name === employeeStateNames.FIRED
+                                                cardEmployee.state.name === employeeStateNames.FIRED
                                             "
-                                            @click="dialogEmployee.dispatch('back')"
+                                            @click="cardEmployee.dispatch('back', false)"
                                             name="autorenew" size="md" class="q-ml-sm pointer text-info"
                                         />
                                     </div>
@@ -164,18 +168,10 @@
 
                                 <q-tab-panel name="vacation">
                                     <div class="text-h4 q-mb-md">Отпуска</div>
-                                    <p>
-                                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque
-                                        magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima
-                                        assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
                                 </q-tab-panel>
 
                                 <q-tab-panel name="notes">
                                     <div class="text-h4 q-mb-md">Заметки</div>
-                                    <p>
-                                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque
-                                        magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima
-                                        assumenda consectetur culpa fuga nulla ullam. In, libero.</p>
                                 </q-tab-panel>
                             </q-tab-panels>
                         </template>
@@ -202,15 +198,15 @@ import { employeeStateNames } from '@/entities/Employee';
 const notify = useNotify()
 const $um = Rbac.getInstance()
 
-const { isUserProfileCardOpened, dialogEmployee, avatar } = useUserProfileCard()
+const { isUserProfileCardOpened, cardEmployee, avatar } = useUserProfileCard()
 
 const selectPositionModel = ref({
-    label: dialogEmployee.value?.position?.position,
-    value: dialogEmployee.value?.position?.id
+    label: cardEmployee.value?.position?.position,
+    value: cardEmployee.value?.position?.id
 })
 
 const tab = ref('hire')
-const splitterModel = ref(10)
+const splitterModel = ref(15)
 
 const selectPositionOptions = computed(() => {
     return getSelectOptionsFromDataArray<IPosition>($um.company.positions, {
@@ -219,14 +215,14 @@ const selectPositionOptions = computed(() => {
     })
 })
 const positionText = computed(() => {
-    if(dialogEmployee.value === undefined || dialogEmployee.value.position?.position === undefined){
+    if(cardEmployee.value === undefined || cardEmployee.value.position?.position === undefined){
         return 'не указана'
     }
-    return dialogEmployee.value.position.position
+    return cardEmployee.value.position.position
 })
 async function onPositionSelect(): Promise<void> {
     if(!selectPositionModel.value.value) return
-    const res: TResult = await $um.company.changeEmployeePosition(selectPositionModel.value.value, dialogEmployee.value.userId)
+    const res: TResult = await $um.company.changeEmployeePosition(selectPositionModel.value.value, cardEmployee.value.userId)
     if(res.error) {
         notify.run(res.errorMessage, notifyTypes.err)
         return
@@ -239,8 +235,9 @@ async function onPositionSelect(): Promise<void> {
 
 <style lang="scss" scoped>
 .employee-card {
-    max-width: 1200px;
+    max-width: 70%;
     min-height: 400px;
+    width: 70%;
     .profile-card_select {
         width:250px;
     }
@@ -253,6 +250,7 @@ async function onPositionSelect(): Promise<void> {
 @media (max-width: 768px) {
     .employee-card {
         max-width: 100%;
+        width: 100%;
     }
     .row.items-center {
         flex-direction: column;
@@ -262,11 +260,6 @@ async function onPositionSelect(): Promise<void> {
         width: 100%;
         text-align: center;
         margin-bottom: 8px;
-    }
-}
-@media (min-width: 800px) {
-    .employee-card {
-        min-width: 800px;
     }
 }
 </style>

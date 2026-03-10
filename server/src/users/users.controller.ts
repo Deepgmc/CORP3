@@ -61,4 +61,22 @@ export class UsersController {
     ): Promise<UpdateResult | boolean> {
         return await this.usersService.changeUserPosition(savingData)
     }
+
+    //нанимаем сотрудника
+    @UseGuards(AuthGuard('jwt'))
+    @Patch('hire_employee')
+    async hireEmployee (
+        @Body() user: {userId: string}
+    ): Promise<UpdateResult | boolean> {
+        return await this.usersService.hireEmployee(user.userId)
+    }
+
+    //увольняем сотрудника
+    @UseGuards(AuthGuard('jwt'))
+    @Patch('fire_employee')
+    async fireEmployee (
+        @Body() user: {userId: string}
+    ): Promise<UpdateResult | boolean> {
+        return await this.usersService.fireEmployee(user.userId)
+    }
 }

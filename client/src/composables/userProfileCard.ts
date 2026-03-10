@@ -9,7 +9,7 @@ import { Rbac } from "@/entities/Rbac";
 
 const isUserProfileCardOpened = ref<boolean>(false)
 
-const dialogEmployee = ref<Employee>(new Employee(userDummy, true))
+const cardEmployee = ref<Employee>(new Employee(userDummy, true))
 
 const avatar = ref('')
 
@@ -23,8 +23,8 @@ export function useUserProfileCard() {
         isUserProfileCardOpened.value = false
     }
 
-    function setDialogEmployee(newEmployee: Employee) {
-        dialogEmployee.value = newEmployee
+    function setCardEmployee(newEmployee: Employee) {
+        cardEmployee.value = newEmployee
     }
 
     async function loadUserCardData(userId: IUser['userId']): Promise<void> {
@@ -36,7 +36,7 @@ export function useUserProfileCard() {
             if(!foundEmployee){
                 throw new Error('Не найден сотрудник при открытии карточки сотрудника')
             }
-            setDialogEmployee(foundEmployee)
+            setCardEmployee(foundEmployee)
             avatar.value = res.data.avatar
         }
     }
@@ -45,7 +45,7 @@ export function useUserProfileCard() {
         avatar,
 
         isUserProfileCardOpened,
-        dialogEmployee,
+        cardEmployee,
 
         openUserCard,
         closeUserCard,

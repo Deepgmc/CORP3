@@ -20,20 +20,24 @@ export const enum employeeStateNames {
 const employeeStates: TState[] = [
     {
         name: employeeStateNames.INIT,
-        isActive: isNewEmployee
+        isActive: isNewEmployee,
+        label: 'Новый сотрудник'
     },
     {
         name: employeeStateNames.HIRED,
-        isActive: isHired
+        isActive: isHired,
+        label: 'Работает'
     },
     {
         name: employeeStateNames.FIRED,
-        isActive: isFired
+        isActive: isFired,
+        label: 'Уволен'
     }
 ];
-function getStateObject(name: employeeStateNames){
+function getStateObject(name: employeeStateNames): TState | undefined {
     return employeeStates.find((state: TState) => state.name === name)
 }
+
 export class Employee extends FiniteStateMachine {
 
     protected _apiModule: string = 'users'
@@ -60,32 +64,56 @@ export class Employee extends FiniteStateMachine {
     department  : IDepartment | null    = null
     position    : IPosition | null      = null
 
+    public status = computed(() => {
+        let stateObj: TState | undefined
+        if(isNewEmployee.call(this)) {
+            stateObj = getStateObject(employeeStateNames.INIT)
+        } else if(isHired.call(this)){
+            stateObj = getStateObject(employeeStateNames.HIRED)
+        } else if(isFired.call(this)){
+            stateObj = getStateObject(employeeStateNames.FIRED)
+        }
+        if(stateObj === undefined) return 'Статус неопределён'
+        return stateObj.label
+    })
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     constructor(incomeIUser: IUser, _isDummy: boolean = false) {
         const FSMTransitions: ITransition = {
             init: {//новый, зареганный, привязан к компании при регистрации, но еще не сотрудник по сути
-                initState: function() {
-                },
-                hire: function() {
-                    this.changeStateTo(getStateObject(employeeStateNames.HIRED)).dispatch('initState')
+                initState: function() {},
+                hire: async function(isInitialization = false) {
+                    this.changeStateTo(getStateObject(employeeStateNames.HIRED)).dispatch('initState', isInitialization)
                 }
             },
             hired: {//нанят на работу, полноценный сотрудник, имеет должность, департамент и т.п.
-                initState: function() {
+                initState: async function(isInitialization = false) {
                     this.hire_date = Date.now()
+                    this.fire_date = 0
+                    if(isInitialization) return
+
+                    const hireRes = await this.hireEmployee()
+                    if(hireRes.error) {
+                        console.warn(`Статус найма на работу ${this.userId} не был изменён`)
+                    }
                 },
-                fire: function() {
-                    this.changeStateTo(getStateObject(employeeStateNames.FIRED)).dispatch('initState')
+                fire: async function(isInitialization = false) {
+                    this.changeStateTo(getStateObject(employeeStateNames.FIRED)).dispatch('initState', isInitialization)
                 },
             },
             fired: {//уволен. по сути тоже что init, привязан к компании, но имеет статус уволен
-                initState: function() {
+                initState: async function(isInitialization = false) {
                     this.hire_date = 0
                     this.fire_date = Date.now()
+                    if(isInitialization) return
+
+                    const fireRes = await this.fireEmployee()
+                    if(fireRes.error) {
+                        console.warn(`Статус увольнения ${this.userId} не был изменён`)
+                    }
                 },
-                back: function() {
-                    this.changeStateTo(getStateObject(employeeStateNames.HIRED)).dispatch('initState')
-                    this.fire_date = 0
+                back: function(isInitialization = false) {
+                    this.changeStateTo(getStateObject(employeeStateNames.HIRED)).dispatch('initState', isInitialization)
                 }
             },
         }
@@ -95,6 +123,22 @@ export class Employee extends FiniteStateMachine {
 
         Object.assign(this, incomeIUser)
         this.initNetwork(this._apiModule)
+    }
+
+    public async hireEmployee(): Promise<TResult> {
+        const res = await this._patchData('hire_employee')({ userId: this.userId })
+        if(res.data.affected !== 0) {
+            return { error: false, res: true }
+        }
+        return { error: true, errorMessage: 'Не обновлено ни одной записи' }
+    }
+
+    public async fireEmployee(): Promise<TResult> {
+        const res = await this._patchData('fire_employee')({ userId: this.userId })
+        if(res.data.affected !== 0) {
+            return { error: false, res: true }
+        }
+        return { error: true, errorMessage: 'Не обновлено ни одной записи' }
     }
 
     public async changeEmployeePosition(newPositionId: IPosition['id'], userId: IUser['userId']): Promise<TResult> {
@@ -130,10 +174,13 @@ export class Employee extends FiniteStateMachine {
 };
 
 function getInitState(incomeIUser: IUser): TState {
+    let initStateName = ''
+    const initStateObject = getStateObject(employeeStateNames.INIT)
+    if(initStateObject !== undefined) initStateName = initStateObject.label
     const initState: TState = employeeStates.reduce((acc: TState, state: TState) => {
         if(state.isActive.call(incomeIUser)) acc = state
         return acc
-    }, { name: employeeStateNames.INIT, isActive: isNewEmployee })
+    }, { name: employeeStateNames.INIT, isActive: isNewEmployee, label: initStateName } )
     return initState
 }
 

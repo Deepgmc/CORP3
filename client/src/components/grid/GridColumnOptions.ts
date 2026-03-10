@@ -51,6 +51,15 @@ export const employeeAvailableCols: ColsConfig = {
         type      : fieldTypes.text,
         editable  : false,
     },
+    status: {
+        label     : 'Статус',
+        switchData: false,
+        align     : 'center',
+        type      : fieldTypes.text,
+        editable  : false,
+        sortFn  : defaultStringSortFn,
+        order   : -1,
+    },
     positionId: {
         label     : 'Должность',
         switchData: true,

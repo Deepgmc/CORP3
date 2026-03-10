@@ -14,7 +14,7 @@ import { GridCols } from '../../composables/gridView/GridColsManager'
 import { Rbac } from '@/entities/Rbac';
 
 const $userManager = Rbac.getInstance()
-const needFields = ['userId', 'username', 'firstName', 'departmentId', 'positionId', 'birth', 'phone', 'skills']
+const needFields = ['userId', 'username', 'firstName', 'departmentId', 'status', 'positionId', 'skills']
 const employees = $userManager.company.employees
 
 const gridCols = new GridCols(
