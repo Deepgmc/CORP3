@@ -220,6 +220,9 @@ export class GridCols {
             case 'skills':
                 item['skillsValue'] = item.skills.map((skill: any) => skill.skill).join(', ')
             break;
+            case 'state':
+                item['stateValue'] = item.state.label
+            break;
         }
     }
 
@@ -237,9 +240,5 @@ export class GridCols {
 
     getColsMap(): TColsMap{
         return this.colsMap
-    }
-
-    getModifiedData(){
-        return this.modifiedData
     }
 }

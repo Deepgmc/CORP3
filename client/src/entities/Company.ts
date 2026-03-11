@@ -185,7 +185,10 @@ export default class Company extends Manager implements ICompany {
     async changeEmployeePosition(newPositionId: IPosition['id'], userId: IUser['userId']): Promise<TResult> {
         const employee = this.employees.find((emp: Employee) => emp.userId === userId)
         if(employee){
-            const res = await employee.changeEmployeePosition(newPositionId, userId)
+            const res: TResult = await employee.changeEmployeePosition(newPositionId, userId)
+            if(!res.error){
+                this._store.changeEmployeePosition(newPositionId, userId)
+            }
             return res
         }
         return {error: true, errorMessage: 'Unhandled error'}

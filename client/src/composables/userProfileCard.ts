@@ -23,8 +23,8 @@ export function useUserProfileCard() {
         isUserProfileCardOpened.value = false
     }
 
-    function setCardEmployee(newEmployee: Employee) {
-        cardEmployee.value = newEmployee
+    function setCardEmployee(newCardEmployee: Employee) {
+        cardEmployee.value = newCardEmployee
     }
 
     async function loadUserCardData(userId: IUser['userId']): Promise<void> {

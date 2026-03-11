@@ -55,16 +55,16 @@
             <q-card-section>
                 <!-- Информация о компании -->
                 <div class="row items-center">
-                    <div class="col-4 q-pa-xs flex justify-center items-center">
+                    <div class="col-3 q-pa-xs flex justify-center items-center">
                         <q-icon name="business" class="text-primary" />
                         <span class="text-body1 q-ml-md">{{ cardEmployee.company?.name }}</span>
                         <span v-if="cardEmployee.isManager()" class="subcaption q-ml-xs q-mt-xs">(руководитель)</span>
                     </div>
-                    <div class="col-4 q-pa-xs flex justify-center items-center">
+                    <div class="col-3 q-pa-xs flex justify-center items-center">
                         <q-icon name="work" class="text-primary q-ml-md" />
                         <span class="text-body1 q-ml-md">{{ cardEmployee.department?.name }}</span>
                     </div>
-                    <div class="col-4 q-pa-xs flex justify-center items-center">
+                    <div class="col-3 q-pa-xs flex justify-center items-center">
                         <div class="text-subtitle1 text-grey-10">
                             <template v-if="!$um.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.EDIT)(R_FIELDS.POSITION)">Должность: {{ positionText }}</template>
                             <template v-else>
@@ -76,6 +76,11 @@
                                     @update:model-value="onPositionSelect"
                                 ></q-select>
                             </template>
+                        </div>
+                    </div>
+                    <div class="col-3 q-pa-xs flex justify-center items-center">
+                        <div class="text-subtitle1 text-grey-10">
+                            {{ cardEmployee.state.label }}
                         </div>
                     </div>
                 </div>

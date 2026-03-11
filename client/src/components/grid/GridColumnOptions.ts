@@ -51,9 +51,9 @@ export const employeeAvailableCols: ColsConfig = {
         type      : fieldTypes.text,
         editable  : false,
     },
-    status: {
+    state: {
         label     : 'Статус',
-        switchData: false,
+        switchData: true,
         align     : 'center',
         type      : fieldTypes.text,
         editable  : false,

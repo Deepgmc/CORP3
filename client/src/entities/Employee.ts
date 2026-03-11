@@ -64,19 +64,6 @@ export class Employee extends FiniteStateMachine {
     department  : IDepartment | null    = null
     position    : IPosition | null      = null
 
-    public status = computed(() => {
-        let stateObj: TState | undefined
-        if(isNewEmployee.call(this)) {
-            stateObj = getStateObject(employeeStateNames.INIT)
-        } else if(isHired.call(this)){
-            stateObj = getStateObject(employeeStateNames.HIRED)
-        } else if(isFired.call(this)){
-            stateObj = getStateObject(employeeStateNames.FIRED)
-        }
-        if(stateObj === undefined) return 'Статус неопределён'
-        return stateObj.label
-    })
-
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     constructor(incomeIUser: IUser, _isDummy: boolean = false) {
         const FSMTransitions: ITransition = {
