@@ -119,69 +119,13 @@
             </q-card-section>
 
             <!--Admin controls-->
-            <q-card-section class="bg-warning text-white q-pa-xs" :horizontal="true" v-if="$um.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.EDIT)(R_FIELDS.ENTIRE)">
-                <div class="text-h6">Управление струдником</div>
-            </q-card-section>
-            <q-card-actions
-                v-if="$um.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.EDIT)(R_FIELDS.ENTIRE)"
-                class="q-pa-md flex justify-around"
-            >
-                    <q-splitter v-model="splitterModel" style="height: 250px; width:100%;">
-                        <template #before>
-                            <q-tabs v-model="tab" vertical class="text-teal">
-                                <q-tab name="hire" icon="done" label="Статус сотрудника" />
-                                <q-tab name="vacation" icon="event" label="Отпуска" />
-                                <q-tab name="notes" icon="edit" label="Заметки" />
-                            </q-tabs>
-                        </template>
-
-                        <template #after>
-                            <q-tab-panels v-model="tab" animated swipeable vertical transition-prev="jump-up" transition-next="jump-up">
-                                <q-tab-panel name="hire">
-                                    <div class="text-h4 q-mb-md">Статус</div>
-                                    <div>
-                                        (HireD: {{ cardEmployee.hire_date }}) (FireD: {{ cardEmployee.fire_date }})
-                                        <br>State: {{ cardEmployee.state }}
-                                        <q-icon
-                                            v-if="
-                                                $um.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.EDIT)(R_FIELDS.HIRE) &&
-                                                cardEmployee.state.name === employeeStateNames.INIT
-                                            "
-                                            @click="cardEmployee.dispatch('hire', false)"
-                                            name="thumb_up" size="md" class="q-ml-sm pointer text-secondary"
-                                        />
-
-                                        <q-icon
-                                            v-if="
-                                                $um.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.EDIT)(R_FIELDS.FIRE) &&
-                                                cardEmployee.state.name === employeeStateNames.HIRED
-                                            "
-                                            @click="cardEmployee.dispatch('fire', false)"
-                                            name="highlight_off" size="md" class="q-ml-sm pointer text-negative"
-                                        />
-
-                                        <q-icon
-                                            v-if="
-                                                $um.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.VIEW)(R_FIELDS.ENTIRE) &&
-                                                cardEmployee.state.name === employeeStateNames.FIRED
-                                            "
-                                            @click="cardEmployee.dispatch('back', false)"
-                                            name="autorenew" size="md" class="q-ml-sm pointer text-info"
-                                        />
-                                    </div>
-                                </q-tab-panel>
-
-                                <q-tab-panel name="vacation">
-                                    <div class="text-h4 q-mb-md">Отпуска</div>
-                                </q-tab-panel>
-
-                                <q-tab-panel name="notes">
-                                    <div class="text-h4 q-mb-md">Заметки</div>
-                                </q-tab-panel>
-                            </q-tab-panels>
-                        </template>
-                    </q-splitter>
-            </q-card-actions>
+            <employee-edit>
+                <template #header>
+                    <q-card-section class="bg-warning text-white q-pa-xs" :horizontal="true">
+                        <div class="text-h6">Управление струдником</div>
+                    </q-card-section>
+                </template>
+            </employee-edit>
         </q-card>
     </q-dialog>
 </template>
@@ -191,7 +135,6 @@
 import { computed, ref } from 'vue';
 import { R_ACTIONS, R_ENTITIES, R_FIELDS, Rbac } from '@/entities/Rbac';
 import { useUserProfileCard } from '@/composables/userProfileCard';
-import UserSkills from '@/components/UserSkills.vue'
 import { genderOptions } from '@/utils/constants/main';
 import { getAgeFromTS, getReadableFormatFromTS } from '@/utils/helpers/dates';
 import { getSelectOptionsFromDataArray } from '@/utils/helpers/components';
@@ -199,7 +142,11 @@ import type { IPosition } from '@/interfaces/Company';
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
 import { SAVED_SUCCESS } from '@/utils/constants/texts';
 import type { TResult } from '@/interfaces/Error';
-import { employeeStateNames } from '@/entities/Employee';
+
+import UserSkills from '@/components/UserSkills.vue'
+import EmployeeEdit from '@/components/employee/EmployeeEdit.vue';
+
+
 const notify = useNotify()
 const $um = Rbac.getInstance()
 
@@ -209,9 +156,6 @@ const selectPositionModel = ref({
     label: cardEmployee.value?.position?.position,
     value: cardEmployee.value?.position?.id
 })
-
-const tab = ref('hire')
-const splitterModel = ref(15)
 
 const selectPositionOptions = computed(() => {
     return getSelectOptionsFromDataArray<IPosition>($um.company.positions, {
