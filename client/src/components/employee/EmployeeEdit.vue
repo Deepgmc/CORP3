@@ -16,21 +16,28 @@
 
         <template #after>
             <q-tab-panels v-model="tab" animated swipeable vertical transition-prev="jump-up" transition-next="jump-up">
-                <q-tab-panel name="hire">
+                <q-tab-panel name="status">
                     <div class="text-h4 q-mb-md">Статус</div>
                     <div>
-                        (HireD: {{ cardEmployee.hire_date }}) (FireD: {{ cardEmployee.fire_date }})
-                        <br>State: {{ cardEmployee.state }}
-                        <q-icon
-                            v-if="
-                                $um.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.EDIT)(R_FIELDS.HIRE) &&
-                                cardEmployee.state.name === employeeStateNames.INIT
-                            "
-                            @click="cardEmployee.dispatch('hire', false)"
-                            name="thumb_up" size="md" class="q-ml-sm pointer text-secondary"
-                        />
-
-                        <q-icon
+                        <div class="row">
+                            <state-icon
+                                :state="cardEmployee.state"
+                                size="md"
+                                type="icon"
+                            ></state-icon>
+                        </div>
+                        <div class="row q-mt-md">
+                            <state-icon
+                                v-for="transitionTo in cardEmployee.state.transitions"
+                                :key="transitionTo.name"
+                                :state="employeeStates[transitionTo.name]"
+                                :transition="transitionTo"
+                                size="md"
+                                type="button"
+                                @dispatch-action="dispatchAction"
+                            ></state-icon>
+                        </div>
+                        <!-- <q-icon
                             v-if="
                                 $um.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.EDIT)(R_FIELDS.FIRE) &&
                                 cardEmployee.state.name === employeeStateNames.HIRED
@@ -38,7 +45,6 @@
                             @click="cardEmployee.dispatch('fire', false)"
                             name="highlight_off" size="md" class="q-ml-sm pointer text-negative"
                         />
-
                         <q-icon
                             v-if="
                                 $um.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.VIEW)(R_FIELDS.ENTIRE) &&
@@ -46,7 +52,7 @@
                             "
                             @click="cardEmployee.dispatch('back', false)"
                             name="autorenew" size="md" class="q-ml-sm pointer text-info"
-                        />
+                        /> -->
                     </div>
                 </q-tab-panel>
 
@@ -104,16 +110,21 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { employeeStateNames } from '@/entities/Employee';
-import { R_ACTIONS, R_ENTITIES, R_FIELDS, Rbac } from '@/entities/Rbac';
+import StateIcon from '@/components/employee/StateIcon.vue'
+import { employeeStates } from '@/entities/Employee';
+// import { R_ACTIONS, R_ENTITIES, R_FIELDS, Rbac } from '@/entities/Rbac';
 import { useUserProfileCard } from '@/composables/userProfileCard';
 
-const $um = Rbac.getInstance()
+//const $um = Rbac.getInstance()
 const { cardEmployee } = useUserProfileCard()
 const tab = ref('vacation')
 const splitterModel = ref(15)
 const vacationStartDate = ref<string>()
 const vacationEndDate = ref<string>()
+
+function dispatchAction(action: string){
+    cardEmployee.value.dispatch(action, false)
+}
 
 </script>
 

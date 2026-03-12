@@ -119,7 +119,7 @@
             </q-card-section>
 
             <!--Admin controls-->
-            <employee-edit>
+            <employee-edit v-if="$um.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.EDIT)(R_FIELDS.ENTIRE)">
                 <template #header>
                     <q-card-section class="bg-warning text-white q-pa-xs" :horizontal="true">
                         <div class="text-h6">Управление струдником</div>

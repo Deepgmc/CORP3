@@ -1,5 +1,6 @@
 import logParameter from "@/decorators/logFSMStates";
 import Manager from "../entities/Manager";
+import type { employeeStateNames } from "@/entities/Employee";
 
 export class FiniteStateMachine extends Manager {
     public state: TState
@@ -41,7 +42,15 @@ export interface ITransition {
 }
 
 export type TState = {
-    name: string,
-    label: string,
-    isActive: (...args: any[]) => boolean
+    name    : string,
+    label   : string,
+    isActive: (...args: any[]) => boolean,
+    icon    : string,
+    color   : string,
+    transitions: TStateTransition[]
+}
+
+export type TStateTransition = {
+    name  : employeeStateNames,
+    action: string,
 }

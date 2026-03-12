@@ -17,26 +17,41 @@ export const enum employeeStateNames {
     FIRED = 'fired'
 }
 
-const employeeStates: TState[] = [
-    {
-        name: employeeStateNames.INIT,
-        isActive: isNewEmployee,
-        label: 'Новый сотрудник'
+export const employeeStates: Record<employeeStateNames, TState> = {
+    [employeeStateNames.INIT]: {
+        name       : employeeStateNames.INIT,
+        isActive   : isNewEmployee,
+        label      : 'Новый сотрудник',
+        icon       : 'fiber_new',
+        color      : 'primary',
+        transitions: [{
+            name: employeeStateNames.HIRED,
+            action: 'hire'
+        }],
     },
-    {
-        name: employeeStateNames.HIRED,
-        isActive: isHired,
-        label: 'Работает'
+    [employeeStateNames.HIRED]: {
+        name       : employeeStateNames.HIRED,
+        isActive   : isHired,
+        label      : 'Работает',
+        icon       : 'done',
+        color      : 'positive',
+        transitions: [{
+            name: employeeStateNames.FIRED,
+            action: 'fire'
+        }],
     },
-    {
-        name: employeeStateNames.FIRED,
-        isActive: isFired,
-        label: 'Уволен'
+    [employeeStateNames.FIRED]: {
+        name       : employeeStateNames.FIRED,
+        isActive   : isFired,
+        label      : 'Уволен',
+        icon       : 'close',
+        color      : 'negative',
+        transitions: [{
+            name: employeeStateNames.HIRED,
+            action: 'hire'
+        }],
     }
-];
-function getStateObject(name: employeeStateNames): TState | undefined {
-    return employeeStates.find((state: TState) => state.name === name)
-}
+};
 
 export class Employee extends FiniteStateMachine {
 
@@ -70,7 +85,7 @@ export class Employee extends FiniteStateMachine {
             init: {//новый, зареганный, привязан к компании при регистрации, но еще не сотрудник по сути
                 initState: function() {},
                 hire: async function(isInitialization = false) {
-                    this.changeStateTo(getStateObject(employeeStateNames.HIRED)).dispatch('initState', isInitialization)
+                    this.changeStateTo(employeeStates[employeeStateNames.HIRED]).dispatch('initState', isInitialization)
                 }
             },
             hired: {//нанят на работу, полноценный сотрудник, имеет должность, департамент и т.п.
@@ -85,7 +100,7 @@ export class Employee extends FiniteStateMachine {
                     }
                 },
                 fire: async function(isInitialization = false) {
-                    this.changeStateTo(getStateObject(employeeStateNames.FIRED)).dispatch('initState', isInitialization)
+                    this.changeStateTo(employeeStates[employeeStateNames.FIRED]).dispatch('initState', isInitialization)
                 },
             },
             fired: {//уволен. по сути тоже что init, привязан к компании, но имеет статус уволен
@@ -99,8 +114,8 @@ export class Employee extends FiniteStateMachine {
                         console.warn(`Статус увольнения ${this.userId} не был изменён`)
                     }
                 },
-                back: function(isInitialization = false) {
-                    this.changeStateTo(getStateObject(employeeStateNames.HIRED)).dispatch('initState', isInitialization)
+                hire: function(isInitialization = false) {
+                    this.changeStateTo(employeeStates[employeeStateNames.HIRED]).dispatch('initState', isInitialization)
                 }
             },
         }
@@ -161,14 +176,10 @@ export class Employee extends FiniteStateMachine {
 };
 
 function getInitState(incomeIUser: IUser): TState {
-    let initStateName = ''
-    const initStateObject = getStateObject(employeeStateNames.INIT)
-    if(initStateObject !== undefined) initStateName = initStateObject.label
-    const initState: TState = employeeStates.reduce((acc: TState, state: TState) => {
+    return Object.entries(employeeStates).reduce((acc: TState, [, state]) => {
         if(state.isActive.call(incomeIUser)) acc = state
         return acc
-    }, { name: employeeStateNames.INIT, isActive: isNewEmployee, label: initStateName } )
-    return initState
+    }, Object.assign({}, employeeStates[employeeStateNames.INIT]) )
 }
 
 /** Еще не назначен на должность, не нанят и не работал */
