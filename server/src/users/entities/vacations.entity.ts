@@ -12,18 +12,18 @@ export class VacationsEntity {
     @Column({
         type: 'bigint',
     })
-    date_from: number;
+    dateFrom: number;
 
     @Column({
         type: 'bigint',
     })
-    date_to: number;
+    dateTo: number;
 
     @Column({
         default: false,
         type: Boolean
     })
-    ill: boolean;
+    isMedical: boolean;
 
     //! ##############   RELATIONS
 

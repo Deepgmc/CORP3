@@ -1,8 +1,7 @@
-import { fieldTypes, type ColsConfig, type sortOrders, type TGridColMap } from '@/composables/gridView/GridColsManager';
+import { fieldTypes, type ColsConfig, type sortOrders } from '@/composables/gridView/GridColsManager';
 
 
 //настройки для вывода списка юзеров
-export const employeeBaseMap: Map<string, TGridColMap> = new Map()
 //ВСЕ доступные поля. Из них йпотом выбираем нужные при выводе конкретной таблицы
 export const employeeAvailableCols: ColsConfig = {
     userId: {
@@ -105,7 +104,6 @@ export const employeeAvailableCols: ColsConfig = {
 }
 
 //настройки для вывода списка департаментов
-export const departmentBaseMap: Map<string, TGridColMap> = new Map()
 //ВСЕ доступные поля. Из них йпотом выбираем нужные при выводе конкретной таблицы
 export const departmentAvailableCols: ColsConfig = {
     id: {
@@ -146,6 +144,40 @@ export const departmentAvailableCols: ColsConfig = {
         editable: false
     },
 }
+
+//настройки для вывода списка департаментов
+//ВСЕ доступные поля. Из них йпотом выбираем нужные при выводе конкретной таблицы
+export const vacationAvailableCols: ColsConfig = {
+    id: {
+        label   : 'ID',
+        sortFn  : defaultNumSortFn,
+        order   : -1,
+        align   : 'center',
+        type    : fieldTypes.number,
+        editable: false
+    },
+    dateFrom: {
+        label     : 'От',
+        switchData: false,
+        align     : 'left',
+        type      : fieldTypes.text,
+        editable  : false
+    },
+    dateTo: {
+        label     : 'До',
+        switchData: false,
+        align     : 'left',
+        type      : fieldTypes.text,
+        editable  : false
+    },
+    isMedical: {
+        label     : 'Больничный',
+        switchData: false,
+        align     : 'left',
+        type      : fieldTypes.widget,
+        editable  : false,
+    },
+};
 
 export type TSortFn = (a: any, b: any, order: sortOrders) => number
 

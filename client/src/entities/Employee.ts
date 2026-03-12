@@ -1,5 +1,5 @@
-import type { IUser, TSkill } from "@/interfaces/User";
-import type { ICompany, IDepartment, IPosition } from "@/interfaces/Company";
+import type { IPosition, IUser, IVacation, TSkill } from "@/interfaces/User";
+import type { ICompany, IDepartment } from "@/interfaces/Company";
 import type { TResult } from "@/interfaces/Error";
 import { computed } from "vue";
 import { Rbac } from "./Rbac";
@@ -53,7 +53,7 @@ export const employeeStates: Record<employeeStateNames, TState> = {
     }
 };
 
-export class Employee extends FiniteStateMachine {
+export class Employee extends FiniteStateMachine implements IUser {
 
     protected _apiModule: string = 'users'
 
@@ -78,6 +78,7 @@ export class Employee extends FiniteStateMachine {
     skills      : TSkill[]              = []
     department  : IDepartment | null    = null
     position    : IPosition | null      = null
+    vacations   : IVacation[]           = []
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     constructor(incomeIUser: IUser, _isDummy: boolean = false) {

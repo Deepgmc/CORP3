@@ -1,5 +1,6 @@
 import { Employee } from "@/entities/Employee"
-import { type IDepartment, type ICompany, type IPosition } from "@/interfaces/Company"
+import { type IDepartment, type ICompany } from "@/interfaces/Company"
+import type { IPosition } from "@/interfaces/User"
 import { defineStore } from "pinia"
 import { computed, ref } from "vue"
 
@@ -40,7 +41,6 @@ export const useCompanyStore = defineStore('company', () => {
     const getPositions = computed(() => {
         return positions
     })
-
 
     function addNewDepartment(newDept: IDepartment): void {
         departments.value.push(newDept)

@@ -138,13 +138,13 @@ import { useUserProfileCard } from '@/composables/userProfileCard';
 import { genderOptions } from '@/utils/constants/main';
 import { getAgeFromTS, getReadableFormatFromTS } from '@/utils/helpers/dates';
 import { getSelectOptionsFromDataArray } from '@/utils/helpers/components';
-import type { IPosition } from '@/interfaces/Company';
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
 import { SAVED_SUCCESS } from '@/utils/constants/texts';
 import type { TResult } from '@/interfaces/Error';
 
 import UserSkills from '@/components/UserSkills.vue'
 import EmployeeEdit from '@/components/employee/EmployeeEdit.vue';
+import type { IPosition } from '@/interfaces/User';
 
 
 const notify = useNotify()
@@ -186,7 +186,7 @@ async function onPositionSelect(): Promise<void> {
 .employee-card {
     max-width: 70%;
     min-height: 400px;
-    width: 70%;
+    max-height: auto;
     .profile-card_select {
         width:250px;
     }

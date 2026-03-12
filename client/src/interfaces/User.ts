@@ -1,4 +1,4 @@
-import type { ICompany, IDepartment, IPosition } from './Company'
+import type { ICompany, IDepartment } from './Company'
 import type { jwtStrategy } from '@/auth/strategies/jwt.strategy'
 import type { isLoginedResult } from '@/auth/strategies/Strategy'
 import type { Router } from 'vue-router'
@@ -26,8 +26,11 @@ export interface IUser {
     company   : ICompany | null,
     skills    : TSkill[],
     department: IDepartment | null,
-    position  : IPosition | null
+    position  : IPosition | null,
+    vacations : IVacation[]
 }
+
+export type TUserId = IUser['userId'];
 
 export interface ILoginUser extends Pick<IUser, 'username'> {
     password: string,
@@ -35,10 +38,33 @@ export interface ILoginUser extends Pick<IUser, 'username'> {
 
 export type TSkill = {
     id         : number,
-    skillUserId: number,
+    skillUserId: TUserId,
     skill      : string
 }
 
+export interface IVacation {
+    id       : number,
+    dateFrom : number,
+    dateTo   : number,
+    isMedical: boolean,
+    userId   : TUserId
+}
+
+export interface IPosition {
+    id      : number,
+    position: string
+}
+export interface IPositionSelect {
+    value: number,
+    label: string
+}
+
+
+
+
+/**
+ * Login/Register etc.
+ */
 //тип для формы смены пароля
 export interface ICPForm extends Pick<IUser, 'username' | 'userId'> {
     password: string,
@@ -50,13 +76,9 @@ export interface TRegisterForm extends Pick<IUser, 'username' | 'email' | 'birth
     password: string,
 }
 
-export type TUserId = IUser['userId'];
-
 export type IUsersCreateDTO = Omit<IUser, 'userId'>
 export type IUsersUpdateDTO = Partial<IUser>
 export type TUserWithoutPassword = Omit<IUser, 'password'>
-
-
 
 export type TJwtToken = string
 
