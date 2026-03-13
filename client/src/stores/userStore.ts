@@ -43,6 +43,7 @@ export const useUserStore = defineStore('user', () => {
                 user.value.skills.splice(index, 1)
                 return true
             }
+            return false
         })
     }
 
@@ -94,5 +95,6 @@ export const userDummy: IUser = {
     company   : null,
     skills    : [],
     department: null,
+    vacations : [],
 }
 

@@ -150,31 +150,36 @@ export const departmentAvailableCols: ColsConfig = {
 export const vacationAvailableCols: ColsConfig = {
     id: {
         label   : 'ID',
-        sortFn  : defaultNumSortFn,
-        order   : -1,
         align   : 'center',
         type    : fieldTypes.number,
         editable: false
     },
     dateFrom: {
         label     : 'От',
-        switchData: false,
+        switchData: true,
         align     : 'left',
         type      : fieldTypes.text,
         editable  : false
     },
     dateTo: {
         label     : 'До',
-        switchData: false,
+        switchData: true,
         align     : 'left',
         type      : fieldTypes.text,
         editable  : false
     },
     isMedical: {
-        label     : 'Больничный',
+        label     : 'Больничный/Отпуск',
         switchData: false,
-        align     : 'left',
+        align     : 'center',
         type      : fieldTypes.widget,
+        editable  : false,
+    },
+    vacationStatus: {
+        label     : 'Статус',
+        switchData: false,
+        align     : 'center',
+        type      : fieldTypes.text,
         editable  : false,
     },
 };

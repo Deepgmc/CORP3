@@ -224,6 +224,10 @@ export class GridCols {
             case 'state':
                 item['stateValue'] = item.state.label
             break;
+            case 'dateFrom':
+            case 'dateTo':
+                item[`${field}Value`] = convertTSToStr(item[field])
+            break;
         }
     }
 

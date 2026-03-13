@@ -5,6 +5,24 @@
         :gridCols="gridCols"
         @gv_sort="gridCols.sortField.bind(gridCols)"
     >
+        <template #actions_caption>
+            <q-icon class="gv-edit_buttons-negative" name="edit" />
+        </template>
+
+        <template #actions_buttons="slotProps">
+            <q-icon
+                class="gv-edit_buttons-negative"
+                name="delete"
+                size="md"
+                :data-userId="slotProps.itemId"
+                @click="deleteVacation(slotProps.itemId)"
+            />
+        </template>
+        <template #field_components="slotProps">
+            <div v-if="slotProps.col === 'isMedical' && slotProps.row instanceof Vacation">
+                {{ slotProps.row.getVacationIsMedicalText() }} ({{ slotProps.row.rangeDays }} дней)
+            </div>
+        </template>
     </grid-view>
 
     <q-separator class="q-mt-md" />
@@ -56,6 +74,7 @@ import type { IVacation } from '@/interfaces/User';
 import { GridCols } from '@/composables/gridView/GridColsManager';
 import { vacationAvailableCols } from '@/components/grid/GridColumnOptions';
 import GridView from '@/components/grid/GridView.vue';
+import { Vacation } from '@/entities/Vacation';
 
 const props = defineProps<{
     userId      : number
@@ -67,7 +86,7 @@ const vacationEndDate = ref<string>()
 const isMedicalVacation = ref<boolean>(false)
 
 const gridCols = new GridCols (
-    ['dateFrom', 'dateTo', 'isMedical'],
+    ['id', 'dateFrom', 'dateTo', 'isMedical', 'vacationStatus'],
     vacationAvailableCols,
     props.vacationsRaw,
     'id',
@@ -76,8 +95,8 @@ const gridCols = new GridCols (
     5
 );
 
+function deleteVacation(vacationId: number){
+    console.log('deleting vacation:', vacationId)
+}
+
 </script>
-
-<style lang="scss">
-
-</style>

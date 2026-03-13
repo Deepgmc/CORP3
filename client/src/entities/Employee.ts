@@ -1,9 +1,11 @@
-import type { IPosition, IUser, IVacation, TSkill } from "@/interfaces/User";
+import type { IPosition, IUser, TMedicalLabel, TSkill } from "@/interfaces/User";
 import type { ICompany, IDepartment } from "@/interfaces/Company";
 import type { TResult } from "@/interfaces/Error";
 import { computed } from "vue";
 import { Rbac } from "./Rbac";
 import { FiniteStateMachine, type TState } from "@/utils/FiniteStateMachine";
+import { Vacation } from "./Vacation";
+import { labelVacationIsMedical } from "@/utils/constants/main";
 
 export interface ITransition {
     [key: string]: {
@@ -78,10 +80,17 @@ export class Employee extends FiniteStateMachine implements IUser {
     skills      : TSkill[]              = []
     department  : IDepartment | null    = null
     position    : IPosition | null      = null
-    vacations   : IVacation[]           = []
+    vacations   : Vacation[]            = []
+
+    static getVacationIsMedicalText(value: boolean): string {
+        const val: TMedicalLabel | undefined = labelVacationIsMedical[Number(value)]
+        if(val !== undefined) return val.label
+        return ''
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     constructor(incomeIUser: IUser, _isDummy: boolean = false) {
+
         const FSMTransitions: ITransition = {
             init: {//новый, зареганный, привязан к компании при регистрации, но еще не сотрудник по сути
                 initState: function() {},
@@ -124,8 +133,18 @@ export class Employee extends FiniteStateMachine implements IUser {
         if(initState === null) throw new TypeError(`Не определён начальный статус сотрудника: ${incomeIUser.userId}`)
         super(initState, FSMTransitions)
 
-        Object.assign(this, incomeIUser)
+        const desearelizedUser = this.deserializeIncomeUser(incomeIUser)
+        Object.assign(this, desearelizedUser)
         this.initNetwork(this._apiModule)
+    }
+
+    private deserializeIncomeUser(incomeUser: IUser): IUser {
+        incomeUser.vacations = incomeUser.vacations
+            .map(vac => {
+                return new Vacation(vac)
+            })
+            .sort()
+        return incomeUser
     }
 
     public async hireEmployee(): Promise<TResult> {

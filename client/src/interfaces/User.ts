@@ -43,11 +43,16 @@ export type TSkill = {
 }
 
 export interface IVacation {
-    id       : number,
-    dateFrom : number,
-    dateTo   : number,
-    isMedical: boolean,
-    userId   : TUserId
+    id            : number,
+    dateFrom      : number,
+    dateTo        : number,
+    isMedical     : boolean,
+    userId        : TUserId,
+    vacationStatus: string
+}
+
+export type TMedicalLabel = {
+    label: string
 }
 
 export interface IPosition {

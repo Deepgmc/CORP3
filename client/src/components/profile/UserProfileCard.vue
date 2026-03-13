@@ -36,14 +36,14 @@
                     </div>
                 </div>
 
-                <div class="col-5 column items-end justify-around">
+                <div class="col-5 column items-end justify-start">
                     <!-- Контактный телефон -->
                     <div class="row flex justify-center">
                         <q-icon size="md" name="phone" class="text-primary" />
                         <span class="text-body1 q-ml-sm">{{ cardEmployee.phone }}</span>
                     </div>
                     <!-- email -->
-                    <div class="row flex justify-center">
+                    <div class="row flex justify-center q-pt-sm">
                         <q-icon size="md" name="email" class="text-primary" />
                         <span class="text-body1 q-ml-sm">{{ cardEmployee.email }}</span>
                     </div>
