@@ -1,7 +1,7 @@
-import type { IDepartment, IPosition } from "@/interfaces/Company";
+import type { IDepartment } from "@/interfaces/Company";
 import { convertTSToStr, getAgeFromTS } from "@/utils/helpers/dates";
 import { computed, ref, type ComputedRef, type Ref } from "vue";
-import type { IUser } from "@/interfaces/User";
+import type { IPosition, IUser, IVacation, TSkill } from "@/interfaces/User";
 import type { TSortFn } from "../../components/grid/GridColumnOptions";
 import { Rbac } from "@/entities/Rbac";
 
@@ -17,7 +17,7 @@ export type TGridColMap = {
 
 export type TColsMap = Map<string, TGridColMap>
 
-export type GridColsData = IDepartment[] | IUser[]
+export type GridColsData = IDepartment[] | IUser[] | IVacation[]
 
 export type GridColsDataTypes = GridColsData extends (infer T)[] ? T : never // keyof IDepartmet | keyof IUser  etc...
 
@@ -188,6 +188,7 @@ export class GridCols {
             case 'companyId':
                 if(item.companyId !== null){
                     //! тут нужно выбирать из списка компаний а не текущую!!!
+                    //TODO
                     item['companyIdValue'] = this.$userManager.company.name
                 }
             break;
@@ -218,7 +219,14 @@ export class GridCols {
                 }
             break;
             case 'skills':
-                item['skillsValue'] = item.skills.map((skill: any) => skill.skill).join(', ')
+                item['skillsValue'] = item.skills.map((skill: TSkill) => skill.skill).join(', ')
+            break;
+            case 'state':
+                item['stateValue'] = item.state.label
+            break;
+            case 'dateFrom':
+            case 'dateTo':
+                item[`${field}Value`] = convertTSToStr(item[field])
             break;
         }
     }
@@ -237,9 +245,5 @@ export class GridCols {
 
     getColsMap(): TColsMap{
         return this.colsMap
-    }
-
-    getModifiedData(){
-        return this.modifiedData
     }
 }

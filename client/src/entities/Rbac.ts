@@ -175,6 +175,9 @@ export class ManagerRole extends Role {
         [R_ENTITIES.EMPLOYEE]: {
             [R_ACTIONS.VIEW]: [
                 R_FIELDS.ENTIRE
+            ],
+            [R_ACTIONS.EDIT]: [
+                R_FIELDS.ENTIRE
             ]
         },
         [R_ENTITIES.USER]: {
@@ -193,7 +196,13 @@ export class EmployeeRole extends Role {
     constructor(){
         super('employee', 2)
     }
-    public readonly permissions: TRolePermissions = {}
+    public readonly permissions: TRolePermissions = {
+        [R_ENTITIES.EMPLOYEE]: {
+            [R_ACTIONS.VIEW]: [
+                R_FIELDS.ENTIRE
+            ],
+        },
+    }
 }
 export class GuestRole extends Role {
     constructor(){

@@ -1,6 +1,6 @@
 import { Employee } from "@/entities/Employee"
-import { type IDepartment, type ICompany, type IPosition } from "@/interfaces/Company"
-import type { IUser } from "@/interfaces/User"
+import { type IDepartment, type ICompany } from "@/interfaces/Company"
+import type { IPosition } from "@/interfaces/User"
 import { defineStore } from "pinia"
 import { computed, ref } from "vue"
 
@@ -26,7 +26,7 @@ export const useCompanyStore = defineStore('company', () => {
         departments.value = newDepts
     }
     function setEmployees(newEmployees: Employee[]): void {
-        employees.value = newEmployees.map((employee: IUser) => new Employee(employee))
+        employees.value = newEmployees.map((employee: Employee) => new Employee(employee))
     }
     function setPositions(newPositions: IPosition[]): void {
         positions.value = newPositions
@@ -41,7 +41,6 @@ export const useCompanyStore = defineStore('company', () => {
     const getPositions = computed(() => {
         return positions
     })
-
 
     function addNewDepartment(newDept: IDepartment): void {
         departments.value.push(newDept)
@@ -75,6 +74,15 @@ export const useCompanyStore = defineStore('company', () => {
         return false
     }
 
+    function changeEmployeePosition(newPositionId: number, userId: number){
+        const thisEmp = employees.value.find(emp => {
+            return emp.userId === userId
+        })
+        if(thisEmp !== undefined){
+            thisEmp.positionId = newPositionId
+        }
+    }
+
 
 
     return {
@@ -94,7 +102,8 @@ export const useCompanyStore = defineStore('company', () => {
 
         addNewDepartment,
         deleteDepartment,
-        changeUserDepartment
+        changeUserDepartment,
+        changeEmployeePosition
     }
 })
 

@@ -50,6 +50,7 @@
                             <slot
                                 name="field_components"
                                 :col="col"
+                                :row="row"
                                 :value="row[col as keyof GridColsDataTypes]"
                             ></slot>
                         </td>

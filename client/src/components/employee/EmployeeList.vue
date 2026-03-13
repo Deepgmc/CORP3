@@ -8,13 +8,13 @@
 </template>
 
 <script setup lang="ts">
-import GridViewEmployees from '../grid/GridViewEmployees.vue';
-import { employeeAvailableCols } from '@/components/grid/GridColumnOptions'
-import { GridCols } from '../../composables/gridView/GridColsManager'
+import GridViewEmployees from '@/components/grid/GridViewEmployees.vue';
+import { employeeAvailableCols } from '@/components/grid/GridColumnOptions';
+import { GridCols } from '@/composables/gridView/GridColsManager';
 import { Rbac } from '@/entities/Rbac';
 
 const $userManager = Rbac.getInstance()
-const needFields = ['userId', 'username', 'firstName', 'departmentId', 'positionId', 'birth', 'phone', 'skills']
+const needFields = ['userId', 'username', 'firstName', 'departmentId', 'state', 'positionId', 'skills']
 const employees = $userManager.company.employees
 
 const gridCols = new GridCols(
@@ -25,5 +25,5 @@ const gridCols = new GridCols(
     'users',
     'user_field',
     8
-)
+);
 </script>

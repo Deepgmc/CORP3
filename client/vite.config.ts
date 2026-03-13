@@ -9,13 +9,17 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
+    console.log('Vite.config command:', command)
+    console.log('Vite.config mode:', mode)
+    console.log('Vite.config isSsrBuild:', isSsrBuild)
+    console.log('Vite.config isPreview:', isPreview)
     const env = loadEnv(mode, process.cwd(), '');
     //console.log('%c process.env.NODE_ENV:', 'color:rgb(182, 86, 158);', process.env.NODE_ENV)
     return {
         plugins: [
             vue({
-              template: { transformAssetUrls }
+                template: { transformAssetUrls }
             }),
             vueDevTools(),
             quasar({
@@ -24,6 +28,13 @@ export default defineConfig(({ mode }) => {
                 )
             }),
         ],
+
+        resolve: {
+            alias: {
+                '@': nodeUrl.fileURLToPath(new nodeUrl.URL('./src', import.meta.url))
+            },
+        },
+
         //root: 'src',
         build: {
             outDir: './dist',
@@ -32,12 +43,6 @@ export default defineConfig(({ mode }) => {
                 input: {
                     app: './index.html',
                 },
-            },
-        },
-
-        resolve: {
-            alias: {
-                '@': nodeUrl.fileURLToPath(new nodeUrl.URL('./src', import.meta.url))
             },
         },
 

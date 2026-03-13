@@ -46,13 +46,5 @@ export const positionDummy = {
     id: 0,
     position: ''
 }
-export interface IPosition {
-    id      : number,
-    position: string
-}
-export interface IPositionSelect {
-    value: number,
-    label: string
-}
 
 export interface IAddDepartment extends Pick<IDepartment, 'companyId' | 'name' | 'description' | 'countusers'> {}

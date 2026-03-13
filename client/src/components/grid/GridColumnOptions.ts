@@ -1,8 +1,7 @@
-import { fieldTypes, type ColsConfig, type sortOrders, type TGridColMap } from '@/composables/gridView/GridColsManager';
+import { fieldTypes, type ColsConfig, type sortOrders } from '@/composables/gridView/GridColsManager';
 
 
 //настройки для вывода списка юзеров
-export const employeeBaseMap: Map<string, TGridColMap> = new Map()
 //ВСЕ доступные поля. Из них йпотом выбираем нужные при выводе конкретной таблицы
 export const employeeAvailableCols: ColsConfig = {
     userId: {
@@ -51,6 +50,15 @@ export const employeeAvailableCols: ColsConfig = {
         type      : fieldTypes.text,
         editable  : false,
     },
+    state: {
+        label     : 'Статус',
+        switchData: true,
+        align     : 'center',
+        type      : fieldTypes.text,
+        editable  : false,
+        sortFn  : defaultStringSortFn,
+        order   : -1,
+    },
     positionId: {
         label     : 'Должность',
         switchData: true,
@@ -96,7 +104,6 @@ export const employeeAvailableCols: ColsConfig = {
 }
 
 //настройки для вывода списка департаментов
-export const departmentBaseMap: Map<string, TGridColMap> = new Map()
 //ВСЕ доступные поля. Из них йпотом выбираем нужные при выводе конкретной таблицы
 export const departmentAvailableCols: ColsConfig = {
     id: {
@@ -137,6 +144,45 @@ export const departmentAvailableCols: ColsConfig = {
         editable: false
     },
 }
+
+//настройки для вывода списка департаментов
+//ВСЕ доступные поля. Из них йпотом выбираем нужные при выводе конкретной таблицы
+export const vacationAvailableCols: ColsConfig = {
+    id: {
+        label   : 'ID',
+        align   : 'center',
+        type    : fieldTypes.number,
+        editable: false
+    },
+    dateFrom: {
+        label     : 'От',
+        switchData: true,
+        align     : 'left',
+        type      : fieldTypes.text,
+        editable  : false
+    },
+    dateTo: {
+        label     : 'До',
+        switchData: true,
+        align     : 'left',
+        type      : fieldTypes.text,
+        editable  : false
+    },
+    isMedical: {
+        label     : 'Больничный/Отпуск',
+        switchData: false,
+        align     : 'center',
+        type      : fieldTypes.widget,
+        editable  : false,
+    },
+    vacationStatus: {
+        label     : 'Статус',
+        switchData: false,
+        align     : 'center',
+        type      : fieldTypes.text,
+        editable  : false,
+    },
+};
 
 export type TSortFn = (a: any, b: any, order: sortOrders) => number
 

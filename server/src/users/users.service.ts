@@ -102,7 +102,7 @@ export class UsersService {
         try {
             const searchObject = {
                 where: { [field]: value },
-                relations: ['company', 'skills', 'department', 'position'],
+                relations: ['company', 'skills', 'department', 'position', 'vacations'],
             }
             return await this.usersRepository.findOne(searchObject)
         } catch (e) {
@@ -153,9 +153,13 @@ export class UsersService {
         itemId   : string,
         val      : string
     }): Promise<UpdateResult> {
+        const id = parseInt(savingData.itemId)
+        if(!Number.isInteger(id)){
+            throw new TypeError('Id не число')
+        }
         const res = await this.usersRepository.update(
             {
-                userId: Number(savingData.itemId)
+                userId: id
             }, {
                 [savingData.fieldName]: savingData.val
             }
@@ -179,11 +183,42 @@ export class UsersService {
         userId       : string,
         newPositionId: string
     }) {
-        const res = await this.saveOneUserField({
+        return await this.saveOneUserField({
             fieldName: 'positionId',
             itemId   : savingData.userId,
             val      : savingData.newPositionId
         })
-        return res
+    }
+
+    async hireEmployee(userId: string) {
+        const res = await this.saveOneUserField({
+            fieldName: 'hire_date',
+            itemId   : userId,
+            val      : String(Date.now())
+        })
+        if(res.affected === undefined || res.affected < 1){
+            throw new Error('Статус найма на работу не был обновлён')
+        }
+        return await this.saveOneUserField({
+            fieldName: 'fire_date',
+            itemId   : userId,
+            val      : '0'
+        })
+    }
+
+    async fireEmployee(userId: string) {
+        const res = await this.saveOneUserField({
+            fieldName: 'fire_date',
+            itemId   : userId,
+            val      : String(Date.now())
+        })
+        if(res.affected === undefined || res.affected < 1){
+            throw new Error('Статус увольнения не был обновлён')
+        }
+        return await this.saveOneUserField({
+            fieldName: 'hire_date',
+            itemId   : userId,
+            val      : '0'
+        })
     }
 }

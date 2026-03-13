@@ -3,6 +3,7 @@ import { SkillsEntity } from './skills.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { DepartmentEntity } from 'src/company/entities/departments.entity';
 import { PositionsEntity } from './positions.entity';
+import { VacationsEntity } from './vacations.entity';
 
 
 @Entity('users')
@@ -83,30 +84,38 @@ export class UsersEntity {
     })
     positionId: number;
 
-    //! ##############   RELATIONS
+//! #################################   RELATIONS
 
     @ManyToOne(() => CompanyEntity, { cascade: true })
     @JoinColumn({ name: 'companyId' })
     company: CompanyEntity;
-
+//################################################################
     @OneToMany(() => SkillsEntity, (skills) => skills.user)
     @JoinColumn({
         name: 'userId',
         referencedColumnName: 'skillUserId'
     })
     skills: SkillsEntity[];
-
+//################################################################
+    @OneToMany(() => VacationsEntity, (vacations) => vacations.user)
+    @JoinColumn({
+        name: 'userId',
+        referencedColumnName: 'vacationUserId'
+    })
+    vacations: VacationsEntity[];
+//################################################################
     @ManyToOne(() => DepartmentEntity)
     @JoinColumn({
         name: 'departmentId',
         referencedColumnName: 'id'
     })
     department: DepartmentEntity;
-
+//################################################################
     @ManyToOne(() => PositionsEntity)
     @JoinColumn({
         name: 'positionId',
         referencedColumnName: 'id'
     })
     position: PositionsEntity;
+//################################################################
 }

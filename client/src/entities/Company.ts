@@ -1,5 +1,5 @@
-import { departmentDummy, positionDummy, type IAddDepartment, type ICompany, type ICompanyForm, type IDepartment, type IPosition } from "@/interfaces/Company";
-import type { IUser } from "@/interfaces/User";
+import { departmentDummy, positionDummy, type IAddDepartment, type ICompany, type ICompanyForm, type IDepartment } from "@/interfaces/Company";
+import type { IPosition, IUser } from "@/interfaces/User";
 import type { AxiosResponse } from "axios";
 import { useCompanyStore } from "@/stores/companyStore";
 import { isSuccessRequest } from "@/utils/helpers/network";
@@ -93,16 +93,6 @@ export default class Company extends Manager implements ICompany {
         return this._store.positions
     }
 
-    // get departments() {
-    //     return this._store.getDepartments
-    // }
-    // get employees() {
-    //     return this._store.getEmployees
-    // }
-    // get positions() {
-    //     return this._store.getPositions
-    // }
-
     async saveCompanyProfile(company: ICompanyForm): Promise<boolean> {
         const res: AxiosResponse = await this._postData('save_company_profile')(company)
         if (isSuccessRequest(res)) {
@@ -185,7 +175,10 @@ export default class Company extends Manager implements ICompany {
     async changeEmployeePosition(newPositionId: IPosition['id'], userId: IUser['userId']): Promise<TResult> {
         const employee = this.employees.find((emp: Employee) => emp.userId === userId)
         if(employee){
-            const res = await employee.changeEmployeePosition(newPositionId, userId)
+            const res: TResult = await employee.changeEmployeePosition(newPositionId, userId)
+            if(!res.error){
+                this._store.changeEmployeePosition(newPositionId, userId)
+            }
             return res
         }
         return {error: true, errorMessage: 'Unhandled error'}

@@ -18,9 +18,6 @@
                             :image="userAvatar"
                         />
                     </q-avatar>
-                    <!-- <q-avatar size="240px" class="shadow-2">
-                        <img :src="userAvatar" :alt="`${form.firstName} ${form.lastName}`">
-                    </q-avatar> -->
                 </div>
             </div>
             </q-card-section>
