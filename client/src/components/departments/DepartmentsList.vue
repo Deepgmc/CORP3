@@ -102,10 +102,10 @@ const gridCols = new GridCols(
 
 /** Форма добавления нового департамента */
 const newDepartment = reactive<IAddDepartment>({
-    name: '',
+    name       : '',
     description: '',
-    companyId: $um.company.companyId,
-    countusers: '0'
+    companyId  : $um.company.companyId,
+    countusers : '0'
 })
 
 
@@ -158,8 +158,10 @@ function dropUser(event: DragEvent){
             $um.company.switchUserDepartmets(thisEmp, dragFromId, dropId)
             return true
         }
+        return false
     })
-}
+    return true
+};
 </script>
 
 <style lang="scss">

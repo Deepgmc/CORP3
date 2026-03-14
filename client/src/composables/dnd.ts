@@ -16,8 +16,7 @@ export function dragItem (
     event.dataTransfer.dropEffect = 'move'
     event.dataTransfer.setData('dragItemId', String(thisId))
     event.dataTransfer.setData('dragDeptId', String(eventTarget.dataset.deptid))
-
-    // console.log('Drag itemId:', thisId, 'deptId:', eventTarget.dataset.deptid)
+    return true
 }
 
 export function dropItem(event: DragEvent): {dropId: number, dragItemId: number, dragFromId: number} | boolean {
@@ -26,12 +25,8 @@ export function dropItem(event: DragEvent): {dropId: number, dragItemId: number,
     if(!event.dataTransfer || !event.target || typeof ds.deptid === 'undefined') return false
 
     const thisDropId = parseInt(ds.deptid)
-
     const dragItemId = parseInt(event.dataTransfer.getData('dragItemId'))
     const dragDeptId = parseInt(event.dataTransfer.getData('dragDeptId'))
-
-    // console.log('Drag itemId:', dragItemId, 'Drag deptId:', dragDeptId)
-    // console.log('DROP deptId:', thisDropId)
 
     return {
         dropId    : thisDropId,

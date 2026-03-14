@@ -175,7 +175,7 @@ export const vacationAvailableCols: ColsConfig = {
         type      : fieldTypes.widget,
         editable  : false,
     },
-    vacationStatus: {
+    vacationStatusText: {
         label     : 'Статус',
         switchData: false,
         align     : 'center',

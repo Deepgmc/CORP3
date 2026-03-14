@@ -1,15 +1,21 @@
 import type { IVacation, TMedicalLabel, TUserId } from "@/interfaces/User";
 import { labelVacationIsMedical } from "@/utils/constants/main";
+import Manager from "./Manager";
 
-export class Vacation implements IVacation {
+export class Vacation extends Manager implements IVacation {
+
+    _apiModule = 'vacation'
+
     public readonly id!       : number
-    public readonly dateFrom! : number
-    public readonly dateTo   !: number
-    public readonly isMedical!: boolean
+    public dateFrom !         : number
+    public dateTo   !         : number
+    public isMedical!         : boolean
     public readonly userId   !: TUserId
 
     constructor(rawVacation: IVacation) {
+        super()
         Object.assign(this, rawVacation)
+        this.initNetwork(this._apiModule)
     }
 
     public getVacationIsMedicalText() {
@@ -26,7 +32,7 @@ export class Vacation implements IVacation {
         return Math.round(this.range / 1000 / 60 /60 / 24)
     }
 
-    get vacationStatus(){
+    get vacationStatusText(){
         if(this.isCurrentlyActive()) return 'Активен'
         else if(this.isPast()) return 'Прошедший'
         else return 'Будущий'
@@ -41,5 +47,18 @@ export class Vacation implements IVacation {
     }
     public isFuture(){
         return this.dateFrom > Date.now()
+    }
+
+    protected getModel(): IVacation {
+        return {
+            dateFrom : this.dateFrom,
+            dateTo   : this.dateTo,
+            isMedical: this.isMedical,
+            userId   : this.userId,
+        }
+    }
+
+    saveModel(){
+        return super.saveModel()
     }
 }

@@ -21,4 +21,14 @@ export default class Manager {
         this._deleteData = this.networkManager.getApiRequestMethod(EReqMethods.delete)(this._apiModule)
         this._patchData  = this.networkManager.getApiRequestMethod(EReqMethods.patch)(this._apiModule)
     }
+
+    protected getModel() {
+        throw new Error('Вызов только из наследников')
+    }
+
+    protected async saveModel(): Promise<boolean> {
+        const res = await this._postData('save_model')(this.getModel())
+        console.log('res:', res)
+        return true
+    }
 }

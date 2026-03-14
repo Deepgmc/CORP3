@@ -28,12 +28,12 @@
     <q-separator class="q-mt-md" />
 
     <div class="row q-mt-md">
-        <div class="col flex justify-around">
-            <q-input readonly v-model="vacationStartDate" label="Дата начала" dense>
+        <q-form @submit="addVacation" class="col flex justify-between items-center">
+            <q-input readonly v-model="newVacation.dateFrom" label="Дата начала" dense>
                 <template #append>
                     <q-icon name="event" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                            <q-date v-model="vacationStartDate" mask="DD.MM.YYYY">
+                            <q-date v-model="newVacation.dateFrom" mask="DD.MM.YYYY">
                                 <div class="row items-center justify-end">
                                     <q-btn v-close-popup label="OK" color="primary" flat />
                                 </div>
@@ -42,11 +42,11 @@
                     </q-icon>
                 </template>
             </q-input>
-            <q-input readonly v-model="vacationEndDate" label="Дата конца" dense>
+            <q-input readonly v-model="newVacation.dateTo" label="Дата конца" dense>
                 <template #append>
                     <q-icon name="event" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                            <q-date v-model="vacationEndDate" mask="DD.MM.YYYY">
+                            <q-date v-model="newVacation.dateTo" mask="DD.MM.YYYY">
                                 <div class="row items-center justify-end">
                                     <q-btn v-close-popup label="OK" color="primary" flat />
                                 </div>
@@ -56,37 +56,45 @@
                 </template>
             </q-input>
             <div>
-                <q-checkbox v-model="isMedicalVacation" left-label label="Больничный" />
+                <q-checkbox v-model="newVacation.isMedical" left-label label="Больничный" />
             </div>
-        </div>
-    </div>
-    <div class="row">
-        <q-btn
-            flat label="Назначить отпуск на эти даты" color="primary"
-            class="q-ma-md"
-        />
+            <q-btn
+                label="Назначить на эти даты"
+                color="primary"
+                type="submit"
+            />
+        </q-form>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
-import type { IVacation } from '@/interfaces/User';
+import { reactive } from 'vue';
+import type { IVacation, TNewVacation } from '@/interfaces/User';
 import { GridCols } from '@/composables/gridView/GridColsManager';
 import { vacationAvailableCols } from '@/components/grid/GridColumnOptions';
+import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
 import GridView from '@/components/grid/GridView.vue';
 import { Vacation } from '@/entities/Vacation';
+import { convertStrToUnixTimestamp } from '@/utils/helpers/dates';
 
-const props = defineProps<{
-    userId      : number
-    vacationsRaw: IVacation[]
-}>()
+interface IProps {
+   userId      : number
+   vacationsRaw: IVacation[]
+};
 
-const vacationStartDate = ref<string>()
-const vacationEndDate = ref<string>()
-const isMedicalVacation = ref<boolean>(false)
+const notify = useNotify()
+const props = defineProps<IProps>()
+
+const newVacation: TNewVacation = reactive({
+    dateFrom          : '02.03.2026',
+    dateTo            : '11.03.2026',
+    isMedical         : false,
+    userId            : props.userId
+
+})
 
 const gridCols = new GridCols (
-    ['id', 'dateFrom', 'dateTo', 'isMedical', 'vacationStatus'],
+    ['id', 'dateFrom', 'dateTo', 'isMedical', 'vacationStatusText'],
     vacationAvailableCols,
     props.vacationsRaw,
     'id',
@@ -94,6 +102,29 @@ const gridCols = new GridCols (
     'user_field',
     5
 );
+
+async function addVacation(): Promise<boolean> {
+    try {
+        const dateFrom = convertStrToUnixTimestamp(newVacation.dateFrom)
+        const dateTo = convertStrToUnixTimestamp(newVacation.dateTo)
+        if(dateFrom.error || dateTo.error) {
+            throw new TypeError('Неверные даты')
+        }
+        const newVac = new Vacation (
+                Object.assign (
+                newVacation,
+                {
+                    dateFrom: dateFrom.res,
+                    dateTo: dateTo.res
+                }
+            )
+        );
+        return await newVac.saveModel()
+    } catch (e) {
+        if(typeof e === 'string') notify.run(e, notifyTypes.err)
+        return false
+    }
+}
 
 function deleteVacation(vacationId: number){
     console.log('deleting vacation:', vacationId)
