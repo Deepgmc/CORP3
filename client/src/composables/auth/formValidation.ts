@@ -4,97 +4,101 @@ import { type ValidatorFn, type ValidatorResponse } from '@vuelidate/core'
 import type { TRegisterForm } from '@/interfaces/User'
 
 const VLengths = {
-  username: {
-    min: 3,
-    max: 25
-  },
-  password: {
-    min: 6,
-    max: 40
-  },
-  passwordConfirm: {
-    min: 6,
-    max: 40
-  },
-  email: {
-    min: 4,
-    max: 60
-  }
+    username: {
+        min: 3,
+        max: 25
+    },
+    password: {
+        min: 6,
+        max: 40
+    },
+    passwordConfirm: {
+        min: 6,
+        max: 40
+    },
+    email: {
+        min: 4,
+        max: 60
+    }
 } as { [key: string]: TMinMax }
 
 type TMinMax = {
-  min: number,
-  max: number
+    min: number,
+    max: number
 }
 
 export enum EValidations {
-  required  = 'required',
-  minLength = 'minLength',
-  maxLength = 'maxLength',
-  email     = 'email',
-  passEqual = 'passEqual',
-  companyId = 'companyId'
+    required     = 'required',
+    minLength    = 'minLength',
+    maxLength    = 'maxLength',
+    email        = 'email',
+    passEqual    = 'passEqual',
+    companyId    = 'companyId',
+    departmentId = 'departmentId',
 }
 
 //передаём типы необходимых валидаций, получаем эти валидации в необходиом vuelidate виде
-export function getAuthRules(fields: Array<string>, formType: string = 'register'){
-  const rules: any = {}
-  let thisRules: Array<EValidations>
-  fields.forEach((field) => {
-    thisRules = []
-    switch(field) {
-      case 'password':
-        thisRules = [EValidations.minLength, EValidations.maxLength, EValidations.required]
-        if(formType === 'register') thisRules.push(EValidations.passEqual) //проверка совпадения паролей только для формы регистрации, а не логина
-        break;
-      case 'passwordConfirm':
-      case 'username':
-        thisRules = [EValidations.minLength, EValidations.maxLength, EValidations.required]
-        break;
-      case 'email':
-        thisRules = [EValidations.email, EValidations.required]
-        break;
-      case 'companyId':
-        thisRules = [EValidations.companyId]
-        break;
-    }
-    rules[field] = getRule(thisRules, field)
-  })
+export function getAuthRules(fields: Array<string>, formType: string = 'register') {
+    const rules: any = {}
+    let thisRules: Array<EValidations>
+    fields.forEach((field) => {
+        thisRules = []
+        switch (field) {
+            case 'password':
+                thisRules = [EValidations.minLength, EValidations.maxLength, EValidations.required]
+                if (formType === 'register') thisRules.push(EValidations.passEqual) //проверка совпадения паролей только для формы регистрации, а не логина
+                break;
+            case 'passwordConfirm':
+            case 'username':
+                thisRules = [EValidations.minLength, EValidations.maxLength, EValidations.required]
+                break;
+            case 'email':
+                thisRules = [EValidations.email, EValidations.required]
+                break;
+            case 'companyId':
+                thisRules = [EValidations.companyId, EValidations.required]
+                break;
+            case 'departmentId':
+                thisRules = [EValidations.required]
+                break;
+        }
+        rules[field] = getRule(thisRules, field)
+    })
 
-  return computed(() => (rules))
+    return computed(() => (rules))
 }
 
 const externalServerValidation = () => true //vuelidate bug: incorrect works with $externalData errors!
 
 //для каждого отдельно правила собираем набор ограничений уже конкретно
-export function getRule(types: Array<EValidations>, fieldName: string){
-  const result: any = {externalServerValidation} //vuelidate bug: incorrect works with $externalData errors!
-  types.forEach(type => {
-    let min, max
-    switch (type){
-      case EValidations.required:
-        result[type] = helpers.withMessage(`Не может быть пустым`, required)
-      break;
-      case EValidations.minLength:
-        min = VLengths[fieldName]?.min
-        if(min) result[type] = helpers.withMessage(`Длина: от ${min}`, minLength(min))
-      break;
-      case EValidations.maxLength:
-        max = VLengths[fieldName]?.max
-        if(max) result[type] = helpers.withMessage(`Длина: до ${max}`, maxLength(max))
-      break;
-      case EValidations.email:
-        result[type] = helpers.withMessage(`Невалидный адрес`, email)
-      break;
-      case EValidations.passEqual:
-        result[type] = helpers.withMessage(`Пароли не совпадают`, passEqual)
-      break;
-      case EValidations.companyId:
-        result[type] = helpers.withMessage(`Нужно выбрать компанию`, isSetCompanyId)
-      break;
-    }
-  })
-  return result
+export function getRule(types: Array<EValidations>, fieldName: string) {
+    const result: any = { externalServerValidation } //vuelidate bug: incorrect works with $externalData errors!
+    types.forEach(type => {
+        let min, max
+        switch (type) {
+            case EValidations.required:
+                result[type] = helpers.withMessage(`Не может быть пустым`, required)
+                break;
+            case EValidations.minLength:
+                min = VLengths[fieldName]?.min
+                if (min) result[type] = helpers.withMessage(`Длина: от ${min}`, minLength(min))
+                break;
+            case EValidations.maxLength:
+                max = VLengths[fieldName]?.max
+                if (max) result[type] = helpers.withMessage(`Длина: до ${max}`, maxLength(max))
+                break;
+            case EValidations.email:
+                result[type] = helpers.withMessage(`Невалидный адрес`, email)
+                break;
+            case EValidations.passEqual:
+                result[type] = helpers.withMessage(`Пароли не совпадают`, passEqual)
+                break;
+            case EValidations.companyId:
+                result[type] = helpers.withMessage(`Нужно выбрать компанию`, isSetCompanyId)
+                break;
+        }
+    })
+    return result
 }
 
 /**
@@ -104,12 +108,12 @@ export function getRule(types: Array<EValidations>, fieldName: string){
  * @returns ValidatorResponse -> type Vuelidate
  */
 const passEqual: ValidatorFn = (value: TRegisterForm['password'], siblings: any): ValidatorResponse => {
-  return {
-    $valid: value === siblings.passwordConfirm as TRegisterForm['passwordConfirm']
-  }
+    return {
+        $valid: value === siblings.passwordConfirm as TRegisterForm['passwordConfirm']
+    }
 }
 const isSetCompanyId: ValidatorFn = (value: TRegisterForm['companyId']): ValidatorResponse => {
-  return {
-    $valid: value !== null && value !== 0 && !!value
-  }
+    return {
+        $valid: value !== null && value !== 0 && !!value
+    }
 }

@@ -28,6 +28,7 @@ export class UsersEntity {
 
     @Column({//д.р.
         type: 'bigint',
+        default: 0,
     })
     birth: number;
 
@@ -38,18 +39,22 @@ export class UsersEntity {
 
     @Column({//приём на работу
         type: 'bigint',
+        default: 0,
     })
     hire_date: number;
 
     @Column({//увольнение
         type: 'bigint',
+        default: 0,
     })
     fire_date: number;
 
     @Column()
     companyId: number;
 
-    @Column({ default: false })
+    @Column({
+        default: false
+    })
     isDirector: boolean;
 
     @Column({
