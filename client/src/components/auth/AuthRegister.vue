@@ -71,6 +71,8 @@
                         :options="selectDeptOptions"
                         input-debounce="0"
                         label="Выберите департамент *"
+                        :error="$v.departmentId.$error"
+                        :error-message="getErrorForField('departmentId')"
                         @update:model-value="onDeptSelect"
                     >
                         <template #no-option>
@@ -167,7 +169,7 @@ onMounted(() => {
     loadAllCompanies()
 })
 
-const rules = getAuthRules(['username', 'password', 'passwordConfirm', 'email', 'passEqual', 'companyId'])
+const rules = getAuthRules(['username', 'password', 'passwordConfirm', 'email', 'passEqual', 'companyId', 'departmentId'])
 const $v = useVuelidate(rules, regUser, { $externalResults: $externalResults })
 
 function setBlur(fieldName: string) {
