@@ -8,22 +8,6 @@ const dtoMsg = new dtoValidationMessageHandler('User')
 
 export class CreateUserDto implements IUsersCreateDTO {
 
-    //used by app.useGlobalPipes(new ValidationPipe({
-    // validators:
-    // https://github.com/typestack/class-validator?tab=readme-ov-file#validation-messages
-    /**
-    @IsOptional()
-    @IsPositive()
-    @Max(1000)
-    @IsInt()
-    @IsEmail()
-    @IsNumberString()
-    @IsNotEmpty()
-    @IsString()
-    @Length(10, 20)
-    @IsDate()
-     */
-
     @ApiProperty({
         description: 'Имя пользователя',
         required   : true,

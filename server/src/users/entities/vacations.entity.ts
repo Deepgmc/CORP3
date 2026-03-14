@@ -25,11 +25,14 @@ export class VacationsEntity {
     })
     isMedical: boolean;
 
+    @Column()
+    userId: number;
+
     //! ##############   RELATIONS
 
     @ManyToOne(() => UsersEntity, (user) => user.vacations)
     @JoinColumn({
-        name: 'vacationUserId',
+        name: 'userId',
         referencedColumnName: 'userId'
     })
     user: UsersEntity

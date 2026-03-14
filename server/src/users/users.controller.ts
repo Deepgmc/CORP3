@@ -5,6 +5,7 @@ import { UserId } from './userId.decorator'
 import { IUser } from 'src/interfaces/IUser';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateResult } from 'typeorm';
+import { CreateVacationDTO } from './dto/create-vacation.dto';
 
 @Controller('users')
 export class UsersController {
@@ -78,5 +79,13 @@ export class UsersController {
         @Body() user: {userId: string}
     ): Promise<UpdateResult | boolean> {
         return await this.usersService.fireEmployee(user.userId)
+    }
+
+    //сохраняем отпуск
+    @Post('vacation/save_model')
+    async vacationSaveModel (
+        @Body() vacationDTO: CreateVacationDTO
+    ): Promise<CreateVacationDTO | boolean> {
+        return await this.usersService.saveNewVacation(vacationDTO)
     }
 }

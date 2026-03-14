@@ -105,7 +105,7 @@ export class UsersEntity {
     @OneToMany(() => VacationsEntity, (vacations) => vacations.user)
     @JoinColumn({
         name: 'userId',
-        referencedColumnName: 'vacationUserId'
+        referencedColumnName: 'userId'
     })
     vacations: VacationsEntity[];
 //################################################################
