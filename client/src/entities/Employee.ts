@@ -193,6 +193,11 @@ export class Employee extends FiniteStateMachine implements IUser {
     public isFired(): boolean {
         return isFired.call(this)
     }
+
+    public addNewVacation(vacation: Vacation): boolean {
+        this.vacations.push(vacation)
+        return true
+    }
 };
 
 function getInitState(incomeIUser: IUser): TState {

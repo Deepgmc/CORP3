@@ -6,6 +6,7 @@ import { isSuccessRequest } from "@/utils/helpers/network";
 import type { Employee } from "./Employee";
 import type { TResult } from "@/interfaces/Error";
 import Manager from "./Manager";
+import type { Vacation } from "./Vacation";
 
 type TCompanyData = {
     companyId: number,
@@ -198,5 +199,13 @@ export default class Company extends Manager implements ICompany {
     getPositionById(positionId: number): IPosition {
         const foundPosition = this.positions.find((pos: IPosition) => pos.id === positionId)
         return typeof foundPosition === 'undefined' ? positionDummy : foundPosition
+    }
+
+    addNewEmployeeVacation (vacation: Vacation): boolean {
+        const thisEmp = this.getEmployeeById(vacation.userId)
+        if(thisEmp !== null){
+            return thisEmp.addNewVacation(vacation)
+        }
+        return false
     }
 }

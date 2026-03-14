@@ -5,11 +5,6 @@ import { defineStore } from "pinia"
 import { computed, ref } from "vue"
 
 export const useCompanyStore = defineStore('company', () => {
-    /**
-     ref() становятся свойствами состояния
-     computed() становятся геттерами
-     function() становятся действиями
-    */
 
     const company = ref<ICompany>(companyDummy)
 
@@ -103,7 +98,8 @@ export const useCompanyStore = defineStore('company', () => {
         addNewDepartment,
         deleteDepartment,
         changeUserDepartment,
-        changeEmployeePosition
+
+        changeEmployeePosition,
     }
 })
 

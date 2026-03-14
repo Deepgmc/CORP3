@@ -29,13 +29,13 @@ export function convertStrToUnixTimestamp(dateIncome: string): TResult {
     const unifiedStr = dateIncome.replaceAll('/', '.').replaceAll('-', '.')
 
     let parsedDate = Date.parse(unifiedStr)
-    if(Number.isNaN(parsedDate)){
-        const testUSDateArr: string[] = unifiedStr.split('.')
-        if(testUSDateArr.length === 3){
-            const [day, month, year] = testUSDateArr
-            parsedDate = Date.parse(`${month}.${day}.${year}`)
-        }
+    //if(Number.isNaN(parsedDate)){
+    const testUSDateArr: string[] = unifiedStr.split('.')
+    if(testUSDateArr.length === 3){
+        const [day, month, year] = testUSDateArr
+        parsedDate = Date.parse(`${month}.${day}.${year}`)
     }
+    //}
 
     if(Number.isNaN(parsedDate)){
         return {

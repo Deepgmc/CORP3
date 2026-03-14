@@ -1,4 +1,5 @@
 import NetworkManager, { EReqMethods } from "@/network/NetworkManager"
+import { isSuccessRequest } from "@/utils/helpers/network"
 
 export default class Manager {
 
@@ -14,7 +15,7 @@ export default class Manager {
         this.networkManager = NetworkManager.getInstance()
     }
 
-    protected initNetwork(apiModule: string){
+    protected initNetwork(apiModule: string) {
         this._apiModule = apiModule
         this._postData   = this.networkManager.getApiRequestMethod(EReqMethods.post)(this._apiModule)
         this._getData    = this.networkManager.getApiRequestMethod(EReqMethods.get)(this._apiModule)
@@ -27,8 +28,8 @@ export default class Manager {
     }
 
     protected async saveModel(): Promise<boolean> {
-        const res = await this._postData('save_model')(this.getModel())
-        console.log('res:', res)
-        return true
+        return isSuccessRequest (
+            await this._postData('save_model')(this.getModel())
+        );
     }
 }

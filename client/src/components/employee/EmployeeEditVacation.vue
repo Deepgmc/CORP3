@@ -76,6 +76,7 @@ import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
 import GridView from '@/components/grid/GridView.vue';
 import { Vacation } from '@/entities/Vacation';
 import { convertStrToUnixTimestamp } from '@/utils/helpers/dates';
+import { UNKNOWN_ERROR } from '@/utils/constants/texts';
 
 interface IProps {
    userId      : number
@@ -86,8 +87,8 @@ const notify = useNotify()
 const props = defineProps<IProps>()
 
 const newVacation: TNewVacation = reactive({
-    dateFrom          : '02.03.2026',
-    dateTo            : '11.03.2026',
+    dateFrom          : '01.03.2026',
+    dateTo            : '10.03.2026',
     isMedical         : false,
     userId            : props.userId
 
@@ -103,7 +104,11 @@ const gridCols = new GridCols (
     5
 );
 
-async function addVacation(): Promise<boolean> {
+async function addVacation(): Promise<void> {
+    if(newVacation.dateFrom.length < 1 || newVacation.dateTo.length < 1){
+        notify.run('Введите даты отпуска', notifyTypes.err)
+        return
+    }
     try {
         const dateFrom = convertStrToUnixTimestamp(newVacation.dateFrom)
         const dateTo = convertStrToUnixTimestamp(newVacation.dateTo)
@@ -119,15 +124,27 @@ async function addVacation(): Promise<boolean> {
                 }
             )
         );
-        return await newVac.saveModel()
-    } catch (e) {
-        if(typeof e === 'string') notify.run(e, notifyTypes.err)
-        return false
+        if(await newVac.saveModel()){
+            formReset()
+        } else {
+            throw new Error('Ошибка сохранения отпуска')
+        }
+    } catch (e: unknown) {
+        let msg = UNKNOWN_ERROR
+        if(e instanceof Error) msg = e.message
+        else if(typeof e === 'string') msg = e
+        notify.run(msg, notifyTypes.err)
     }
 }
 
 function deleteVacation(vacationId: number){
     console.log('deleting vacation:', vacationId)
+}
+
+function formReset(){
+    newVacation.dateFrom = ''
+    newVacation.dateTo = ''
+    newVacation.isMedical = false
 }
 
 </script>
