@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import * as fs from 'node:fs'
 const SaveBase64 = require('node-base64-to-image')
 import { InjectRepository } from '@nestjs/typeorm'
@@ -229,5 +229,10 @@ export class UsersService {
 
     async saveNewVacation(newVacation: CreateVacationDTO): Promise<CreateVacationDTO> {
         return await this.vacationsRepository.save(newVacation)
+    }
+
+    async deleteVacation(id: number): Promise<DeleteResult> {
+        if(!Number.isInteger(id)) throw new TypeError('Неверно передан id')
+        return await this.vacationsRepository.delete({id})
     }
 }

@@ -11,7 +11,7 @@ export class Vacation extends Manager implements IVacation {
     public  dateFrom !         : number
     public  dateTo   !         : number
     public  isMedical!         : boolean
-    public  readonly userId   !: TUserId
+    public  readonly userId    !: TUserId
     private $um                : Rbac
 
     constructor(rawVacation: IVacation) {
@@ -58,12 +58,20 @@ export class Vacation extends Manager implements IVacation {
             dateTo   : this.dateTo,
             isMedical: this.isMedical,
             userId   : this.userId,
+            id       : this.id
         }
     }
 
     async saveModel(): Promise<boolean> {
         if(await super.saveModel()) {
             return this.$um.company.addNewEmployeeVacation(this)
+        }
+        return false
+    }
+
+    async delete(): Promise<boolean> {
+        if(await super.delete(this.id)) {
+            return this.$um.company.deleteVacation(this)
         }
         return false
     }

@@ -32,4 +32,10 @@ export default class Manager {
             await this._postData('save_model')(this.getModel())
         );
     }
+
+    protected async delete(id: number): Promise<boolean> {
+        return isSuccessRequest (
+            await this._deleteData(`delete/${id}`)()
+        );
+    }
 }

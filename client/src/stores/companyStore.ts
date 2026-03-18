@@ -1,4 +1,5 @@
 import { Employee } from "@/entities/Employee"
+import type { Vacation } from "@/entities/Vacation"
 import { type IDepartment, type ICompany } from "@/interfaces/Company"
 import type { IPosition } from "@/interfaces/User"
 import { defineStore } from "pinia"
@@ -78,6 +79,15 @@ export const useCompanyStore = defineStore('company', () => {
         }
     }
 
+    function getVacationById(userId: number, vacationId: number): Vacation | null {
+        const foundEmployee = employees.value.find(emp => emp.userId === userId)
+        if(foundEmployee) {
+            const foundVacation = foundEmployee.vacations.find(vacation => vacation.id === vacationId)
+            if(foundVacation) return foundVacation as Vacation
+        }
+        return null
+    }
+
 
 
     return {
@@ -100,6 +110,7 @@ export const useCompanyStore = defineStore('company', () => {
         changeUserDepartment,
 
         changeEmployeePosition,
+        getVacationById,
     }
 })
 

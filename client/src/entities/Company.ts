@@ -208,4 +208,16 @@ export default class Company extends Manager implements ICompany {
         }
         return false
     }
+
+    getVacationById(userId: number, vacationId: number): Vacation | null {
+        return this._store.getVacationById(userId, vacationId)
+    }
+
+    deleteVacation(vacation: Vacation): boolean {
+        const foundEmployee = this.getEmployeeById(vacation.userId)
+        if(foundEmployee){
+            foundEmployee.deleteVacation(vacation)
+        }
+        return false
+    }
 }

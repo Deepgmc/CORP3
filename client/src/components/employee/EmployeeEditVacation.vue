@@ -14,7 +14,6 @@
                 class="gv-edit_buttons-negative"
                 name="delete"
                 size="md"
-                :data-userId="slotProps.itemId"
                 @click="deleteVacation(slotProps.itemId)"
             />
         </template>
@@ -77,12 +76,14 @@ import GridView from '@/components/grid/GridView.vue';
 import { Vacation } from '@/entities/Vacation';
 import { convertStrToUnixTimestamp } from '@/utils/helpers/dates';
 import { UNKNOWN_ERROR } from '@/utils/constants/texts';
+import { Rbac } from '@/entities/Rbac';
 
 interface IProps {
    userId      : number
    vacationsRaw: IVacation[]
 };
 
+const $um = Rbac.getInstance()
 const notify = useNotify()
 const props = defineProps<IProps>()
 
@@ -138,7 +139,10 @@ async function addVacation(): Promise<void> {
 }
 
 function deleteVacation(vacationId: number){
-    console.log('deleting vacation:', vacationId)
+    const vacationObj = $um.company.getVacationById(props.userId, vacationId)
+    if(vacationObj){
+        vacationObj.delete()
+    }
 }
 
 function formReset(){

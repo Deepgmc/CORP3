@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Logger, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, UseGuards } from '@nestjs/common';
 
 import { UsersService } from './users.service';
 import { UserId } from './userId.decorator'
 import { IUser } from 'src/interfaces/IUser';
 import { AuthGuard } from '@nestjs/passport';
-import { UpdateResult } from 'typeorm';
+import { DeleteResult, UpdateResult } from 'typeorm';
 import { CreateVacationDTO } from './dto/create-vacation.dto';
 
 @Controller('users')
@@ -87,5 +87,13 @@ export class UsersController {
         @Body() vacationDTO: CreateVacationDTO
     ): Promise<CreateVacationDTO | boolean> {
         return await this.usersService.saveNewVacation(vacationDTO)
+    }
+
+    //удаляем отпуск
+    @Delete('vacation/delete/:id')
+    async vacationDelete (
+        @Param('id') id: number
+    ): Promise<DeleteResult> {
+        return await this.usersService.deleteVacation(id)
     }
 }
