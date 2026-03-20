@@ -3,7 +3,7 @@ import type { Vacation } from "@/entities/Vacation"
 import { type IDepartment, type ICompany } from "@/interfaces/Company"
 import type { IPosition } from "@/interfaces/User"
 import { defineStore } from "pinia"
-import { computed, ref } from "vue"
+import { ref } from "vue"
 
 export const useCompanyStore = defineStore('company', () => {
 
@@ -28,15 +28,15 @@ export const useCompanyStore = defineStore('company', () => {
         positions.value = newPositions
     }
 
-    const getDepartments = computed(() => {
-        return departments
-    })
-    const getEmployees = computed(() => {
-        return employees
-    })
-    const getPositions = computed(() => {
-        return positions
-    })
+    // const getDepartments = computed(() => {
+    //     return departments
+    // })
+    // const getEmployees = computed(() => {
+    //     return employees
+    // })
+    // const getPositions = computed(() => {
+    //     return positions
+    // })
 
     function addNewDepartment(newDept: IDepartment): void {
         departments.value.push(newDept)
@@ -96,9 +96,9 @@ export const useCompanyStore = defineStore('company', () => {
         departments,
         positions,
 
-        getDepartments,
-        getEmployees,
-        getPositions,
+        // getDepartments,
+        // getEmployees,
+        // getPositions,
 
         setCompany,
         setDepartments,
