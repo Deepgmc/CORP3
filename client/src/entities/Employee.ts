@@ -202,8 +202,8 @@ export class Employee extends FiniteStateMachine implements IUser {
 
     public deleteVacation(vacation: Vacation): boolean {
         const deletingIndex = this.vacations.findIndex(vac => vac.id === vacation.id)
-        if(deletingIndex){
-            this.vacations = this.vacations.splice(deletingIndex, 1)
+        if(deletingIndex !== -1){
+            this.vacations.splice(deletingIndex, 1)
             return true
         }
         return false

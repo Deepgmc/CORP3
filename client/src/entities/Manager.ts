@@ -1,4 +1,6 @@
+import type { TResult } from "@/interfaces/Error"
 import NetworkManager, { EReqMethods } from "@/network/NetworkManager"
+import { UNKNOWN_ERROR } from "@/utils/constants/texts"
 import { isSuccessRequest } from "@/utils/helpers/network"
 
 export default class Manager {
@@ -27,15 +29,20 @@ export default class Manager {
         throw new Error('Вызов только из наследников')
     }
 
-    protected async saveModel(): Promise<boolean> {
-        return isSuccessRequest (
-            await this._postData('save_model')(this.getModel())
-        );
+    protected async saveModel(): Promise<TResult> { //возвращаем сохранённый новый id
+        const saveRes = await this._postData('save_model')(this.getModel())
+        if(isSuccessRequest (saveRes) && saveRes.data.id) {
+            return { error: false, res: { id: saveRes.data.id } }
+        }
+        return { error: true, errorMessage: UNKNOWN_ERROR }
     }
 
     protected async delete(id: number): Promise<boolean> {
-        return isSuccessRequest (
-            await this._deleteData(`delete/${id}`)()
-        );
+        if(!Number.isInteger(id)) return false
+        const res = await this._deleteData(`delete/${id}`)()
+        if(isSuccessRequest (res)){
+            return !!res.data.affected
+        }
+        return false
     }
 }

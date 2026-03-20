@@ -2,17 +2,19 @@ import type { IVacation, TMedicalLabel, TUserId } from "@/interfaces/User";
 import { labelVacationIsMedical } from "@/utils/constants/main";
 import Manager from "./Manager";
 import { Rbac } from "./Rbac";
+import type { TResult } from "@/interfaces/Error";
+import { UNKNOWN_ERROR } from "@/utils/constants/texts";
 
 export class Vacation extends Manager implements IVacation {
 
     _apiModule = 'users/vacation'
 
-    public  readonly id!       : number
-    public  dateFrom !         : number
-    public  dateTo   !         : number
-    public  isMedical!         : boolean
+    public  id!                 : number
+    public  dateFrom !          : number
+    public  dateTo   !          : number
+    public  isMedical!          : boolean
     public  readonly userId    !: TUserId
-    private $um                : Rbac
+    private $um                 : Rbac
 
     constructor(rawVacation: IVacation) {
         super()
@@ -62,11 +64,13 @@ export class Vacation extends Manager implements IVacation {
         }
     }
 
-    async saveModel(): Promise<boolean> {
-        if(await super.saveModel()) {
-            return this.$um.company.addNewEmployeeVacation(this)
+    async saveModel(): Promise<TResult> {
+        const modelSaveRes = await super.saveModel()
+        if(!modelSaveRes.error) {
+            this.id = modelSaveRes.res.id
+            return { error: false, res: this.$um.company.addNewEmployeeVacation(this) }
         }
-        return false
+        return { error: true, errorMessage: UNKNOWN_ERROR }
     }
 
     async delete(): Promise<boolean> {

@@ -1,8 +1,8 @@
 return {
     framework: {
-        plugins: ['Notify'],
+        lang: 'ru',
         config: {
-            notify
+            lang: 'ru'
         }
     }
 }

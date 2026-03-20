@@ -216,7 +216,7 @@ export default class Company extends Manager implements ICompany {
     deleteVacation(vacation: Vacation): boolean {
         const foundEmployee = this.getEmployeeById(vacation.userId)
         if(foundEmployee){
-            foundEmployee.deleteVacation(vacation)
+            return foundEmployee.deleteVacation(vacation)
         }
         return false
     }

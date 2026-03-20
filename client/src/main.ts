@@ -5,6 +5,7 @@ import './assets/main.scss'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { Quasar, Notify } from 'quasar'
+import langRu from 'quasar/lang/ru'
 
 import App from './App.vue'
 import router from './router'
@@ -21,5 +22,6 @@ app
 .use(router)
 .use(Quasar, {
     plugins: {Notify},
+    lang: langRu
 })
 .mount('#corp_root_container')

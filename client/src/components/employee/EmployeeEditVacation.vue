@@ -32,8 +32,13 @@
                 <template #append>
                     <q-icon name="event" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                            <q-date v-model="newVacation.dateFrom" mask="DD.MM.YYYY">
-                                <div class="row items-center justify-end">
+                            <q-date
+                                minimal
+                                flat
+                                v-model="newVacation.dateFrom"
+                                mask="DD.MM.YYYY"
+                            >
+                                <div class="flex items-center justify-end">
                                     <q-btn v-close-popup label="OK" color="primary" flat />
                                 </div>
                             </q-date>
@@ -45,8 +50,13 @@
                 <template #append>
                     <q-icon name="event" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                            <q-date v-model="newVacation.dateTo" mask="DD.MM.YYYY">
-                                <div class="row items-center justify-end">
+                            <q-date
+                                minimal
+                                flat
+                                v-model="newVacation.dateTo"
+                                mask="DD.MM.YYYY"
+                            >
+                                <div class="flex items-center justify-end">
                                     <q-btn v-close-popup label="OK" color="primary" flat />
                                 </div>
                             </q-date>
@@ -75,7 +85,7 @@ import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
 import GridView from '@/components/grid/GridView.vue';
 import { Vacation } from '@/entities/Vacation';
 import { convertStrToUnixTimestamp } from '@/utils/helpers/dates';
-import { UNKNOWN_ERROR } from '@/utils/constants/texts';
+import { DELETE_ERROR, DELETE_SUCCESS, UNKNOWN_ERROR } from '@/utils/constants/texts';
 import { Rbac } from '@/entities/Rbac';
 
 interface IProps {
@@ -125,10 +135,11 @@ async function addVacation(): Promise<void> {
                 }
             )
         );
-        if(await newVac.saveModel()){
+        const saveRes = await newVac.saveModel()
+        if(!saveRes.error){
             formReset()
         } else {
-            throw new Error('Ошибка сохранения отпуска')
+            throw new Error(saveRes.errorMessage)
         }
     } catch (e: unknown) {
         let msg = UNKNOWN_ERROR
@@ -138,10 +149,14 @@ async function addVacation(): Promise<void> {
     }
 }
 
-function deleteVacation(vacationId: number){
+async function deleteVacation(vacationId: number){
     const vacationObj = $um.company.getVacationById(props.userId, vacationId)
     if(vacationObj){
-        vacationObj.delete()
+        if(await vacationObj.delete()){
+            notify.run(DELETE_SUCCESS, notifyTypes.succ)
+        } else {
+            notify.run(DELETE_ERROR, notifyTypes.err)
+        }
     }
 }
 

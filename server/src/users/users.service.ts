@@ -232,7 +232,8 @@ export class UsersService {
     }
 
     async deleteVacation(id: number): Promise<DeleteResult> {
-        if(!Number.isInteger(id)) throw new TypeError('Неверно передан id')
-        return await this.vacationsRepository.delete({id})
+        const parsedId = Number(id)
+        if(!Number.isInteger(parsedId)) throw new TypeError('Неверно передан id')
+        return await this.vacationsRepository.delete({id: parsedId})
     }
 }
