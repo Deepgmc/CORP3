@@ -58,6 +58,10 @@ export function getAgeFromTS(timestamp: number): number | false {
     return Math.floor( (+nowDate - +birthDate) / (1000 * 60 * 60 * 24 * 365) )
 }
 
+export function getOneDayMilliseconds() {
+    return 1000 * 60 * 60 * 24
+}
+
 function getCorrectTimestamp(timestamp: string | number): number | false {
     timestamp = Number(timestamp)
     if (!Number.isInteger(timestamp)) return false

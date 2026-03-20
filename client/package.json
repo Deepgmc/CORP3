@@ -11,10 +11,8 @@
     "build": "vite build",
     "build-with-type": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
-
     "test:unit": "vitest --run",
     "test:unit-hot": "vitest",
-
     "cy": "cypress run --e2e",
     "test:e2e": "start-server-and-test preview http://localhost:5173 'cypress run --e2e'",
     "test:e2e:dev": "start-server-and-test 'vite dev --port 5173' http://localhost:5173 'cypress open --e2e'",
@@ -24,12 +22,14 @@
     "@quasar/extras": "^1.17.0",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
+    "apexcharts": "^5.10.4",
     "avatar-editor": "^1.1.0",
     "axios": "^1.12.2",
     "pinia": "^3.0.3",
     "quasar": "^2.18.5",
     "vue": "^3.5.22",
-    "vue-router": "^4.6.4"
+    "vue-router": "^4.6.4",
+    "vue3-apexcharts": "^1.11.1"
   },
   "devDependencies": {
     "@quasar/vite-plugin": "^1.10.0",

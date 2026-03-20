@@ -4,6 +4,7 @@ import './assets/main.scss'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import VueApexCharts from "vue3-apexcharts";
 import { Quasar, Notify } from 'quasar'
 import langRu from 'quasar/lang/ru'
 
@@ -24,4 +25,5 @@ app
     plugins: {Notify},
     lang: langRu
 })
+.use(VueApexCharts)
 .mount('#corp_root_container')
