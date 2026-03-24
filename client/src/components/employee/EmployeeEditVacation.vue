@@ -80,7 +80,7 @@
 import { reactive } from 'vue';
 import type { IVacation, TNewVacation } from '@/interfaces/User';
 import { GridCols } from '@/composables/gridView/GridColsManager';
-import { vacationAvailableCols } from '@/components/grid/GridColumnOptions';
+import { vacationAvailableCols } from '@/composables/gridView/GridColumnOptions';
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
 import GridView from '@/components/grid/GridView.vue';
 import { Vacation } from '@/entities/Vacation';

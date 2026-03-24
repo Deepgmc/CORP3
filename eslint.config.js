@@ -43,6 +43,7 @@ export default typescriptEslint.config(
 
       'no-debugger'                               : 'warn',
       'no-constant-condition'                     : 'off',
+      'no-case-declarations'                      : 'off',
 
       //'vue/v-slot-type'                            : 'warn',
       'vue/require-prop-types'                     : 'error',

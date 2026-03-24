@@ -2,7 +2,7 @@ import type { IDepartment } from "@/interfaces/Company";
 import { convertTSToStr, getAgeFromTS } from "@/utils/helpers/dates";
 import { computed, ref, type ComputedRef, type Ref } from "vue";
 import type { IPosition, IUser, IVacation, TSkill } from "@/interfaces/User";
-import type { TSortFn } from "../../components/grid/GridColumnOptions";
+import type { TSortFn } from "./GridColumnOptions";
 import { Rbac } from "@/entities/Rbac";
 
 export type TGridColMap = {
@@ -12,7 +12,8 @@ export type TGridColMap = {
     order     ?: sortOrders,
     align      : 'left' | 'center' | 'right',
     type       : fieldTypes,
-    editable   : boolean
+    editable   : boolean,
+    width     ?: string, //ширина столбца при выводе
 }
 
 export type TColsMap = Map<string, TGridColMap>
@@ -227,6 +228,11 @@ export class GridCols {
             case 'dateFrom':
             case 'dateTo':
                 item[`${field}Value`] = convertTSToStr(item[field])
+            break;
+            case 'position':
+                const thisDept: IDepartment = this.$userManager.company.getDepartmentById(item.departmentId)
+                const thisPosition: IPosition = this.$userManager.company.getPositionById(item.positionId)
+                item[`${field}Value`] = `${thisPosition.position} (${thisDept.name})`
             break;
         }
     }
