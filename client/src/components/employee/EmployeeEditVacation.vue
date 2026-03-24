@@ -1,5 +1,12 @@
 <template>
     <div class="text-h4 q-mb-md">Отпуска</div>
+
+    <employee-vacation-graph
+        :vacationsRaw="vacationsRaw"
+        :userId="userId"
+        :userName="userName"
+    ></employee-vacation-graph>
+
     <grid-view
         v-if="vacationsRaw && vacationsRaw.length"
         :gridCols="gridCols"
@@ -78,18 +85,22 @@
 
 <script lang="ts" setup>
 import { reactive } from 'vue';
+import { Rbac } from '@/entities/Rbac';
+import { Vacation } from '@/entities/Vacation';
 import type { IVacation, TNewVacation } from '@/interfaces/User';
 import { GridCols } from '@/composables/gridView/GridColsManager';
 import { vacationAvailableCols } from '@/composables/gridView/GridColumnOptions';
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
-import GridView from '@/components/grid/GridView.vue';
-import { Vacation } from '@/entities/Vacation';
 import { convertStrToUnixTimestamp } from '@/utils/helpers/dates';
 import { DELETE_ERROR, DELETE_SUCCESS, UNKNOWN_ERROR } from '@/utils/constants/texts';
-import { Rbac } from '@/entities/Rbac';
+
+import EmployeeVacationGraph from './EmployeeVacationGraph.vue';
+
+import GridView from '@/components/grid/GridView.vue';
 
 interface IProps {
-   userId      : number
+   userId      : number,
+   userName    : string,
    vacationsRaw: IVacation[]
 };
 
@@ -102,8 +113,9 @@ const newVacation: TNewVacation = reactive({
     dateTo            : '10.03.2026',
     isMedical         : false,
     userId            : props.userId
-
 })
+
+console.log('props.vacationsRaw:', props.vacationsRaw)
 
 const gridCols = new GridCols (
     ['id', 'dateFrom', 'dateTo', 'isMedical', 'vacationStatusText'],
@@ -115,7 +127,7 @@ const gridCols = new GridCols (
     5
 );
 
-async function addVacation(): Promise<void> {
+function addVacation(): void {
     if(newVacation.dateFrom.length < 1 || newVacation.dateTo.length < 1){
         notify.run('Введите даты отпуска', notifyTypes.err)
         return
@@ -127,20 +139,21 @@ async function addVacation(): Promise<void> {
             throw new TypeError('Неверные даты')
         }
         const newVac = new Vacation (
-                Object.assign (
-                newVacation,
-                {
-                    dateFrom: dateFrom.res,
-                    dateTo: dateTo.res
-                }
-            )
+            {
+                userId: newVacation.userId,
+                isMedical: newVacation.isMedical,
+                dateFrom: dateFrom.res,
+                dateTo: dateTo.res
+            }
         );
-        const saveRes = await newVac.saveModel()
-        if(!saveRes.error){
-            formReset()
-        } else {
-            throw new Error(saveRes.errorMessage)
-        }
+        newVac.saveModel()
+            .then((saveRes) => {
+                if(!saveRes.error){
+                    formReset()
+                } else {
+                    throw new Error(saveRes.errorMessage)
+                }
+            })
     } catch (e: unknown) {
         let msg = UNKNOWN_ERROR
         if(e instanceof Error) msg = e.message

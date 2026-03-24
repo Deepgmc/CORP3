@@ -52,15 +52,10 @@
                 </q-tab-panel>
 
                 <q-tab-panel name="vacation">
-                    <employee-vacation-graph
-                        :vacationsRaw="cardEmployee.vacations"
-                        :userId="cardEmployee.userId"
-                        :userName="cardEmployee.username"
-                    ></employee-vacation-graph>
-
                     <employee-edit-vacation
                         :vacationsRaw="cardEmployee.vacations"
                         :userId="cardEmployee.userId"
+                        :userName="cardEmployee.username"
                     ></employee-edit-vacation>
                 </q-tab-panel>
 
@@ -79,9 +74,10 @@ import { useUserProfileCard } from '@/composables/userProfileCard';
 
 import StateIcon from '@/components/employee/StateIcon.vue';
 import EmployeeEditVacation from './EmployeeEditVacation.vue';
-import EmployeeVacationGraph from './EmployeeVacationGraph.vue';
 
 const { cardEmployee } = useUserProfileCard()
+
+
 const tab = ref('vacation')
 const splitterModel = ref(15)
 
