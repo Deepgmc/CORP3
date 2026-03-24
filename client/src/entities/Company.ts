@@ -1,11 +1,12 @@
 import { departmentDummy, positionDummy, type IAddDepartment, type ICompany, type ICompanyForm, type IDepartment } from "@/interfaces/Company";
 import type { IPosition, IUser } from "@/interfaces/User";
 import type { AxiosResponse } from "axios";
-import { useCompanyStore } from "@/stores/companyStore";
+import { useOrganizationStore } from "@/stores/organizationStore";
 import { isSuccessRequest } from "@/utils/helpers/network";
 import type { Employee } from "./Employee";
 import type { TResult } from "@/interfaces/Error";
 import Manager from "./Manager";
+import type { Vacation } from "./Vacation";
 
 type TCompanyData = {
     companyId: number,
@@ -23,7 +24,7 @@ export default class Company extends Manager implements ICompany {
     protected _apiModule: string = 'company'
 
     //_store: any
-    _store: ReturnType<typeof useCompanyStore>
+    _store: ReturnType<typeof useOrganizationStore>
 
 
     static getInstance(
@@ -48,7 +49,7 @@ export default class Company extends Manager implements ICompany {
 
         this.initNetwork(this._apiModule)
 
-        this._store = useCompanyStore()
+        this._store = useOrganizationStore()
         this._store.setCompany({ companyId, name, address })
 
         //загружаем связанные данные компании - департаменты и сотрудников
@@ -198,5 +199,25 @@ export default class Company extends Manager implements ICompany {
     getPositionById(positionId: number): IPosition {
         const foundPosition = this.positions.find((pos: IPosition) => pos.id === positionId)
         return typeof foundPosition === 'undefined' ? positionDummy : foundPosition
+    }
+
+    addNewEmployeeVacation (vacation: Vacation): boolean {
+        const thisEmp = this.getEmployeeById(vacation.userId)
+        if(thisEmp !== null){
+            return thisEmp.addNewVacation(vacation)
+        }
+        return false
+    }
+
+    getVacationById(userId: number, vacationId: number): Vacation | null {
+        return this._store.getVacationById(userId, vacationId)
+    }
+
+    deleteVacation(vacation: Vacation): boolean {
+        const foundEmployee = this.getEmployeeById(vacation.userId)
+        if(foundEmployee){
+            return foundEmployee.deleteVacation(vacation)
+        }
+        return false
     }
 }

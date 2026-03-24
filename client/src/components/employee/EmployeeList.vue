@@ -9,12 +9,12 @@
 
 <script setup lang="ts">
 import GridViewEmployees from '@/components/grid/GridViewEmployees.vue';
-import { employeeAvailableCols } from '@/components/grid/GridColumnOptions';
+import { employeeAvailableCols } from '@/composables/gridView/GridColumnOptions';
 import { GridCols } from '@/composables/gridView/GridColsManager';
 import { Rbac } from '@/entities/Rbac';
 
 const $userManager = Rbac.getInstance()
-const needFields = ['userId', 'username', 'firstName', 'departmentId', 'state', 'positionId', 'skills']
+const needFields = ['username', 'firstName', 'state', 'position', 'skills']
 const employees = $userManager.company.employees
 
 const gridCols = new GridCols(

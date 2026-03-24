@@ -17,12 +17,14 @@ export const employeeAvailableCols: ColsConfig = {
         align   : 'center',
         type    : fieldTypes.text,
         editable: false,
+        width   : '8em',
     },
     firstName: {
         label   : 'Имя',
         align   : 'center',
         type    : fieldTypes.text,
         editable: true,
+        width   : '8em',
     },
     lastName: {
         label   : 'Фамилия',
@@ -56,8 +58,9 @@ export const employeeAvailableCols: ColsConfig = {
         align     : 'center',
         type      : fieldTypes.text,
         editable  : false,
-        sortFn  : defaultStringSortFn,
-        order   : -1,
+        sortFn    : defaultStringSortFn,
+        order     : -1,
+        width     : '7em',
     },
     positionId: {
         label     : 'Должность',
@@ -67,6 +70,14 @@ export const employeeAvailableCols: ColsConfig = {
         editable  : false,
         sortFn  : defaultStringSortFn,
         order   : -1,
+    },
+    position: {
+        label     : 'Должность',
+        type      : fieldTypes.text,
+        align     : 'left',
+        editable  : false,
+        switchData: true,
+        width     : '20em',
     },
     birth: {
         label     : 'Дата рождения',
@@ -100,6 +111,7 @@ export const employeeAvailableCols: ColsConfig = {
         align     : 'left',
         type      : fieldTypes.widget,
         editable  : false,
+        width     : '25em'
     },
 }
 
@@ -112,7 +124,8 @@ export const departmentAvailableCols: ColsConfig = {
         order   : -1,
         align   : 'center',
         type    : fieldTypes.number,
-        editable: false
+        editable: false,
+        width   : '5em',
     },
     companyId: {
         label     : 'Компания',
@@ -127,13 +140,15 @@ export const departmentAvailableCols: ColsConfig = {
         order   : -1,
         align   : 'left',
         type    : fieldTypes.text,
-        editable: true
+        editable: true,
+        width   : '20em',
     },
     description: {
         label   : 'Описание',
         align   : 'left',
         type    : fieldTypes.text,
-        editable: true
+        editable: true,
+        width   : '25em',
     },
     countusers: {
         label   : 'Чел.',
@@ -141,7 +156,8 @@ export const departmentAvailableCols: ColsConfig = {
         sortFn  : defaultNumSortFn,
         order   : -1,
         type    : fieldTypes.number,
-        editable: false
+        editable: false,
+        width   : '5em'
     },
 }
 
@@ -175,7 +191,7 @@ export const vacationAvailableCols: ColsConfig = {
         type      : fieldTypes.widget,
         editable  : false,
     },
-    vacationStatus: {
+    vacationStatusText: {
         label     : 'Статус',
         switchData: false,
         align     : 'center',

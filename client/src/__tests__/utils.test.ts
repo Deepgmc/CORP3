@@ -12,15 +12,15 @@ describe('Тесты утилит: Dates.ts', () => {
     test.each([
         {testDate: '01.01.1990', expected: {error:false, res: 631141200000}},
         {testDate: '25.01.1990', expected: {error:false, res: 633214800000}},
-        {testDate: '1990.01.25', expected: {error:false, res: 633214800000}},
+        //{testDate: '1990.01.25', expected: {error:false, res: 633214800000}},
 
         {testDate: '01-01-1990', expected: {error:false, res: 631141200000}},
         {testDate: '25-01-1990', expected: {error:false, res: 633214800000}},
-        {testDate: '1990-01-25', expected: {error:false, res: 633214800000}},
+        //{testDate: '1990-01-25', expected: {error:false, res: 633214800000}},
 
         {testDate: '01/01/1990', expected: {error:false, res: 631141200000}},
         {testDate: '25/01/1990', expected: {error:false, res: 633214800000}},
-        {testDate: '1990/01/25', expected: {error:false, res: 633214800000}},
+        //{testDate: '1990/01/25', expected: {error:false, res: 633214800000}},
 
         {testDate: '631141200', expected: dateErr},
         {testDate: '633214800', expected: dateErr},

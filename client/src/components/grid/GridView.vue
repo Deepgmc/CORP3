@@ -9,6 +9,7 @@
                             v-for="col in cols.keys()"
                             :key="col"
                             @click="$emit('gv_sort', col)"
+                            :style="{width: cols.get(col)!.width}"
                         >
                             {{ cols.get(col)!.label }}
                             <q-icon
@@ -17,7 +18,11 @@
                             />
                         </th>
 
-                        <th v-if="$slots.actions_caption" class="text-center">
+                        <th
+                            v-if="$slots.actions_caption"
+                            class="text-center"
+                            style="width: 5em;"
+                        >
                             <slot name="actions_caption"></slot>
                         </th>
                     </tr>
@@ -210,6 +215,7 @@ $cellPadding: 5px;
     width:100%;
     border-spacing: 0px;
     border-collapse: collapse;
+    table-layout: fixed;
 
     thead th, thead tr {
         padding: 0px;

@@ -25,6 +25,15 @@ export type TSkill = {
     skill      : string
 }
 
+export interface IVacation {
+    id                ?:number,
+    dateFrom          : number,
+    dateTo            : number,
+    isMedical         : boolean,
+    userId            : TUserId
+}
+export type IVacationCreateDTO = Omit<IVacation, 'id'>
+
 export type TUserId = IUser['userId'];
 
 export type ILoginUser = Pick<IUser, 'username' | 'password'>

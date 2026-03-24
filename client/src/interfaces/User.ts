@@ -1,6 +1,7 @@
 import type { ICompany, IDepartment } from './Company'
 import type { jwtStrategy } from '@/auth/strategies/jwt.strategy'
 import type { isLoginedResult } from '@/auth/strategies/Strategy'
+import type { Vacation } from '@/entities/Vacation';
 import type { Router } from 'vue-router'
 
 export interface IUser {
@@ -27,7 +28,7 @@ export interface IUser {
     skills    : TSkill[],
     department: IDepartment | null,
     position  : IPosition | null,
-    vacations : IVacation[]
+    vacations : Vacation[]
 }
 
 export type TUserId = IUser['userId'];
@@ -43,12 +44,15 @@ export type TSkill = {
 }
 
 export interface IVacation {
-    id            : number,
-    dateFrom      : number,
-    dateTo        : number,
-    isMedical     : boolean,
-    userId        : TUserId,
-    vacationStatus: string
+    id                ?:number,
+    dateFrom          : number,
+    dateTo            : number,
+    isMedical         : boolean,
+    userId            : TUserId
+}
+export interface TNewVacation extends Pick<IVacation, 'isMedical' | 'userId'> {
+    dateFrom: string,
+    dateTo  : string
 }
 
 export type TMedicalLabel = {

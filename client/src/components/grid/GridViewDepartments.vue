@@ -15,6 +15,7 @@
                 class="gv-edit_buttons-negative"
                 name="delete_forever"
                 @click="deleteDepartment"
+                :size="'sm'"
                 :data-itemId="slotProps.itemId"
             />
         </template>

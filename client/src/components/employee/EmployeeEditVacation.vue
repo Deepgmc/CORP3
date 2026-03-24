@@ -14,7 +14,6 @@
                 class="gv-edit_buttons-negative"
                 name="delete"
                 size="md"
-                :data-userId="slotProps.itemId"
                 @click="deleteVacation(slotProps.itemId)"
             />
         </template>
@@ -28,13 +27,18 @@
     <q-separator class="q-mt-md" />
 
     <div class="row q-mt-md">
-        <div class="col flex justify-around">
-            <q-input readonly v-model="vacationStartDate" label="Дата начала" dense>
+        <q-form @submit="addVacation" class="col flex justify-between items-center">
+            <q-input readonly v-model="newVacation.dateFrom" label="Дата начала" dense>
                 <template #append>
                     <q-icon name="event" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                            <q-date v-model="vacationStartDate" mask="DD.MM.YYYY">
-                                <div class="row items-center justify-end">
+                            <q-date
+                                minimal
+                                flat
+                                v-model="newVacation.dateFrom"
+                                mask="DD.MM.YYYY"
+                            >
+                                <div class="flex items-center justify-end">
                                     <q-btn v-close-popup label="OK" color="primary" flat />
                                 </div>
                             </q-date>
@@ -42,12 +46,17 @@
                     </q-icon>
                 </template>
             </q-input>
-            <q-input readonly v-model="vacationEndDate" label="Дата конца" dense>
+            <q-input readonly v-model="newVacation.dateTo" label="Дата конца" dense>
                 <template #append>
                     <q-icon name="event" class="cursor-pointer">
                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                            <q-date v-model="vacationEndDate" mask="DD.MM.YYYY">
-                                <div class="row items-center justify-end">
+                            <q-date
+                                minimal
+                                flat
+                                v-model="newVacation.dateTo"
+                                mask="DD.MM.YYYY"
+                            >
+                                <div class="flex items-center justify-end">
                                     <q-btn v-close-popup label="OK" color="primary" flat />
                                 </div>
                             </q-date>
@@ -56,37 +65,48 @@
                 </template>
             </q-input>
             <div>
-                <q-checkbox v-model="isMedicalVacation" left-label label="Больничный" />
+                <q-checkbox v-model="newVacation.isMedical" left-label label="Больничный" />
             </div>
-        </div>
-    </div>
-    <div class="row">
-        <q-btn
-            flat label="Назначить отпуск на эти даты" color="primary"
-            class="q-ma-md"
-        />
+            <q-btn
+                label="Назначить на эти даты"
+                color="primary"
+                type="submit"
+            />
+        </q-form>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
-import type { IVacation } from '@/interfaces/User';
+import { reactive } from 'vue';
+import type { IVacation, TNewVacation } from '@/interfaces/User';
 import { GridCols } from '@/composables/gridView/GridColsManager';
-import { vacationAvailableCols } from '@/components/grid/GridColumnOptions';
+import { vacationAvailableCols } from '@/composables/gridView/GridColumnOptions';
+import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
 import GridView from '@/components/grid/GridView.vue';
 import { Vacation } from '@/entities/Vacation';
+import { convertStrToUnixTimestamp } from '@/utils/helpers/dates';
+import { DELETE_ERROR, DELETE_SUCCESS, UNKNOWN_ERROR } from '@/utils/constants/texts';
+import { Rbac } from '@/entities/Rbac';
 
-const props = defineProps<{
-    userId      : number
-    vacationsRaw: IVacation[]
-}>()
+interface IProps {
+   userId      : number
+   vacationsRaw: IVacation[]
+};
 
-const vacationStartDate = ref<string>()
-const vacationEndDate = ref<string>()
-const isMedicalVacation = ref<boolean>(false)
+const $um = Rbac.getInstance()
+const notify = useNotify()
+const props = defineProps<IProps>()
+
+const newVacation: TNewVacation = reactive({
+    dateFrom          : '01.03.2026',
+    dateTo            : '10.03.2026',
+    isMedical         : false,
+    userId            : props.userId
+
+})
 
 const gridCols = new GridCols (
-    ['id', 'dateFrom', 'dateTo', 'isMedical', 'vacationStatus'],
+    ['id', 'dateFrom', 'dateTo', 'isMedical', 'vacationStatusText'],
     vacationAvailableCols,
     props.vacationsRaw,
     'id',
@@ -95,8 +115,55 @@ const gridCols = new GridCols (
     5
 );
 
-function deleteVacation(vacationId: number){
-    console.log('deleting vacation:', vacationId)
+async function addVacation(): Promise<void> {
+    if(newVacation.dateFrom.length < 1 || newVacation.dateTo.length < 1){
+        notify.run('Введите даты отпуска', notifyTypes.err)
+        return
+    }
+    try {
+        const dateFrom = convertStrToUnixTimestamp(newVacation.dateFrom)
+        const dateTo = convertStrToUnixTimestamp(newVacation.dateTo)
+        if(dateFrom.error || dateTo.error) {
+            throw new TypeError('Неверные даты')
+        }
+        const newVac = new Vacation (
+                Object.assign (
+                newVacation,
+                {
+                    dateFrom: dateFrom.res,
+                    dateTo: dateTo.res
+                }
+            )
+        );
+        const saveRes = await newVac.saveModel()
+        if(!saveRes.error){
+            formReset()
+        } else {
+            throw new Error(saveRes.errorMessage)
+        }
+    } catch (e: unknown) {
+        let msg = UNKNOWN_ERROR
+        if(e instanceof Error) msg = e.message
+        else if(typeof e === 'string') msg = e
+        notify.run(msg, notifyTypes.err)
+    }
+}
+
+async function deleteVacation(vacationId: number){
+    const vacationObj = $um.company.getVacationById(props.userId, vacationId)
+    if(vacationObj){
+        if(await vacationObj.delete()){
+            notify.run(DELETE_SUCCESS, notifyTypes.succ)
+        } else {
+            notify.run(DELETE_ERROR, notifyTypes.err)
+        }
+    }
+}
+
+function formReset(){
+    newVacation.dateFrom = ''
+    newVacation.dateTo = ''
+    newVacation.isMedical = false
 }
 
 </script>

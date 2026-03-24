@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import * as fs from 'node:fs'
 const SaveBase64 = require('node-base64-to-image')
 import { InjectRepository } from '@nestjs/typeorm'
@@ -10,6 +10,8 @@ import { SkillsEntity } from './entities/skills.entity';
 import { IUser, TSkill } from 'src/interfaces/IUser';
 import { DepartmentEntity } from 'src/company/entities/departments.entity';
 import { PositionsEntity } from './entities/positions.entity';
+import { CreateVacationDTO } from './dto/create-vacation.dto';
+import { VacationsEntity } from './entities/vacations.entity';
 
 const avatarFolderPath = '/home/deep/work/CORP3/server/avatars'
 
@@ -28,6 +30,9 @@ export class UsersService {
 
         @InjectRepository(PositionsEntity)
         private deptPositions: Repository<PositionsEntity>,
+
+        @InjectRepository(VacationsEntity)
+        private vacationsRepository: Repository<VacationsEntity>,
     ) { }
 
     async getFullUserData(field: string, value: string | number): Promise<any> {
@@ -220,5 +225,15 @@ export class UsersService {
             itemId   : userId,
             val      : '0'
         })
+    }
+
+    async saveNewVacation(newVacation: CreateVacationDTO): Promise<CreateVacationDTO> {
+        return await this.vacationsRepository.save(newVacation)
+    }
+
+    async deleteVacation(id: number): Promise<DeleteResult> {
+        const parsedId = Number(id)
+        if(!Number.isInteger(parsedId)) throw new TypeError('Неверно передан id')
+        return await this.vacationsRepository.delete({id: parsedId})
     }
 }
