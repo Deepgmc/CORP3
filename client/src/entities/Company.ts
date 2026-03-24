@@ -1,7 +1,7 @@
 import { departmentDummy, positionDummy, type IAddDepartment, type ICompany, type ICompanyForm, type IDepartment } from "@/interfaces/Company";
 import type { IPosition, IUser } from "@/interfaces/User";
 import type { AxiosResponse } from "axios";
-import { useCompanyStore } from "@/stores/companyStore";
+import { useOrganizationStore } from "@/stores/organizationStore";
 import { isSuccessRequest } from "@/utils/helpers/network";
 import type { Employee } from "./Employee";
 import type { TResult } from "@/interfaces/Error";
@@ -24,7 +24,7 @@ export default class Company extends Manager implements ICompany {
     protected _apiModule: string = 'company'
 
     //_store: any
-    _store: ReturnType<typeof useCompanyStore>
+    _store: ReturnType<typeof useOrganizationStore>
 
 
     static getInstance(
@@ -49,7 +49,7 @@ export default class Company extends Manager implements ICompany {
 
         this.initNetwork(this._apiModule)
 
-        this._store = useCompanyStore()
+        this._store = useOrganizationStore()
         this._store.setCompany({ companyId, name, address })
 
         //загружаем связанные данные компании - департаменты и сотрудников

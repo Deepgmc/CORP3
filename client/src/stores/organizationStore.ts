@@ -1,11 +1,11 @@
+import { ref } from "vue"
+import { defineStore } from "pinia"
 import { Employee } from "@/entities/Employee"
 import type { Vacation } from "@/entities/Vacation"
 import { type IDepartment, type ICompany } from "@/interfaces/Company"
 import type { IPosition } from "@/interfaces/User"
-import { defineStore } from "pinia"
-import { ref } from "vue"
 
-export const useCompanyStore = defineStore('company', () => {
+export const useOrganizationStore = defineStore('organization', () => {
 
     const company = ref<ICompany>(companyDummy)
 
