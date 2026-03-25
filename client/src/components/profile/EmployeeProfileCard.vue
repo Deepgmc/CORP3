@@ -31,6 +31,10 @@
                                     <span class="text-weight-medium">пол:</span>
                                     <span class="text-weight-light q-ml-xs">{{ genderOptions[cardEmployee.gender]?.label.toLocaleLowerCase() }}</span>
                                 </div>
+                                <div class="text-body3 text-grey-7">
+                                    <span class="text-weight-medium">зарплата:</span>
+                                    <span class="text-weight-light q-ml-xs">{{ cardEmployee.salaryAmount }} руб.</span>
+                                </div>
                             </div>
                         </div>
                     </div>

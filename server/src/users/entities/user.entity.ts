@@ -89,6 +89,13 @@ export class UsersEntity {
     })
     positionId: number;
 
+    //зарплата, рубли в месяц
+    @Column({
+        type: 'integer',
+        default: null
+    })
+    salaryAmount: number;
+
 //! #################################   RELATIONS
 
     @ManyToOne(() => CompanyEntity, { cascade: true })

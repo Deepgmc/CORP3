@@ -1,4 +1,4 @@
-import type { IPosition, IUser, TMedicalLabel, TSkill } from "@/interfaces/User";
+import type { IPosition, IUser, IVacation, TMedicalLabel, TSkill } from "@/interfaces/User";
 import type { ICompany, IDepartment } from "@/interfaces/Company";
 import type { TResult } from "@/interfaces/Error";
 import { computed } from "vue";
@@ -6,6 +6,7 @@ import { Rbac } from "./Rbac";
 import { FiniteStateMachine, type TState } from "@/utils/FiniteStateMachine";
 import { Vacation } from "./Vacation";
 import { labelVacationIsMedical } from "@/utils/constants/main";
+import { isAffected, isSuccessRequest } from "@/utils/helpers/network";
 
 export interface ITransition {
     [key: string]: {
@@ -77,11 +78,14 @@ export class Employee extends FiniteStateMachine implements IUser {
     public     companyId    : number    = 0
     public     isDirector   : boolean   = false
     public     avatar       : string    = ''
+
     company     : ICompany | null       = null
     skills      : TSkill[]              = []
     department  : IDepartment | null    = null
     position    : IPosition | null      = null
-    vacations   : Vacation[]            = []
+    vacations   : IVacation[]           = []
+
+    public salaryAmount: number | null  = null
 
     static getVacationIsMedicalText(value: boolean): string {
         const val: TMedicalLabel | undefined = labelVacationIsMedical[Number(value)]
@@ -150,7 +154,7 @@ export class Employee extends FiniteStateMachine implements IUser {
 
     public async hireEmployee(): Promise<TResult> {
         const res = await this._patchData('hire_employee')({ userId: this.userId })
-        if(res.data.affected !== 0) {
+        if(isAffected(res).many()) {
             return { error: false, res: true }
         }
         return { error: true, errorMessage: 'Не обновлено ни одной записи' }
@@ -158,7 +162,7 @@ export class Employee extends FiniteStateMachine implements IUser {
 
     public async fireEmployee(): Promise<TResult> {
         const res = await this._patchData('fire_employee')({ userId: this.userId })
-        if(res.data.affected !== 0) {
+        if(isAffected(res).many()) {
             return { error: false, res: true }
         }
         return { error: true, errorMessage: 'Не обновлено ни одной записи' }
@@ -170,10 +174,38 @@ export class Employee extends FiniteStateMachine implements IUser {
             userId,
             newPositionId,
         })
-        if(res.data.affected !== 0) {
+        if(isAffected(res).many()) {
             return { error: false, res: true }
         }
         return { error: true, errorMessage: 'Не обновлено ни одной записи' }
+    }
+
+    public async setNewSalary(newSalaryAmount: string | number): Promise<boolean> {
+        if(typeof newSalaryAmount === 'string') { newSalaryAmount = parseInt(newSalaryAmount) }
+        if(this.isSalaryValid(newSalaryAmount)){
+            return await this.saveSalary(newSalaryAmount)
+        }
+        return false
+    }
+
+    private async saveSalary(newSalaryAmount: number): Promise<boolean> {
+        const saveRes = await this._patchData('save_salary')({
+            salary: newSalaryAmount,
+            userId: this.userId
+        })
+        if(isSuccessRequest(saveRes) && isAffected(saveRes).one()) {
+            this.salaryAmount = newSalaryAmount
+            return true
+        }
+        return false
+    }
+
+    private isSalaryValid(newSalaryAmount: number): boolean {
+        return Number.isInteger(newSalaryAmount)
+            &&
+            newSalaryAmount > 0
+            &&
+            newSalaryAmount < Employee.maxSalaryValue
     }
 
     public isManager() {
@@ -208,6 +240,8 @@ export class Employee extends FiniteStateMachine implements IUser {
         }
         return false
     }
+
+    static maxSalaryValue = 5000000
 };
 
 function getInitState(incomeIUser: IUser): TState {

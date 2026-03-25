@@ -1,7 +1,6 @@
 import type { ICompany, IDepartment } from './Company'
 import type { jwtStrategy } from '@/auth/strategies/jwt.strategy'
 import type { isLoginedResult } from '@/auth/strategies/Strategy'
-import type { Vacation } from '@/entities/Vacation';
 import type { Router } from 'vue-router'
 
 export interface IUser {
@@ -22,13 +21,14 @@ export interface IUser {
     departmentId : number | null,
     positionId   : number | null,
     avatar       : string | null,
+    salaryAmount : number | null,
 
     //! RELATIONS
     company   : ICompany | null,
     skills    : TSkill[],
     department: IDepartment | null,
     position  : IPosition | null,
-    vacations : Vacation[]
+    vacations : IVacation[]
 }
 
 export type TUserId = IUser['userId'];

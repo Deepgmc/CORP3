@@ -31,54 +31,56 @@
         </template>
     </grid-view>
 
-    <q-separator class="q-mt-md" />
-
-    <div class="row q-mt-md">
-        <q-form @submit="addVacation" class="col flex justify-between items-center">
-            <q-input readonly v-model="newVacation.dateFrom" label="Дата начала" dense>
-                <template #append>
-                    <q-icon name="event" class="cursor-pointer">
-                        <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                            <q-date
-                                minimal
-                                flat
-                                v-model="newVacation.dateFrom"
-                                mask="DD.MM.YYYY"
-                            >
-                                <div class="flex items-center justify-end">
-                                    <q-btn v-close-popup label="OK" color="primary" flat />
-                                </div>
-                            </q-date>
-                        </q-popup-proxy>
-                    </q-icon>
-                </template>
-            </q-input>
-            <q-input readonly v-model="newVacation.dateTo" label="Дата конца" dense>
-                <template #append>
-                    <q-icon name="event" class="cursor-pointer">
-                        <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                            <q-date
-                                minimal
-                                flat
-                                v-model="newVacation.dateTo"
-                                mask="DD.MM.YYYY"
-                            >
-                                <div class="flex items-center justify-end">
-                                    <q-btn v-close-popup label="OK" color="primary" flat />
-                                </div>
-                            </q-date>
-                        </q-popup-proxy>
-                    </q-icon>
-                </template>
-            </q-input>
-            <div>
-                <q-checkbox v-model="newVacation.isMedical" left-label label="Больничный" />
+    <div class="form_container q-mt-md">
+        <q-form @submit="addVacation" class="q-gutter-md">
+            <div class="row justify-between">
+                <q-input readonly v-model="newVacation.dateFrom" label="Дата начала" dense>
+                    <template #append>
+                        <q-icon name="event" class="cursor-pointer">
+                            <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                                <q-date
+                                    minimal
+                                    flat
+                                    v-model="newVacation.dateFrom"
+                                    mask="DD.MM.YYYY"
+                                >
+                                    <div class="flex items-center justify-end">
+                                        <q-btn v-close-popup label="OK" color="primary" flat />
+                                    </div>
+                                </q-date>
+                            </q-popup-proxy>
+                        </q-icon>
+                    </template>
+                </q-input>
+                <q-input readonly v-model="newVacation.dateTo" label="Дата конца" dense>
+                    <template #append>
+                        <q-icon name="event" class="cursor-pointer">
+                            <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                                <q-date
+                                    minimal
+                                    flat
+                                    v-model="newVacation.dateTo"
+                                    mask="DD.MM.YYYY"
+                                >
+                                    <div class="flex items-center justify-end">
+                                        <q-btn v-close-popup label="OK" color="primary" flat />
+                                    </div>
+                                </q-date>
+                            </q-popup-proxy>
+                        </q-icon>
+                    </template>
+                </q-input>
+                <div>
+                    <q-checkbox v-model="newVacation.isMedical" left-label label="Больничный" />
+                </div>
             </div>
-            <q-btn
-                label="Назначить на эти даты"
-                color="primary"
-                type="submit"
-            />
+            <div class="row justify-end q-mt-md">
+                <q-btn
+                    label="Назначить на эти даты"
+                    color="primary"
+                    type="submit"
+                />
+            </div>
         </q-form>
     </div>
 </template>
@@ -114,8 +116,6 @@ const newVacation: TNewVacation = reactive({
     isMedical         : false,
     userId            : props.userId
 })
-
-console.log('props.vacationsRaw:', props.vacationsRaw)
 
 const gridCols = new GridCols (
     ['id', 'dateFrom', 'dateTo', 'isMedical', 'vacationStatusText'],

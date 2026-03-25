@@ -91,6 +91,7 @@ export const userDummy: IUser = {
     reg_date    : 0,
     hire_date   : 0,
     fire_date   : 0,
+    salaryAmount: 0,
 
     company   : null,
     skills    : [],
