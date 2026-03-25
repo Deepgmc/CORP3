@@ -87,6 +87,7 @@ export class Employee extends FiniteStateMachine implements IUser {
     vacations   : IVacation[]           = []
 
     public salaryAmount: number | null  = null
+    public accountBalance: number = 0
 
     static getVacationIsMedicalText(value: boolean): string {
         const val: TMedicalLabel | undefined = labelVacationIsMedical[Number(value)]

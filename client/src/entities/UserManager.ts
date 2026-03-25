@@ -37,13 +37,7 @@ export class UserManager extends Manager implements IUserManager {
         const createdUser: IUser = await this._userStore.loadUserData()
         if (createdUser.company === null || this.company) return
         //юзер загружен, цепляем к нему его компанию
-        this.company = Company.getInstance(
-            {
-                companyId: createdUser.company.companyId,
-                name     : createdUser.company.name,
-                address  : createdUser.company.address,
-            }
-        )
+        this.company = Company.getInstance({...createdUser.company})
     }
 
     /**

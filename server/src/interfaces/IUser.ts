@@ -1,20 +1,21 @@
 export interface IUser {
-    userId      : number,
-    username    : string,
-    password    : string,
-    birth       : number,          //timestamp
-    reg_date    : number,          //timestamp
-    hire_date   : number,          //timestamp
-    fire_date   : number,          //timestamp
-    email       : string,
-    companyId   : number | null,
-    departmentId: number | null,
-    isDirector  : boolean,
-    gender      : number,
-    bio         : string;
-    firstName   : string,
-    lastName    : string,
-    phone       : string,
+    userId        : number,
+    username      : string,
+    password      : string,
+    birth         : number,          //timestamp
+    reg_date      : number,          //timestamp
+    hire_date     : number,          //timestamp
+    fire_date     : number,          //timestamp
+    email         : string,
+    companyId     : number | null,
+    departmentId  : number | null,
+    isDirector    : boolean,
+    gender        : number,
+    bio           : string;
+    firstName     : string,
+    lastName      : string,
+    phone         : string,
+    accountBalance: number,
 
     skills?: TSkill[]
 }

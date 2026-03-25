@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, Length } from 'class-validator'
+import { IsString, IsNotEmpty, Length, IsNumber } from 'class-validator'
 
 import { ICompany } from '../../interfaces/ICompany'
 import { ApiProperty } from '@nestjs/swagger'
@@ -32,6 +32,16 @@ export class CreateCompanyDto implements ICompany {
     @IsString({message: 'Строка'})
     @Length(2, 70, {message: 'Неверная длина адреса'})
     address: string
+
+    @ApiProperty({
+        description: 'Внутренний счёт компании',
+        required: true,
+        type: String,
+        default: 0
+    })
+    @IsNotEmpty({message: 'Не пустое'})
+    @IsNumber()
+    accountBalance: number
 
     constructor() {}
 

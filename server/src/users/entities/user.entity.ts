@@ -96,6 +96,13 @@ export class UsersEntity {
     })
     salaryAmount: number;
 
+    //счёт сотрудника внутри компании
+    @Column({
+        type: 'integer',
+        default: 0
+    })
+    accountBalance: number;
+
 //! #################################   RELATIONS
 
     @ManyToOne(() => CompanyEntity, { cascade: true })

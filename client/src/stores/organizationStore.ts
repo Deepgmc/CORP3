@@ -101,7 +101,8 @@ export const useOrganizationStore = defineStore('organization', () => {
 })
 
 export const companyDummy: ICompany = {
-    companyId: 0,
-    name     : '',
-    address  : ''
+    companyId     : 0,
+    name          : '',
+    address       : '',
+    accountBalance: 0
 }

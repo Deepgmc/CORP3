@@ -29,7 +29,8 @@ vi.mock('@/entities/CompanyManager', () => ({
         company: {
             companyId: 1,
             name: 'Тестовая компания',
-            address: 'Тестовый адрес'
+            address: 'Тестовый адрес',
+            accountBalance: 0
         },
         can: vi.fn(() => () => () => true),
         saveCompanyProfile: vi.fn().mockResolvedValue(true)

@@ -116,7 +116,4 @@ function logout() {
 .sub-item {
     font-size: $text12;
 }
-.fieldset{
-    border: 1px solid grey
-}
 </style>
