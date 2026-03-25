@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, UseGuards } 
 
 import { UsersService } from './users.service';
 import { UserId } from './userId.decorator'
-import { IUser } from 'src/interfaces/IUser';
+import { IUser, TSavingSalary } from 'src/interfaces/IUser';
 import { AuthGuard } from '@nestjs/passport';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { CreateVacationDTO } from './dto/create-vacation.dto';
@@ -95,5 +95,13 @@ export class UsersController {
         @Param('id') id: number
     ): Promise<DeleteResult> {
         return await this.usersService.deleteVacation(id)
+    }
+
+    //сохраняем зарплату
+    @Patch('save_salary')
+    async updateEmployeeSalary (
+        @Body() savingData: TSavingSalary
+    ): Promise<UpdateResult | boolean> {
+        return this.usersService.setNewEmployeeSalary(savingData)
     }
 }

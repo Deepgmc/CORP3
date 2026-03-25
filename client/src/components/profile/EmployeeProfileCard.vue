@@ -31,12 +31,19 @@
                                     <span class="text-weight-medium">пол:</span>
                                     <span class="text-weight-light q-ml-xs">{{ genderOptions[cardEmployee.gender]?.label.toLocaleLowerCase() }}</span>
                                 </div>
+                                <div class="text-body3 text-grey-7">
+                                    <span class="text-weight-medium">зарплата:</span>
+                                    <span
+                                    class="text-weight-light q-ml-xs"
+                                    v-marker
+                                    v-splitNumber="cardEmployee.salaryAmount ? cardEmployee.salaryAmount : 0"></span> руб.
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-5 column items-end justify-start">
+                <div class="col-5 column justify-start items-end">
                     <!-- Контактный телефон -->
                     <div class="row flex justify-center">
                         <q-icon size="md" name="phone" class="text-primary" />
@@ -64,12 +71,12 @@
                         <q-icon name="work" class="text-primary q-ml-md" />
                         <span class="text-body1 q-ml-md">{{ cardEmployee.department?.name }}</span>
                     </div>
-                    <div class="col-3 q-pa-xs flex justify-center items-center">
+                    <div class="col-4 q-pa-xs flex justify-center items-center">
                         <div class="text-subtitle1 text-grey-10">
                             <template v-if="!$um.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.EDIT)(R_FIELDS.POSITION)">Должность: {{ positionText }}</template>
                             <template v-else>
                                 <q-select
-                                    class="profile-card_select"
+                                    class="profile-card_select full-width"
                                     dense filled input-debounce="0"
                                     v-model="selectPositionModel"
                                     :options="selectPositionOptions"
@@ -78,7 +85,7 @@
                             </template>
                         </div>
                     </div>
-                    <div class="col-3 q-pa-xs flex justify-center items-center">
+                    <div class="col-2 q-pa-xs flex justify-center items-center">
                         <div class="text-subtitle1 text-grey-10">
                             {{ cardEmployee.state.label }}
                         </div>

@@ -11,6 +11,7 @@ export const UNKNOWN_ERROR          = 'Неизвестная ошибка'
 
 export const v_msg = {
     REQUIRED    : 'Поле обязательно для заполнения',
+    WRONG_VALUE : 'Неверно задано значение',
     PHONE_FORMAT: 'Неверный формат телефона',
     EMAIL_FORMAT: 'Неверный формат email',
 }

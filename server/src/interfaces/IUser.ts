@@ -51,3 +51,5 @@ export interface TRegisterForm extends Pick<IUser, 'username' | 'password' | 'em
 export type IUsersCreateDTO = Omit<IUser, 'userId'>
 export type IUsersUpdateDTO = Partial<IUser>
 export type TUserWithoutPassword = Omit<IUser, 'password'>
+
+export type TSavingSalary = {userId: string, salary: string}

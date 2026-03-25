@@ -14,6 +14,7 @@
             >
                 <q-tab name="status" icon="done" label="Статус сотрудника" />
                 <q-tab name="vacation" icon="event" label="Отпуска" />
+                <q-tab name="salary" icon="currency_ruble" label="Зарплата" />
                 <q-tab name="notes" icon="edit" label="Заметки" />
             </q-tabs>
         </template>
@@ -52,16 +53,18 @@
                 </q-tab-panel>
 
                 <q-tab-panel name="vacation">
-                    <employee-vacation-graph
-                        :vacationsRaw="cardEmployee.vacations"
-                        :userId="cardEmployee.userId"
-                        :userName="cardEmployee.username"
-                    ></employee-vacation-graph>
-
                     <employee-edit-vacation
                         :vacationsRaw="cardEmployee.vacations"
                         :userId="cardEmployee.userId"
+                        :userName="cardEmployee.username"
                     ></employee-edit-vacation>
+                </q-tab-panel>
+
+                <q-tab-panel name="salary">
+                    <employee-edit-salary
+                        :cardEmployee="cardEmployee"
+                        @set-salary="setSalary"
+                    ></employee-edit-salary>
                 </q-tab-panel>
 
                 <q-tab-panel name="notes">
@@ -76,22 +79,36 @@
 import { ref } from 'vue';
 import { employeeStates } from '@/entities/Employee';
 import { useUserProfileCard } from '@/composables/userProfileCard';
+import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
 
 import StateIcon from '@/components/employee/StateIcon.vue';
 import EmployeeEditVacation from './EmployeeEditVacation.vue';
-import EmployeeVacationGraph from './EmployeeVacationGraph.vue';
+import EmployeeEditSalary from './EmployeeEditSalary.vue';
+import { SAVED_SUCCESS } from '@/utils/constants/texts';
 
 const { cardEmployee } = useUserProfileCard()
-const tab = ref('vacation')
+const notify = useNotify()
+
+const tab = ref('salary') //начально открытая вкладка
 const splitterModel = ref(15)
 
 function dispatchAction(action: string){
     cardEmployee.value.dispatch(action, false)
 }
 
+function setSalary(newSalaryAmount: number) {
+    cardEmployee.value.setNewSalary(newSalaryAmount)
+        .then((result) => {
+            if(!result.error){
+                notify.run(SAVED_SUCCESS, notifyTypes.succ)
+            } else {
+                notify.run(result.errorMessage, notifyTypes.err)
+            }
+        })
+}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .splitter {
     min-height: 250px;
     width: 100%;

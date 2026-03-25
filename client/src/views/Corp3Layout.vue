@@ -75,14 +75,14 @@
     </q-page-container>
 </q-layout>
 
-<user-profile-card v-if="isUserProfileCardOpened"></user-profile-card>
+<employee-profile-card v-if="isUserProfileCardOpened"></employee-profile-card>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import GridViewChangeDialog from '@/components/GridViewChangeDialog.vue'
-import UserProfileCard from '@/components/profile/UserProfileCard.vue'
+import EmployeeProfileCard from '@/components/profile/EmployeeProfileCard.vue'
 import { Rbac } from '@/entities/Rbac'
 import { useUserProfileCard } from '@/composables/userProfileCard'
 

@@ -28,16 +28,6 @@ export const useOrganizationStore = defineStore('organization', () => {
         positions.value = newPositions
     }
 
-    // const getDepartments = computed(() => {
-    //     return departments
-    // })
-    // const getEmployees = computed(() => {
-    //     return employees
-    // })
-    // const getPositions = computed(() => {
-    //     return positions
-    // })
-
     function addNewDepartment(newDept: IDepartment): void {
         departments.value.push(newDept)
     }
@@ -95,10 +85,6 @@ export const useOrganizationStore = defineStore('organization', () => {
         employees,
         departments,
         positions,
-
-        // getDepartments,
-        // getEmployees,
-        // getPositions,
 
         setCompany,
         setDepartments,

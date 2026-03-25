@@ -1,7 +1,7 @@
 import type { TResult } from "@/interfaces/Error"
 import NetworkManager, { EReqMethods } from "@/network/NetworkManager"
 import { UNKNOWN_ERROR } from "@/utils/constants/texts"
-import { isSuccessRequest } from "@/utils/helpers/network"
+import { isAffected, isSuccessRequest } from "@/utils/helpers/network"
 
 export default class Manager {
 
@@ -40,9 +40,6 @@ export default class Manager {
     protected async delete(id: number): Promise<boolean> {
         if(!Number.isInteger(id)) return false
         const res = await this._deleteData(`delete/${id}`)()
-        if(isSuccessRequest (res)){
-            return !!res.data.affected
-        }
-        return false
+        return isSuccessRequest(res) && isAffected(res).one()
     }
 }
