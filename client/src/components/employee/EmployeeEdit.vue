@@ -84,7 +84,7 @@ import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
 import StateIcon from '@/components/employee/StateIcon.vue';
 import EmployeeEditVacation from './EmployeeEditVacation.vue';
 import EmployeeEditSalary from './EmployeeEditSalary.vue';
-import { SAVED_ERROR, SAVED_SUCCESS } from '@/utils/constants/texts';
+import { SAVED_SUCCESS } from '@/utils/constants/texts';
 
 const { cardEmployee } = useUserProfileCard()
 const notify = useNotify()
@@ -99,10 +99,10 @@ function dispatchAction(action: string){
 function setSalary(newSalaryAmount: number) {
     cardEmployee.value.setNewSalary(newSalaryAmount)
         .then((result) => {
-            if(result){
+            if(!result.error){
                 notify.run(SAVED_SUCCESS, notifyTypes.succ)
             } else {
-                notify.run(SAVED_ERROR, notifyTypes.err)
+                notify.run(result.errorMessage, notifyTypes.err)
             }
         })
 }

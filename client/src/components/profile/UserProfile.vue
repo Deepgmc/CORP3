@@ -52,7 +52,7 @@
             <div class="row q-mt-md">
                 <!-- должность -->
                 <div class="col-12">
-                    Заработная плата: <span>{{ form.salaryAmount }}</span>
+                    Заработная плата: <span v-marker v-splitNumber="form.salaryAmount"></span>
                 </div>
             </div>
 

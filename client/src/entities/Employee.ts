@@ -7,6 +7,7 @@ import { FiniteStateMachine, type TState } from "@/utils/FiniteStateMachine";
 import { Vacation } from "./Vacation";
 import { labelVacationIsMedical } from "@/utils/constants/main";
 import { isAffected, isSuccessRequest } from "@/utils/helpers/network";
+import { SAVED_SUCCESS, UNKNOWN_ERROR } from "@/utils/constants/texts";
 
 export interface ITransition {
     [key: string]: {
@@ -180,19 +181,31 @@ export class Employee extends FiniteStateMachine implements IUser {
         return { error: true, errorMessage: 'Не обновлено ни одной записи' }
     }
 
-    public async setNewSalary(newSalaryAmount: string | number): Promise<boolean> {
-        if(typeof newSalaryAmount === 'string') { newSalaryAmount = parseInt(newSalaryAmount) }
-        if(this.isSalaryValid(newSalaryAmount)){
-            return await this.saveSalary(newSalaryAmount)
+    public async setNewSalary(newSalaryAmount: string | number): Promise<TResult> {
+        if(typeof newSalaryAmount === 'string') {
+            newSalaryAmount = parseInt(newSalaryAmount)
         }
-        return false
+
+        if(!this.isSalaryValid(newSalaryAmount)) {
+            return { error: true, errorMessage: 'Неверно указана зарплата' }
+        }
+
+        if(!this.isEmployeeStatusActiveAtOrganization()) {
+            return { error: true, errorMessage: 'Сотрудник не в компании' }
+        }
+
+        if(await this.saveSalary(newSalaryAmount)) {
+            return { error: false, res: SAVED_SUCCESS }
+        }
+
+        return { error: true, errorMessage: UNKNOWN_ERROR }
     }
 
     private async saveSalary(newSalaryAmount: number): Promise<boolean> {
-        const saveRes = await this._patchData('save_salary')({
+        const saveRes = await this._patchData('save_salary')( {
             salary: newSalaryAmount,
             userId: this.userId
-        })
+        } )
         if(isSuccessRequest(saveRes) && isAffected(saveRes).one()) {
             this.salaryAmount = newSalaryAmount
             return true
@@ -241,7 +254,12 @@ export class Employee extends FiniteStateMachine implements IUser {
         return false
     }
 
-    static maxSalaryValue = 5000000
+    static maxSalaryValue = 50000000
+
+    //статусы "активного" в организации сотрудника (уже принят, но еще не уволен и не отстранён)
+    public isEmployeeStatusActiveAtOrganization(): boolean {
+        return [employeeStateNames.HIRED].includes(this.state.name)
+    }
 };
 
 function getInitState(incomeIUser: IUser): TState {

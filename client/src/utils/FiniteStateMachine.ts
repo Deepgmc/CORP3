@@ -42,7 +42,7 @@ export interface ITransition {
 }
 
 export type TState = {
-    name    : string,
+    name    : employeeStateNames,
     label   : string,
     isActive: (...args: any[]) => boolean,
     icon    : string,
