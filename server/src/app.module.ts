@@ -2,15 +2,16 @@ import { join } from 'path';
 import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UserModule } from './user/user.module';
-import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
-import dbConfiguration from './config/db.config';
-import customVariables from './config/custom.config';
 import { APP_FILTER } from '@nestjs/core';
 import { NotFoundExceptionFilter } from './HttpException.filter';
+import dbConfiguration from './config/db.config';
+import customVariables from './config/custom.config';
+import { UserModule } from './user/user.module';
+import { UsersModule } from './users/users.module';
 import { CompanyModule } from './company/company.module';
+import { WarehouseModule } from './warehouse/warehouse.module';
+import { DealsModule } from './deals/deals.module';
 
 @Module({
   imports: [
@@ -18,6 +19,8 @@ import { CompanyModule } from './company/company.module';
     UserModule,
     UsersModule,
     CompanyModule,
+    WarehouseModule,
+    DealsModule,
 
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],

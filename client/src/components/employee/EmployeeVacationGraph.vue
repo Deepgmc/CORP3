@@ -13,25 +13,18 @@ interface IProps {
    vacationsRaw: IVacation[]
 };
 const props = defineProps<IProps>()
-
 const oneDay = getOneDayMilliseconds()
 
 const sick = computed(() => {
-    return props.vacationsRaw
-        .filter(s => s.isMedical)
-        .map(s => {
-            return {
-                x: props.userName,
-                y: [
-                    +s.dateFrom + oneDay,
-                    +s.dateTo + oneDay
-                ]
-            }
-        })
+    return getFiltered(props.vacationsRaw, (v: IVacation) => v.isMedical)
 })
 const vac = computed(() => {
-    return props.vacationsRaw
-        .filter(s => !s.isMedical)
+    return getFiltered(props.vacationsRaw, (v: IVacation) => !v.isMedical)
+})
+
+function getFiltered(vacations: IVacation[], filterFn: (v: IVacation) => boolean) {
+    return vacations
+        .filter(filterFn)
         .map(s => {
             return {
                 x: props.userName,
@@ -41,18 +34,20 @@ const vac = computed(() => {
                 ]
             }
         })
-})
+}
 
-const series = [
-    {
-        name: 'Отпуска',
-        data: vac.value
-    },
-    {
-        name: 'Больничные',
-        data: sick.value
-    },
-];
+const series = computed(() => {
+    return [
+        {
+            name: 'Отпуска',
+            data: vac.value
+        },
+        {
+            name: 'Больничные',
+            data: sick.value
+        },
+    ]
+});
 
 const options = {
     tooltip: {

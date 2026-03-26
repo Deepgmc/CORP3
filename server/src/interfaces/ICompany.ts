@@ -1,7 +1,8 @@
 export interface ICompany {
-    companyId: number,
-    name     : string,
-    address  : string,
+    companyId     : number,
+    name          : string,
+    address       : string,
+    accountBalance: number
 }
 
 export type ICompanyEntity = ICompany

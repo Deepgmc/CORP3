@@ -1,34 +1,35 @@
 import type { ICompany, IDepartment } from './Company'
 import type { jwtStrategy } from '@/auth/strategies/jwt.strategy'
 import type { isLoginedResult } from '@/auth/strategies/Strategy'
-import type { Vacation } from '@/entities/Vacation';
 import type { Router } from 'vue-router'
 
 export interface IUser {
-    userId       : number,
-    username     : string,
-    birth        : number,          //timestamp
-    reg_date     : number,          //timestamp
-    hire_date    : number,          //timestamp
-    fire_date    : number,          //timestamp
-    email        : string,
-    companyId    : number | null,
-    isDirector   : boolean,
-    gender       : number,
-    bio          : string;
-    firstName    : string,
-    lastName     : string,
-    phone        : string,
-    departmentId : number | null,
-    positionId   : number | null,
-    avatar       : string | null,
+    userId        : number,
+    username      : string,
+    birth         : number,          //timestamp
+    reg_date      : number,          //timestamp
+    hire_date     : number,          //timestamp
+    fire_date     : number,          //timestamp
+    email         : string,
+    companyId     : number | null,
+    isDirector    : boolean,
+    gender        : number,
+    bio           : string;
+    firstName     : string,
+    lastName      : string,
+    phone         : string,
+    departmentId  : number | null,
+    positionId    : number | null,
+    avatar        : string | null,
+    salaryAmount  : number | null,
+    accountBalance: number,
 
     //! RELATIONS
     company   : ICompany | null,
     skills    : TSkill[],
     department: IDepartment | null,
     position  : IPosition | null,
-    vacations : Vacation[]
+    vacations : IVacation[]
 }
 
 export type TUserId = IUser['userId'];

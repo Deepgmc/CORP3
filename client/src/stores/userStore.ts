@@ -7,12 +7,6 @@ import type { AxiosResponse } from 'axios'
 
 export const useUserStore = defineStore('user', () => {
 
-    /**
-     ref() становятся свойствами состояния
-     computed() становятся геттерами
-     function() становятся действиями
-    */
-
     const user = ref<IUser>(userDummy)
     const timeLogined = ref<number>(0)
 
@@ -73,24 +67,26 @@ export const useUserStore = defineStore('user', () => {
 
 
 export const userDummy: IUser = {
-    userId      : 0,
-    username    : 'dummy',
-    birth       : 0,
-    email       : '',
-    companyId   : null,
-    isDirector  : false,
-    gender      : 1,
-    bio         : '',
-    firstName   : '',
-    lastName    : '',
-    phone       : '',
-    departmentId: null,
-    positionId  : null,
-    position    : null,
-    avatar      : null,
-    reg_date    : 0,
-    hire_date   : 0,
-    fire_date   : 0,
+    userId        : 0,
+    username      : 'dummy',
+    birth         : 0,
+    email         : '',
+    companyId     : null,
+    isDirector    : false,
+    gender        : 1,
+    bio           : '',
+    firstName     : '',
+    lastName      : '',
+    phone         : '',
+    departmentId  : null,
+    positionId    : null,
+    position      : null,
+    avatar        : null,
+    reg_date      : 0,
+    hire_date     : 0,
+    fire_date     : 0,
+    salaryAmount  : 0,
+    accountBalance: 0,
 
     company   : null,
     skills    : [],

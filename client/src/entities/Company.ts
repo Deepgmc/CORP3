@@ -8,12 +8,6 @@ import type { TResult } from "@/interfaces/Error";
 import Manager from "./Manager";
 import type { Vacation } from "./Vacation";
 
-type TCompanyData = {
-    companyId: number,
-    name: string,
-    address: string,
-}
-
 /**
  * Инстанс компании создаётся при первой загрузке самого юзера - в UserManager -> LoadUserData
  */
@@ -27,8 +21,8 @@ export default class Company extends Manager implements ICompany {
     _store: ReturnType<typeof useOrganizationStore>
 
 
-    static getInstance(
-        companyData?: TCompanyData
+    static getInstance (
+        companyData?: ICompany
     ): Company {
         if (Company.instance) {
             return Company.instance
@@ -36,13 +30,19 @@ export default class Company extends Manager implements ICompany {
         if (typeof companyData === 'undefined') {
             throw new TypeError('No Company instance created. Create with .getInstance + parameters')
         }
-        return new Company(companyData.companyId, companyData.name, companyData.address)
+        return new Company(
+            companyData.companyId,
+            companyData.name,
+            companyData.address,
+            companyData.accountBalance
+        )
     }
 
     private constructor (
-        companyId: number,
-        name     : string,
-        address  : string,
+        companyId     : number,
+        name          : string,
+        address       : string,
+        accountBalance: number
     ) {
         if (Company.instance) throw new TypeError('Instance creation only with .getInstance()')
         super()
@@ -50,9 +50,15 @@ export default class Company extends Manager implements ICompany {
         this.initNetwork(this._apiModule)
 
         this._store = useOrganizationStore()
-        this._store.setCompany({ companyId, name, address })
+        this._store.setCompany({ companyId, name, address, accountBalance })
 
-        //загружаем связанные данные компании - департаменты и сотрудников
+        this.loadAdditionalCompanyData()
+    }
+
+    public async loadAdditionalCompanyData() {
+        /**
+          загружаем связанные данные компании - департаменты, сотрудников и пр.
+        */
         Promise.all([
             this.getFullDepartmentsList(),
             this.getFullEmployeesList(),
@@ -81,6 +87,9 @@ export default class Company extends Manager implements ICompany {
     }
     get address() {
         return this._store.company.address
+    }
+    get accountBalance() {
+        return this._store.company.accountBalance
     }
 
     get departments(): IDepartment[] {

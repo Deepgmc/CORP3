@@ -1,9 +1,10 @@
 import type { AxiosResponse } from "axios"
 
 export interface ICompany {
-    companyId: number,
-    name     : string,
-    address  : string,
+    companyId     : number,
+    name          : string,
+    address       : string,
+    accountBalance: number,
 }
 
 export interface ICompanyManager extends ICompany {
@@ -14,7 +15,7 @@ export interface ICompanyManager extends ICompany {
     departments?: IDepartment[]
 }
 
-export interface ICompanyForm extends Pick<ICompany, 'companyId' | 'name' | 'address'> {}
+export interface ICompanyForm extends Pick<ICompany, 'companyId' | 'name' | 'address'| 'accountBalance'> {}
 
 export type ICompanySelect<T extends ICompany> = {
     value: T['companyId'],

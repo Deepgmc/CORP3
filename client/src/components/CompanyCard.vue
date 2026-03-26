@@ -1,47 +1,32 @@
 <template>
-    <h4>Компания</h4>
-    <q-form class="q-gutter-md" @submit="onSubmit">
-        <fieldset class="fieldset">
-            <legend class="text-h5">{{ captionLabel }}</legend>
-            <!-- company id (readonly) -->
-            <div class="row">
-                <div class="col-12">
-                    <q-input readonly
-                        v-model="companyForm.companyId"
-                        label="ID"
-                        :rules="[val => !!val || v_msg.REQUIRED]" dense
-                    />
+    <h4>{{ captionLabel }} компании {{ companyForm.name }}</h4>
+    <div class="form_container">
+        <q-form @submit="onSubmit">
+            <div class="column">
+                <div class="row justify-around items-center">
+                    <!-- company id (readonly) -->
+                    <div>ID: <span>{{ companyForm.companyId }}</span></div>
+                    <div>Внутренний баланс компании: <span v-marker v-splitNumber="companyForm.accountBalance"></span> руб.</div>
                 </div>
-            </div>
-            <!-- company name -->
-            <div class="row">
-                <div class="col-12">
-                    <q-input
-                        :readonly="!canEdit"
-                        v-model="companyForm.name"
-                        label="Название *"
-                        :rules="[val => !!val || v_msg.REQUIRED]" dense
-                    />
-                </div>
-            </div>
-            <!-- company address -->
-            <div class="row">
-                <div class="col-12">
-                    <q-input :readonly="!canEdit" v-model="companyForm.address" label="Адрес" dense />
-                </div>
-            </div>
 
-            <!-- Кнопки действий -->
-            <div class="row q-pt-md" v-if="canEdit">
-                <div class="col">
+                <!-- company name -->
+                <q-input
+                    :readonly="!canEdit"
+                    v-model="companyForm.name"
+                    label="Название *"
+                    :rules="[val => !!val || v_msg.REQUIRED]"
+                    dense
+                />
+
+                <!-- company address -->
+                <q-input :readonly="!canEdit" :rules="[val => !!val || v_msg.REQUIRED]" v-model="companyForm.address" label="Адрес" dense />
+
+                <!-- Кнопки действий -->
+                <div class="row q-mt-sm justify-end" v-if="canEdit">
                     <q-btn label="Сохранить" type="submit" color="primary" />
                 </div>
             </div>
-        </fieldset>
-    </q-form>
-
-    <div>
-         <span class="spinner"></span> caption!
+        </q-form>
     </div>
 </template>
 
@@ -55,7 +40,7 @@ import { R_ACTIONS, R_ENTITIES, R_FIELDS, Rbac } from '@/entities/Rbac';
 const notify = useNotify()
 const $um = Rbac.getInstance()
 
-const {companyId, name, address} = $um.company
+const {companyId, name, address, accountBalance} = $um.company
 
 const canEdit = $um.can(R_ENTITIES.COMPANY)(R_ACTIONS.EDIT)(R_FIELDS.ENTIRE)
 const captionLabel = canEdit ? 'Редактировать данные' : 'Просмотр данных'
@@ -63,7 +48,8 @@ const captionLabel = canEdit ? 'Редактировать данные' : 'Пр
 const companyForm: ICompanyForm = reactive({
     companyId,
     name,
-    address
+    address,
+    accountBalance
 })
 
 async function onSubmit() {
@@ -72,20 +58,3 @@ async function onSubmit() {
     }
 }
 </script>
-
-<style lang="scss" scoped>
-.spinner {
-    display: inline-block;
-    height: 100px;
-    width: 100px;
-    border: 7px solid;
-    vertical-align: middle;
-    border-radius: 50%;
-    border-top-color: #06c927;
-    animation: rotatee 0.5s linear infinite;
-}
-@keyframes rotatee {
-    0%{ transform: rotate(0deg);}
-    100%{ transform: rotate(360deg);}
-}
-</style>

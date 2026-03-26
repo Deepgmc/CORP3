@@ -45,7 +45,14 @@
             <div class="row q-mt-md" v-if="form.position">
                 <!-- должность -->
                 <div class="col-12">
-                    Должность: <span>{{ form.position.position }}</span> (меняется только по согласованию с HR)
+                    Должность: <span>{{ form.position.position }}</span>
+                </div>
+            </div>
+
+            <div class="row q-mt-md">
+                <!-- должность -->
+                <div class="col-12">
+                    Заработная плата: <span v-marker v-splitNumber="form.salaryAmount"></span>
                 </div>
             </div>
 
@@ -201,17 +208,17 @@ onBeforeMount(() => {
 const isCPOpen = ref(false)
 
 // Модель формы
-const dummyCopy: IUser = Object.create(userDummy)
-const form = reactive<IUser>(dummyCopy)
+// const dummyCopy: IUser = Object.create(userDummy)
+const form = reactive<IUser>(userDummy)
 const bDateStr = ref<string>()
 
 async function onSubmit(): Promise<void> {
     if (avatarEditorRef.value) {
         const avatar = avatarEditorRef.value.getImageScaled().toDataURL('image/png')
-         form.avatar = avatar
+        form.avatar = avatar
     }
 
-    if (await $um.saveUserProfile({...form})) {
+    if (await $um.saveUserProfile(form)) {
         notify.run(SAVED_SUCCESS, notifyTypes.succ)
     } else {
         notify.run(SAVED_ERROR, notifyTypes.err)

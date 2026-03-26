@@ -5,16 +5,9 @@ export function dragItem (
     if(!event.dataTransfer || item === null) return false
     const eventTarget: HTMLElement = event.target as HTMLElement
 
-    let thisId: number
-    if(typeof item.id !== 'undefined'){
-        thisId = item.id
-    } else {
-        thisId = item.userId
-    }
-
     event.dataTransfer.effectAllowed = 'move'
     event.dataTransfer.dropEffect = 'move'
-    event.dataTransfer.setData('dragItemId', String(thisId))
+    event.dataTransfer.setData('dragItemId', String(item.userId))
     event.dataTransfer.setData('dragDeptId', String(eventTarget.dataset.deptid))
     return true
 }

@@ -18,6 +18,12 @@ export class CompanyEntity implements ICompanyEntity {
     @Column()
     address: string;
 
+    @Column({
+        type: 'integer',
+        default: 0
+    })
+    accountBalance: number;
+
     //! ##############   RELATIONS
 
     @OneToMany(() => UsersEntity, user => user.companyId)

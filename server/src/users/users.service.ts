@@ -7,7 +7,7 @@ import { UsersEntity } from './entities/user.entity'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto';
 import { SkillsEntity } from './entities/skills.entity';
-import { IUser, TSkill } from 'src/interfaces/IUser';
+import { IUser, TSavingSalary, TSkill } from 'src/interfaces/IUser';
 import { DepartmentEntity } from 'src/company/entities/departments.entity';
 import { PositionsEntity } from './entities/positions.entity';
 import { CreateVacationDTO } from './dto/create-vacation.dto';
@@ -235,5 +235,13 @@ export class UsersService {
         const parsedId = Number(id)
         if(!Number.isInteger(parsedId)) throw new TypeError('Неверно передан id')
         return await this.vacationsRepository.delete({id: parsedId})
+    }
+
+    async setNewEmployeeSalary(savingData: TSavingSalary) {
+        return await this.saveOneUserField({
+            fieldName: 'salaryAmount',
+            itemId   : savingData.userId,
+            val      : savingData.salary
+        })
     }
 }

@@ -10,17 +10,17 @@ import { UsersModule } from 'src/users/users.module';
 import { PositionsEntity } from 'src/users/entities/positions.entity';
 
 @Module({
-  controllers: [CompanyController],
-  providers: [CompanyService],
-  imports: [
-    UsersModule,
-    TypeOrmModule.forFeature([
-        CompanyEntity,
-        DepartmentEntity,
-        UsersEntity,
-        PositionsEntity
-    ]),
-  ],
-  exports: [ CompanyService ]
+    controllers: [CompanyController],
+    providers: [CompanyService],
+    imports: [
+        UsersModule,
+        TypeOrmModule.forFeature([
+            CompanyEntity,
+            DepartmentEntity,
+            UsersEntity,
+            PositionsEntity
+        ]),
+    ],
+    exports: [CompanyService]
 })
-export class CompanyModule {}
+export class CompanyModule { }

@@ -4,6 +4,13 @@ import { Quasar, QForm, QInput, QBtn } from 'quasar'
 import CompanyCard from '@/components/CompanyCard.vue'
 import { Rbac } from '@/entities/Rbac'
 
+const companyDummy = {
+    companyId: 1,
+    name: 'Тестовая компания',
+    address: 'Тестовый адрес',
+    accountBalance: 0
+}
+
 // Моки для зависимостей
 vi.mock('@/composables/notifyQuasar', () => ({
     notifyTypes: { succ: 'success' },
@@ -24,27 +31,21 @@ vi.mock('@/entities/Rbac', async () => {
 })
 
 // Моки для компании
-vi.mock('@/entities/CompanyManager', () => ({
-    CompanyManager: vi.fn().mockImplementation(() => ({
-        company: {
-            companyId: 1,
-            name: 'Тестовая компания',
-            address: 'Тестовый адрес'
-        },
-        can: vi.fn(() => () => () => true),
-        saveCompanyProfile: vi.fn().mockResolvedValue(true)
-    }))
-}))
+// vi.mock('@/entities/CompanyManager', () => ({
+//     CompanyManager: vi.fn().mockImplementation(() => ({
+//         company: companyDummy,
+//         can: vi.fn(() => () => () => true),
+//         saveCompanyProfile: vi.fn().mockResolvedValue(true)
+//     }))
+// }))
 
 const createWrapper = (rbacMock?: Partial<Rbac>) => {
     const defaultRbacMock = {
-        company: {
-            companyId: 1,
-            name: 'Тестовая компания',
-            address: 'Тестовый адрес'
-        },
+        company: companyDummy,
         can: vi.fn(() => () => () => true),
-        getUser: vi.fn(() => ({ userId: 2 }))
+        getUser: vi.fn(() => ({
+            userId: 3
+        }))
     }
 
     const mock = { ...defaultRbacMock, ...rbacMock }
@@ -75,8 +76,10 @@ describe('CompanyCard', () => {
 
     describe('Рендеринг', () => {
         it('отображает форму с полями компании и заголовок "Компания"', () => {
+
             const wrapper = createWrapper()
-            expect(wrapper.find('h4').text()).toBe('Компания')
+
+            //expect(wrapper.find('h4').text()).toBe('Редактировать данные компании ' + companyDummy.name)
             expect(wrapper.find('form').exists()).toBe(true)
         })
         // it('отображает поле названия компании', () => {

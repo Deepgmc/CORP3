@@ -123,10 +123,6 @@ function addDepartment() {
 
 
 
-
-
-
-
 // DND WIDGET
 const employees = $um.company.employees
 /**
@@ -140,6 +136,7 @@ const deptsDndList: Ref<Map<IDepartment, IUser[]>> = computed(() => {
     })
     return list
 })
+console.log('deptsDndList:', deptsDndList.value)
 
 
 //перемещаем юзера между департаментами

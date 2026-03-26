@@ -148,6 +148,15 @@ export class CreateUserDto implements IUsersCreateDTO {
     @IsString()
     avatar: string;
 
+    @ApiProperty({
+        description: 'Внутренний счёт сотрудника',
+        required   : false,
+        type       : Number,
+        default    : 0
+    })
+    @IsNumber()
+    accountBalance: number;
+
 
 
 
