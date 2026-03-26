@@ -13,7 +13,7 @@ import { UpdateResult } from 'typeorm';
 @Controller('company')
 export class CompanyController {
 
-    private readonly logger = new Logger('USERS SERVICE')
+    private readonly logger = new Logger('Company controller:')
 
     constructor(
         private readonly companyService: CompanyService,
@@ -23,7 +23,7 @@ export class CompanyController {
     @Get('get_all')
     async findAll(): Promise<ICompany[]> {
         const companies = await this.companyService.findAll();
-        this.logger.debug('Find all company call')
+        this.logger.debug('find all company')
         return companies;
     }
 
@@ -88,7 +88,7 @@ export class CompanyController {
     //меняем department юзера
     @UseGuards(AuthGuard('jwt'))
     @Patch('switch_user_department_id')
-    async changeUserDepartment (
+    async changeUserDepartment(
         @Body() savingData: any
     ): Promise<UpdateResult | boolean> {
         return await this.usersService.changeUserDepartment(savingData)

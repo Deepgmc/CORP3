@@ -28,7 +28,7 @@
                         Мой профиль
                     </q-item-section>
                 </q-item>
-
+<!-- --------------------------------- -->
                 <q-item to="/company" active-class="text-blue-9">
                     <q-item-section avatar>
                         <q-icon name="apartment" />
@@ -37,16 +37,33 @@
                         Компания
                     </q-item-section>
                 </q-item>
+                    <q-item to="/departments" active-class="text-blue-9" dense>
+                        <q-item-section class="text-right" dense>
+                            <div class="sub-item q-mr-lg">Департаменты</div>
+                        </q-item-section>
+                    </q-item>
 
-                <q-item to="/departments" active-class="text-blue-9" dense>
-                    <q-item-section class="text-right" dense>
-                        <div class="sub-item q-mr-lg">Департаменты</div>
+                    <q-item to="/employee" active-class="text-blue-9" dense>
+                        <q-item-section class="text-right q-ml-xl" dense>
+                            <div class="sub-item q-mr-lg">Сотрудники</div>
+                        </q-item-section>
+                    </q-item>
+<!-- --------------------------------- -->
+                <q-item to="/deals" active-class="text-blue-9">
+                    <q-item-section avatar>
+                        <q-icon name="handshake" />
+                    </q-item-section>
+                    <q-item-section>
+                        Сделки
                     </q-item-section>
                 </q-item>
 
-                <q-item to="/employee" active-class="text-blue-9" dense>
-                    <q-item-section class="text-right q-ml-xl" dense>
-                        <div class="sub-item q-mr-lg">Сотрудники</div>
+                <q-item to="/warehouse" active-class="text-blue-9">
+                    <q-item-section avatar>
+                        <q-icon name="warehouse" />
+                    </q-item-section>
+                    <q-item-section>
+                        Склад
                     </q-item-section>
                 </q-item>
 

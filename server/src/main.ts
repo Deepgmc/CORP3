@@ -74,7 +74,7 @@ async function bootstrap() {
 
     const port = process.env.LISTEN_PORT ?? 0;
     await app.listen(port);
-    const logger = new Logger(`INIT END. Server started at port: ${port}`);
-    logger.error('####################################');
+    const logger = new Logger('INIT');
+    logger.log(`Server started at port: ${port}`);
 }
 bootstrap();

@@ -40,6 +40,18 @@ const routes: Array<RouteRecordRaw> = [
             },
 
             {
+                path: 'deals',
+                name: 'deals',
+                component: () => import('@/views/pages/DealsView.vue'),
+            },
+
+            {
+                path: 'warehouse',
+                name: 'warehouse',
+                component: () => import('@/views/pages/WarehouseView.vue'),
+            },
+
+            {
                 path: 'stats', // страница статистики
                 name: 'stats',
                 component: () => import('@/views/pages/StatsView.vue'),
