@@ -6,7 +6,7 @@
                 <div class="row justify-around items-center">
                     <!-- company id (readonly) -->
                     <div>ID: <span>{{ companyForm.companyId }}</span></div>
-                    <div>Внутренний баланс компании: <span v-marker>{{ companyForm.accountBalance }}</span></div>
+                    <div>Внутренний баланс компании: <span v-marker v-splitNumber="companyForm.accountBalance"></span> руб.</div>
                 </div>
 
                 <!-- company name -->
