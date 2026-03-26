@@ -1,5 +1,5 @@
 <template>
-    <h4>{{ captionLabel }} компании</h4>
+    <h4>{{ captionLabel }} компании {{ companyForm.name }}</h4>
     <div class="form_container">
         <q-form @submit="onSubmit">
             <div class="column">
