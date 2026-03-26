@@ -94,7 +94,7 @@ export default class NetworkManager {
                             return false
                         }
                     } else {
-                        console.log(`${module}/${action} without auth`)
+                        //console.log(`${module}/${action} without auth`)
                     }
                     try {
                         return this.httpClient[method](`${module}/${action}`, parameters)

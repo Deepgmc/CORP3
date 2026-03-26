@@ -1,16 +1,13 @@
 <template>
-    <h4>{{ captionLabel }} компании</h4>
+    <h4>{{ captionLabel }} компании {{ companyForm.name }}</h4>
     <div class="form_container">
         <q-form @submit="onSubmit">
             <div class="column">
-                <!-- company id (readonly) -->
-                <q-input readonly
-                    type="number"
-                    v-model="companyForm.companyId"
-                    label="ID"
-                    :rules="[val => !!val || v_msg.REQUIRED]"
-                    dense
-                />
+                <div class="row justify-around items-center">
+                    <!-- company id (readonly) -->
+                    <div>ID: <span>{{ companyForm.companyId }}</span></div>
+                    <div>Внутренний баланс компании: <span v-marker>{{ companyForm.accountBalance }}</span></div>
+                </div>
 
                 <!-- company name -->
                 <q-input
@@ -24,19 +21,12 @@
                 <!-- company address -->
                 <q-input :readonly="!canEdit" :rules="[val => !!val || v_msg.REQUIRED]" v-model="companyForm.address" label="Адрес" dense />
 
-                <!-- company account -->
-                <q-input type="number" readonly v-model="companyForm.accountBalance" label="Внутренний баланс компании" dense />
-
                 <!-- Кнопки действий -->
                 <div class="row q-mt-sm justify-end" v-if="canEdit">
                     <q-btn label="Сохранить" type="submit" color="primary" />
                 </div>
             </div>
         </q-form>
-    </div>
-
-    <div>
-         <span class="spinner"></span> caption!
     </div>
 </template>
 
@@ -68,20 +58,3 @@ async function onSubmit() {
     }
 }
 </script>
-
-<style lang="scss" scoped>
-.spinner {
-    display: inline-block;
-    height: 100px;
-    width: 100px;
-    border: 7px solid;
-    vertical-align: middle;
-    border-radius: 50%;
-    border-top-color: #06c927;
-    animation: rotatee 0.5s linear infinite;
-}
-@keyframes rotatee {
-    0%{ transform: rotate(0deg);}
-    100%{ transform: rotate(360deg);}
-}
-</style>

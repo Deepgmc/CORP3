@@ -17,13 +17,11 @@ export default class Company extends Manager implements ICompany {
 
     protected _apiModule: string = 'company'
 
-    public accountBalance: number = 0
-
     //_store: any
     _store: ReturnType<typeof useOrganizationStore>
 
 
-    static getInstance(
+    static getInstance (
         companyData?: ICompany
     ): Company {
         if (Company.instance) {
@@ -54,7 +52,13 @@ export default class Company extends Manager implements ICompany {
         this._store = useOrganizationStore()
         this._store.setCompany({ companyId, name, address, accountBalance })
 
-        //загружаем связанные данные компании - департаменты и сотрудников
+        this.loadAdditionalCompanyData()
+    }
+
+    public async loadAdditionalCompanyData() {
+        /**
+          загружаем связанные данные компании - департаменты, сотрудников и пр.
+        */
         Promise.all([
             this.getFullDepartmentsList(),
             this.getFullEmployeesList(),
@@ -83,6 +87,9 @@ export default class Company extends Manager implements ICompany {
     }
     get address() {
         return this._store.company.address
+    }
+    get accountBalance() {
+        return this._store.company.accountBalance
     }
 
     get departments(): IDepartment[] {
