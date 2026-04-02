@@ -16,6 +16,9 @@ export class WarehouseEntity {
     @Column()
     companyId: number;
 
+    @Column()
+    status: string;
+
     //! ##############   RELATIONS
 
     @ManyToOne(() => CompanyEntity, { cascade: true })

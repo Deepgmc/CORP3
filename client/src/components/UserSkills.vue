@@ -21,7 +21,7 @@
     </div>
 
     <div class="row assertion_block" v-if="needAssession">
-        <q-form @submit="addSkill">
+        <q-form @submit.prevent="addSkill">
             <q-input v-model="newSkill" label="Добавить навык">
                 <template #append>
                     <q-icon @click="addSkill" name="add" class="pointer" />

@@ -113,4 +113,8 @@ function setSalary(newSalaryAmount: number) {
     min-height: 250px;
     width: 100%;
 }
+
+.q-tab--active {
+    background-color: rgb(198, 255, 255);
+}
 </style>

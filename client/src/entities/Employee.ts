@@ -259,7 +259,7 @@ export class Employee extends FiniteStateMachine implements IUser {
 
     //статусы "активного" в организации сотрудника (уже принят, но еще не уволен и не отстранён)
     public isEmployeeStatusActiveAtOrganization(): boolean {
-        return [employeeStateNames.HIRED].includes(this.state.name)
+        return [employeeStateNames.HIRED].includes(this.state.name as employeeStateNames)
     }
 };
 
