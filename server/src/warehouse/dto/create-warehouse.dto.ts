@@ -9,7 +9,7 @@ export class CreateWarehouseDto {
         type: Number
     })
     @IsNotEmpty()
-    productId: number
+    id: number
 
     @ApiProperty({
         description: 'Название товара',

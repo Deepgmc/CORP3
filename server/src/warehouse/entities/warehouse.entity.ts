@@ -8,7 +8,7 @@ export class WarehouseEntity {
     @PrimaryGeneratedColumn('increment', {
         comment: 'Product autoincrement id'
     })
-    readonly productId: number;
+    readonly id: number;
 
     @Column()
     name: string;

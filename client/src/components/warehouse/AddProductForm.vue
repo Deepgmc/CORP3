@@ -1,14 +1,16 @@
 <template>
 <div class="form_container q-mt-md">
-    <q-form @submit.prevent="addProduct" class="q-gutter-md">
+    <q-form
+        @submit.prevent="addProduct"
+        class="q-gutter-md"
+    >
         <q-input
-            v-model="newProduct.name"
+            v-model="newProductName"
             type="text"
             label="название товара"
             outlined
             dense
             :rules="[
-                val => !!val || v_msg.REQUIRED,
                 val => val.length <= 50 || v_msg.WRONG_VALUE
             ]"
         />
@@ -27,18 +29,12 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
-import { productStatesNames, type INewProduct } from '@/interfaces/ProductsDeals';
-import { v_msg } from '@/utils/constants/texts';
+import { v_msg } from '@/utils/constants/texts'
 
+const newProductName = defineModel<string>('newProductName')
 const emit = defineEmits(['add-product'])
-const newProduct: INewProduct = reactive({
-    name: '',
-    status: productStatesNames.inStock
-})
 
 function addProduct(): void {
-    emit('add-product', newProduct)
-    newProduct.name = ''
+    emit('add-product')
 }
 </script>

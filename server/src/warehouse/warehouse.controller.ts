@@ -14,20 +14,19 @@ export class WarehouseController {
 
     @Get('get_all')
     async findAll(): Promise<any> {
-        const products = await this.warehouseService.findAll();
-        this.logger.debug('find all products')
+        const products = await this.warehouseService.getAll();
         return products;
     }
 
-    //сохраняем отпуск
+    //сохраняем товар на склад
     @Post('products/save_model')
     async vacationSaveModel (
-        @Body() vacationDTO: CreateWarehouseDto
+        @Body() productDTO: CreateWarehouseDto
     ): Promise<CreateWarehouseDto | boolean> {
-        return await this.warehouseService.saveNewProduct(vacationDTO)
+        return await this.warehouseService.saveNewProduct(productDTO)
     }
 
-    //удаляем отпуск
+    //удаляем товар
     @Delete('products/delete/:id')
     async vacationDelete (
         @Param('id') id: number

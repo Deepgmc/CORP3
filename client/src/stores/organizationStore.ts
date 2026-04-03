@@ -4,6 +4,7 @@ import { Employee } from "@/entities/Employee"
 import type { Vacation } from "@/entities/Vacation"
 import { type IDepartment, type ICompany } from "@/interfaces/Company"
 import type { IPosition } from "@/interfaces/User"
+import type { IProduct } from "@/interfaces/ProductsDeals"
 
 export const useOrganizationStore = defineStore('organization', () => {
 
@@ -12,6 +13,7 @@ export const useOrganizationStore = defineStore('organization', () => {
     const departments = ref<IDepartment[]>([])
     const employees   = ref<Employee[]>([])
     const positions   = ref<IPosition[]>([])
+    const warehouse   = ref<IProduct[]>([])
 
     function setCompany(newCompany: ICompany): boolean {
         company.value = newCompany
@@ -27,6 +29,9 @@ export const useOrganizationStore = defineStore('organization', () => {
     function setPositions(newPositions: IPosition[]): void {
         positions.value = newPositions
     }
+    function setWarehouse(newProducts: IProduct[]): void {
+        warehouse.value = newProducts
+    }
 
     function addNewDepartment(newDept: IDepartment): void {
         departments.value.push(newDept)
@@ -36,6 +41,10 @@ export const useOrganizationStore = defineStore('organization', () => {
         if(!Number.isInteger(depertmentId)) return false
         departments.value.splice(departments.value.findIndex(dept => dept.id === depertmentId), 1)
         return true
+    }
+
+    function addNewProduct(newProduct: IProduct): boolean {
+        return !!warehouse.value.push(newProduct)
     }
 
     // при смене департамента у сотрудника - меняем сумму сотрудников в списке департаментов
@@ -85,15 +94,18 @@ export const useOrganizationStore = defineStore('organization', () => {
         employees,
         departments,
         positions,
+        warehouse,
 
         setCompany,
         setDepartments,
         setEmployees,
         setPositions,
+        setWarehouse,
 
         addNewDepartment,
         deleteDepartment,
         changeUserDepartment,
+        addNewProduct,
 
         changeEmployeePosition,
         getVacationById,

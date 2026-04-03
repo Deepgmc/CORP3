@@ -1,7 +1,9 @@
+import { notifyTypes, useNotify } from "@/composables/notifyQuasar"
 import type { TResult } from "@/interfaces/Error"
 import NetworkManager, { EReqMethods } from "@/network/NetworkManager"
-import { UNKNOWN_ERROR } from "@/utils/constants/texts"
+import { SAVED_SUCCESS, UNKNOWN_ERROR } from "@/utils/constants/texts"
 import { isAffected, isSuccessRequest } from "@/utils/helpers/network"
+const notify = useNotify()
 
 export default class Manager {
 
@@ -30,11 +32,20 @@ export default class Manager {
     }
 
     protected async saveModel(): Promise<TResult> { //возвращаем сохранённый новый id
-        const saveRes = await this._postData('save_model')(this.getModel())
-        if(isSuccessRequest (saveRes) && saveRes.data.id) {
-            return { error: false, res: { id: saveRes.data.id } }
+        try {
+            const saveRes = await this._postData('save_model')(this.getModel())
+            if(isSuccessRequest (saveRes) && saveRes.data.id) {
+                notify.run(SAVED_SUCCESS, notifyTypes.succ)
+                return { error: false, res: { id: saveRes.data.id } }
+            }
+            return { error: true, errorMessage: UNKNOWN_ERROR }
+        } catch (e: unknown) {
+            let msg = UNKNOWN_ERROR
+            if(e instanceof Error) msg = e.message
+            else if(typeof e === 'string') msg = e
+            notify.run(msg, notifyTypes.err)
+            return { error: true, errorMessage: UNKNOWN_ERROR }
         }
-        return { error: true, errorMessage: UNKNOWN_ERROR }
     }
 
     protected async delete(id: number): Promise<boolean> {

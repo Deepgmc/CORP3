@@ -12,5 +12,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
             WarehouseEntity,
         ]),
     ],
+    exports: [WarehouseService]
 })
 export class WarehouseModule { }

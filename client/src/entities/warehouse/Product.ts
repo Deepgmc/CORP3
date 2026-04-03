@@ -3,6 +3,7 @@ import type { INewProduct, IProduct } from '@/interfaces/ProductsDeals';
 import { productStatesNames } from '@/interfaces/ProductsDeals';
 import { UNKNOWN_ERROR } from '@/utils/constants/texts';
 import { FiniteStateMachine, type ITransition, type TState } from '@/utils/FiniteStateMachine';
+import { Rbac } from '../Rbac';
 
 export const productStates: Record<productStatesNames, TState> = {
     [productStatesNames.inStock]: {
@@ -39,7 +40,8 @@ export const productStates: Record<productStatesNames, TState> = {
 
 export default class Product extends FiniteStateMachine implements IProduct {
 
-    public id = null
+    public id: number = 0
+    public companyId: number | null = null
     public readonly name: string
     public status: productStatesNames = productStatesNames.inStock
     public readonly _apiModule = 'warehouse/products'
@@ -70,6 +72,7 @@ export default class Product extends FiniteStateMachine implements IProduct {
 
         this.name = newProduct.name
         this.status = newProduct.status
+        this.companyId = newProduct.companyId
         this.initNetwork(this._apiModule)
     }
 
@@ -85,9 +88,10 @@ export default class Product extends FiniteStateMachine implements IProduct {
 
     protected getModel(): IProduct {
         return {
-            id    : this.id,
-            name  : this.name,
-            status: this.status,
+            id       : this.id,
+            companyId: this.companyId,
+            name     : this.name,
+            status   : this.status,
         }
     }
 
@@ -95,15 +99,16 @@ export default class Product extends FiniteStateMachine implements IProduct {
         const modelSaveRes = await super.saveModel()
         if(!modelSaveRes.error) {
             this.id = modelSaveRes.res.id
-            //return { error: false, res: this.$um.company.addNewEmployeeVacation(this) }
+            return { error: false, res: Rbac.getInstance().company.addNewProduct(this) }
         }
         return { error: true, errorMessage: UNKNOWN_ERROR }
     }
 
     async delete(): Promise<boolean> {
+        console.log('NO DELETE IMPLEMENTATION!')
         if(this.id === null) return false
         if(await super.delete(this.id)) {
-            //return this.$um.company.deleteVacation(this)
+            return Rbac.getInstance().company.deleteProduct(this)
         }
         return false
     }

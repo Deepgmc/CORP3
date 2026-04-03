@@ -94,7 +94,7 @@ import { GridCols } from '@/composables/gridView/GridColsManager';
 import { vacationAvailableCols } from '@/composables/gridView/GridColumnOptions';
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
 import { convertStrToUnixTimestamp } from '@/utils/helpers/dates';
-import { DELETE_ERROR, DELETE_SUCCESS, UNKNOWN_ERROR } from '@/utils/constants/texts';
+import { DELETE_ERROR, DELETE_SUCCESS } from '@/utils/constants/texts';
 
 import EmployeeVacationGraph from './EmployeeVacationGraph.vue';
 
@@ -132,34 +132,25 @@ function addVacation(): void {
         notify.run('Введите даты отпуска', notifyTypes.err)
         return
     }
-    try {
-        const dateFrom = convertStrToUnixTimestamp(newVacation.dateFrom)
-        const dateTo = convertStrToUnixTimestamp(newVacation.dateTo)
-        if(dateFrom.error || dateTo.error) {
-            throw new TypeError('Неверные даты')
-        }
-        const newVac = new Vacation (
-            {
-                userId: newVacation.userId,
-                isMedical: newVacation.isMedical,
-                dateFrom: dateFrom.res,
-                dateTo: dateTo.res
-            }
-        );
-        newVac.saveModel()
-            .then((saveRes) => {
-                if(!saveRes.error){
-                    formReset()
-                } else {
-                    throw new Error(saveRes.errorMessage)
-                }
-            })
-    } catch (e: unknown) {
-        let msg = UNKNOWN_ERROR
-        if(e instanceof Error) msg = e.message
-        else if(typeof e === 'string') msg = e
-        notify.run(msg, notifyTypes.err)
+    const dateFrom = convertStrToUnixTimestamp(newVacation.dateFrom)
+    const dateTo = convertStrToUnixTimestamp(newVacation.dateTo)
+    if(dateFrom.error || dateTo.error) {
+        throw new TypeError('Неверные даты')
     }
+    const newVac = new Vacation ({
+        userId: newVacation.userId,
+        isMedical: newVacation.isMedical,
+        dateFrom: dateFrom.res,
+        dateTo: dateTo.res
+    });
+    newVac.saveModel()
+        .then((saveRes) => {
+            if(!saveRes.error){
+                formReset()
+            } else {
+                throw new Error(saveRes.errorMessage)
+            }
+        })
 }
 
 async function deleteVacation(vacationId: number){
