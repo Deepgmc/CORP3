@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { IAddDepartment, ICompany } from 'src/interfaces/ICompany';
-import { CompanyService } from './company.service';
+import { UpdateResult } from 'typeorm';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateCompanyDTO } from './dto/update-company.dto';
 import { CompanyEntity } from './entities/company.entity';
@@ -8,7 +7,10 @@ import { DepartmentEntity } from './entities/departments.entity';
 import { UsersEntity } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { PositionsEntity } from 'src/users/entities/positions.entity';
-import { UpdateResult } from 'typeorm';
+import { WarehouseService } from 'src/warehouse/warehouse.service';
+import { IAddDepartment, ICompany } from 'src/interfaces/ICompany';
+import { CompanyService } from './company.service';
+import { WarehouseEntity } from 'src/warehouse/entities/warehouse.entity';
 
 @Controller('company')
 export class CompanyController {
@@ -17,13 +19,13 @@ export class CompanyController {
 
     constructor(
         private readonly companyService: CompanyService,
-        private usersService: UsersService,
+        private readonly usersService: UsersService,
+        private readonly warehouseService: WarehouseService,
     ) { }
 
     @Get('get_all')
     async findAll(): Promise<ICompany[]> {
         const companies = await this.companyService.findAll();
-        this.logger.debug('find all company')
         return companies;
     }
 
@@ -58,9 +60,15 @@ export class CompanyController {
         return await this.companyService.getFullDepartmentsList(companyId)
     }
 
-    @Get('get_positions')
-    async getPositions(): Promise<PositionsEntity[]> {
+    @Get('get_positions/:companyId')
+    async getPositions(@Param('companyId') companyId: number): Promise<PositionsEntity[]> {
+        this.logger.warn(`Добавить ограничение на companyId в должностях ${companyId}`)
         return await this.companyService.getPositions()
+    }
+
+    @Get('get_warehouse/:companyId')
+    async getWarehouse(@Param('companyId') companyId: number): Promise<WarehouseEntity[]> {
+        return await this.warehouseService.getAllForCompany(companyId)
     }
 
     @Get('get_full_employees_list/:companyId')

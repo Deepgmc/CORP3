@@ -8,17 +8,21 @@ import { DepartmentEntity } from './entities/departments.entity';
 import { UsersEntity } from 'src/users/entities/user.entity';
 import { UsersModule } from 'src/users/users.module';
 import { PositionsEntity } from 'src/users/entities/positions.entity';
+import { WarehouseEntity } from 'src/warehouse/entities/warehouse.entity';
+import { WarehouseModule } from 'src/warehouse/warehouse.module';
 
 @Module({
     controllers: [CompanyController],
     providers: [CompanyService],
     imports: [
         UsersModule,
+        WarehouseModule,
         TypeOrmModule.forFeature([
             CompanyEntity,
             DepartmentEntity,
             UsersEntity,
-            PositionsEntity
+            PositionsEntity,
+            WarehouseEntity
         ]),
     ],
     exports: [CompanyService]

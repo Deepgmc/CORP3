@@ -7,6 +7,7 @@ import type { Employee } from "./Employee";
 import type { TResult } from "@/interfaces/Error";
 import Manager from "./Manager";
 import type { Vacation } from "./Vacation";
+import type { IProduct } from "@/interfaces/ProductsDeals";
 
 /**
  * Инстанс компании создаётся при первой загрузке самого юзера - в UserManager -> LoadUserData
@@ -62,20 +63,23 @@ export default class Company extends Manager implements ICompany {
         Promise.all([
             this.getFullDepartmentsList(),
             this.getFullEmployeesList(),
-            this.getFullPositionsList()
+            this.getFullPositionsList(),
+            this.getWarehouse()
         ])
             .then((res: any) => {
                 const [
                     departments,
                     employees,
-                    positions
+                    positions,
+                    warehouse
                 ]:
-                    [IDepartment[], Employee[], IPosition[]]
+                    [IDepartment[], Employee[], IPosition[], IProduct[]]
                  = res;
 
                 this._store.setDepartments(departments)
                 this._store.setEmployees(employees)
                 this._store.setPositions(positions)
+                this._store.setWarehouse(warehouse)
             })
     }
 
@@ -101,6 +105,9 @@ export default class Company extends Manager implements ICompany {
     }
     get positions(): IPosition[] {
         return this._store.positions
+    }
+    get warehouse(): IProduct[] {
+        return this._store.warehouse
     }
 
     async saveCompanyProfile(company: ICompanyForm): Promise<boolean> {
@@ -134,8 +141,17 @@ export default class Company extends Manager implements ICompany {
      * @returns IPosition[]
      */
     async getFullPositionsList(): Promise<AxiosResponse> {
-        const employeeList = await this._getData('get_positions')({}, false)
+        const employeeList = await this._getData(`get_positions/${this.companyId}`)({}, false)
         return employeeList.data
+    }
+
+    /**
+     * Получаем товары на складе
+     * @returns IPosition[]
+     */
+    async getWarehouse(): Promise<AxiosResponse> {
+        const warehouse = await this._getData(`get_warehouse/${this.companyId}`)({}, false)
+        return warehouse.data
     }
 
     /**
@@ -228,5 +244,14 @@ export default class Company extends Manager implements ICompany {
             return foundEmployee.deleteVacation(vacation)
         }
         return false
+    }
+
+    addNewProduct(product: IProduct): boolean {
+        return this._store.addNewProduct(product)
+    }
+    deleteProduct(product: IProduct): boolean {
+        console.log('NO DELETE IMPLEMENTATION:', product)
+        return false
+        //return this._store.deleteProduct(product)
     }
 }
