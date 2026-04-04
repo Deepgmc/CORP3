@@ -4,17 +4,19 @@
         v-for="product in productsList"
         :key="product.id"
     >
-        {{ product.id }} - {{ product.name }}
+        {{ product.id }} - {{ product.name }}- {{ product.status }}
     </div>
     <add-product-form
         @add-product="addProduct"
         v-model:newProductName="newProductRaw.name"
+        v-model:newProductPrice="newProductRaw.price"
+        v-model:newProductUnitId="newProductRaw.unitId"
     ></add-product-form>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
-import { productStatesNames, type INewProduct } from '@/interfaces/ProductsDeals';
+import { productDummy, type INewProduct } from '@/interfaces/ProductsDeals';
 import AddProductForm from './AddProductForm.vue';
 import Product from '@/entities/warehouse/Product';
 import { Rbac } from '@/entities/Rbac';
@@ -26,11 +28,12 @@ const productsList = ref($um.company.warehouse)
 
 function addProduct(): void {
     newProductRaw.companyId = $um.company.companyId
-    if(!checkProductValid()){
+    const newProduct = new Product(newProductRaw)
+    if(!newProduct.checkProductValid()) {
         notify.run('Неверно заполнен продукт', notifyTypes.err)
         return
     }
-    new Product(newProductRaw)
+    newProduct
         .saveModel()
         .then((saveRes) => {
             if(!saveRes.error){
@@ -41,18 +44,9 @@ function addProduct(): void {
         })
 }
 
-const newProductRaw: INewProduct = reactive({
-    name     : '',
-    companyId: null,
-    status   : productStatesNames.inStock
-})
-
-function checkProductValid(){
-    return newProductRaw.name.length > 0 && newProductRaw.companyId !== null
-}
+const newProductRaw: INewProduct = reactive(productDummy)
 
 function formReset() {
-    newProductRaw.name = ''
-    newProductRaw.companyId = null
+    Object.assign(newProductRaw, productDummy)
 }
 </script>

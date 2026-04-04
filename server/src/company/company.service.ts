@@ -7,6 +7,7 @@ import { DepartmentEntity } from './entities/departments.entity';
 import { UsersEntity } from 'src/users/entities/user.entity';
 import { IAddDepartment } from 'src/interfaces/ICompany';
 import { PositionsEntity } from 'src/users/entities/positions.entity';
+import { UnitsEntity } from 'src/warehouse/entities/units.entity';
 
 @Injectable()
 export class CompanyService {
@@ -23,6 +24,9 @@ export class CompanyService {
 
         @InjectRepository(PositionsEntity)
         private positionsRepository: Repository<PositionsEntity>,
+
+        @InjectRepository(UnitsEntity)
+        private unitsRepository: Repository<UnitsEntity>,
     ) { }
 
     /**
@@ -119,5 +123,9 @@ export class CompanyService {
             'id': Number(savingData.itemId),
             [savingData.fieldName]: savingData.val
         })
+    }
+
+    async getFullUnits(): Promise<UnitsEntity[]>{
+        return await this.unitsRepository.find()
     }
 }

@@ -37,7 +37,7 @@ export function useUserProfileCard() {
                 throw new Error('Не найден сотрудник при открытии карточки сотрудника')
             }
             setCardEmployee(foundEmployee)
-            avatar.value = res.data.avatar
+            if(typeof res !== 'boolean') avatar.value = res.data.avatar
         }
     }
 

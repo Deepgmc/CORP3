@@ -178,7 +178,7 @@ const positionText = computed(() => {
 })
 async function onPositionSelect(): Promise<void> {
     if(!selectPositionModel.value.value) return
-    const res: TResult = await $um.company.changeEmployeePosition(selectPositionModel.value.value, cardEmployee.value.userId)
+    const res: TResult<any> = await $um.company.changeEmployeePosition(selectPositionModel.value.value, cardEmployee.value.userId)
     if(res.error) {
         notify.run(res.errorMessage, notifyTypes.err)
         return

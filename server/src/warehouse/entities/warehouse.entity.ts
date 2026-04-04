@@ -1,5 +1,6 @@
 import { CompanyEntity } from 'src/company/entities/company.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { UnitsEntity } from './units.entity';
 
 
 @Entity('warehouse')
@@ -14,10 +15,16 @@ export class WarehouseEntity {
     name: string;
 
     @Column()
+    unitId: number;//основная ед измерения товара (трубы в метрах, сахар в килограммах)
+
+    @Column()
     companyId: number;
 
     @Column()
     status: string;
+
+    @Column()
+    price: number;
 
     //! ##############   RELATIONS
 
@@ -27,4 +34,11 @@ export class WarehouseEntity {
         referencedColumnName: 'companyId'
     })
     company: CompanyEntity;
+
+    @ManyToOne(() => UnitsEntity, { cascade: true })
+    @JoinColumn({
+        name: 'unitId',
+        referencedColumnName: 'id'
+    })
+    unit: UnitsEntity;
 }

@@ -11,6 +11,7 @@ import { WarehouseService } from 'src/warehouse/warehouse.service';
 import { IAddDepartment, ICompany } from 'src/interfaces/ICompany';
 import { CompanyService } from './company.service';
 import { WarehouseEntity } from 'src/warehouse/entities/warehouse.entity';
+import { UnitsEntity } from 'src/warehouse/entities/units.entity';
 
 @Controller('company')
 export class CompanyController {
@@ -101,4 +102,13 @@ export class CompanyController {
     ): Promise<UpdateResult | boolean> {
         return await this.usersService.changeUserDepartment(savingData)
     }
+
+
+
+    //!DICTIONARIES
+    @Get('dictionary/units')
+    async getUnits(): Promise<UnitsEntity[]> {
+        return await this.companyService.getFullUnits()
+    }
+
 }

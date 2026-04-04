@@ -39,12 +39,16 @@ export const productStates: Record<productStatesNames, TState> = {
 };
 
 export default class Product extends FiniteStateMachine implements IProduct {
-
     public id: number = 0
     public companyId: number | null = null
     public readonly name: string
     public status: productStatesNames = productStatesNames.inStock
+
+    public price: number
+    public unitId: number
+
     public readonly _apiModule = 'warehouse/products'
+    private readonly $um = Rbac.getInstance()
 
     constructor(newProduct: INewProduct) {
         const FSMTransitions: ITransition = {
@@ -73,6 +77,9 @@ export default class Product extends FiniteStateMachine implements IProduct {
         this.name = newProduct.name
         this.status = newProduct.status
         this.companyId = newProduct.companyId
+        this.price = newProduct.price
+        this.unitId = newProduct.unitId
+
         this.initNetwork(this._apiModule)
     }
 
@@ -92,14 +99,17 @@ export default class Product extends FiniteStateMachine implements IProduct {
             companyId: this.companyId,
             name     : this.name,
             status   : this.status,
+            price    : this.price,
+            unitId   : this.unitId
         }
     }
 
-    async saveModel(): Promise<TResult> {
+    async saveModel(): Promise<TResult<{id: number}>> {
         const modelSaveRes = await super.saveModel()
         if(!modelSaveRes.error) {
             this.id = modelSaveRes.res.id
-            return { error: false, res: Rbac.getInstance().company.addNewProduct(this) }
+            this.$um.company.addNewProduct(this)
+            return { error: false, res: {id: modelSaveRes.res.id} }
         }
         return { error: true, errorMessage: UNKNOWN_ERROR }
     }
@@ -108,9 +118,16 @@ export default class Product extends FiniteStateMachine implements IProduct {
         console.log('NO DELETE IMPLEMENTATION!')
         if(this.id === null) return false
         if(await super.delete(this.id)) {
-            return Rbac.getInstance().company.deleteProduct(this)
+            return this.$um.company.deleteProduct(this)
         }
         return false
+    }
+
+    checkProductValid(): boolean {
+        return this.name.length > 0
+            && this.companyId !== null
+            && this.price > 0
+            && this.unitId > 0
     }
 }
 

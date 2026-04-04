@@ -1,4 +1,4 @@
-import { departmentDummy, positionDummy, type IAddDepartment, type ICompany, type ICompanyForm, type IDepartment } from "@/interfaces/Company";
+import { departmentDummy, positionDummy, type IAddDepartment, type ICompany, type ICompanyForm, type IDepartment, type IUnit } from "@/interfaces/Company";
 import type { IPosition, IUser } from "@/interfaces/User";
 import type { AxiosResponse } from "axios";
 import { useOrganizationStore } from "@/stores/organizationStore";
@@ -8,6 +8,8 @@ import type { TResult } from "@/interfaces/Error";
 import Manager from "./Manager";
 import type { Vacation } from "./Vacation";
 import type { IProduct } from "@/interfaces/ProductsDeals";
+import Dictionary from "@/utils/Dictionary";
+import { useDictStore } from "@/stores/dictStore";
 
 /**
  * Инстанс компании создаётся при первой загрузке самого юзера - в UserManager -> LoadUserData
@@ -54,12 +56,13 @@ export default class Company extends Manager implements ICompany {
         this._store.setCompany({ companyId, name, address, accountBalance })
 
         this.loadAdditionalCompanyData()
+        this.loadDictionaries()
     }
 
+    /**
+        загружаем связанные данные компании - департаменты, сотрудников и пр.
+    */
     public async loadAdditionalCompanyData() {
-        /**
-          загружаем связанные данные компании - департаменты, сотрудников и пр.
-        */
         Promise.all([
             this.getFullDepartmentsList(),
             this.getFullEmployeesList(),
@@ -81,6 +84,15 @@ export default class Company extends Manager implements ICompany {
                 this._store.setPositions(positions)
                 this._store.setWarehouse(warehouse)
             })
+    };
+
+    /**
+        загружаем словари статичных данных
+    */
+    public async loadDictionaries() {
+        const unitDict = await new Dictionary('units').initData()
+        const dictStore = useDictStore()
+        dictStore.setUnits(unitDict.getData() as IUnit[])
     }
 
     get companyId() {
@@ -198,10 +210,10 @@ export default class Company extends Manager implements ICompany {
         this._store.changeUserDepartment(user.userId, departmentFrom, departmentTo)
     }
 
-    async changeEmployeePosition(newPositionId: IPosition['id'], userId: IUser['userId']): Promise<TResult> {
+    async changeEmployeePosition(newPositionId: IPosition['id'], userId: IUser['userId']): Promise<TResult<any>> {
         const employee = this.employees.find((emp: Employee) => emp.userId === userId)
         if(employee){
-            const res: TResult = await employee.changeEmployeePosition(newPositionId, userId)
+            const res = await employee.changeEmployeePosition(newPositionId, userId)
             if(!res.error){
                 this._store.changeEmployeePosition(newPositionId, userId)
             }

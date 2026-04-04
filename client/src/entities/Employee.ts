@@ -154,7 +154,7 @@ export class Employee extends FiniteStateMachine implements IUser {
         return incomeUser
     }
 
-    public async hireEmployee(): Promise<TResult> {
+    public async hireEmployee(): Promise<TResult<boolean>> {
         const res = await this._patchData('hire_employee')({ userId: this.userId })
         if(isAffected(res).many()) {
             return { error: false, res: true }
@@ -162,7 +162,7 @@ export class Employee extends FiniteStateMachine implements IUser {
         return { error: true, errorMessage: 'Не обновлено ни одной записи' }
     }
 
-    public async fireEmployee(): Promise<TResult> {
+    public async fireEmployee(): Promise<TResult<boolean>> {
         const res = await this._patchData('fire_employee')({ userId: this.userId })
         if(isAffected(res).many()) {
             return { error: false, res: true }
@@ -170,7 +170,7 @@ export class Employee extends FiniteStateMachine implements IUser {
         return { error: true, errorMessage: 'Не обновлено ни одной записи' }
     }
 
-    public async changeEmployeePosition(newPositionId: IPosition['id'], userId: IUser['userId']): Promise<TResult> {
+    public async changeEmployeePosition(newPositionId: IPosition['id'], userId: IUser['userId']): Promise<TResult<boolean>> {
         if(!Number.isInteger(newPositionId) || !Number.isInteger(userId)) return { error: true, errorMessage: 'Передан неверный id' }
         const res = await this._patchData('change_user_position')({
             userId,
@@ -182,7 +182,7 @@ export class Employee extends FiniteStateMachine implements IUser {
         return { error: true, errorMessage: 'Не обновлено ни одной записи' }
     }
 
-    public async setNewSalary(newSalaryAmount: string | number): Promise<TResult> {
+    public async setNewSalary(newSalaryAmount: string | number): Promise<TResult<string>> {
         if(typeof newSalaryAmount === 'string') {
             newSalaryAmount = parseInt(newSalaryAmount)
         }

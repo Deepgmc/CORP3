@@ -31,7 +31,7 @@ export default class Manager {
         throw new Error('Вызов только из наследников')
     }
 
-    protected async saveModel(): Promise<TResult> { //возвращаем сохранённый новый id
+    public async saveModel(): Promise<TResult<{id: number}>> { //возвращаем сохранённый новый id
         try {
             const saveRes = await this._postData('save_model')(this.getModel())
             if(isSuccessRequest (saveRes) && saveRes.data.id) {
@@ -44,7 +44,7 @@ export default class Manager {
             if(e instanceof Error) msg = e.message
             else if(typeof e === 'string') msg = e
             notify.run(msg, notifyTypes.err)
-            return { error: true, errorMessage: UNKNOWN_ERROR }
+            return { error: true, errorMessage: msg }
         }
     }
 
