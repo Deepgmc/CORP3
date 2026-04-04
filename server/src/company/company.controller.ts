@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Logger, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { UpdateResult } from 'typeorm';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateCompanyDTO } from './dto/update-company.dto';
@@ -108,6 +108,7 @@ export class CompanyController {
     //!DICTIONARIES
     @Get('dictionary/units')
     async getUnits(): Promise<UnitsEntity[]> {
+        throw new BadRequestException({error: 'BadRequestException', type: 'test', message: 'Неверный тестовый запрос'})
         return await this.companyService.getFullUnits()
     }
 

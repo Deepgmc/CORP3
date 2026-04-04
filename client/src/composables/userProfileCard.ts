@@ -28,9 +28,7 @@ export function useUserProfileCard() {
     }
 
     async function loadUserCardData(userId: IUser['userId']): Promise<void> {
-        const res: AxiosResponse | boolean = await NetworkManager.getInstance()
-            .getApiRequestMethod(EReqMethods.get)('users')(`get_employee_avatar/${userId}`)() as AxiosResponse | boolean;
-        if(typeof res === 'boolean'){ return }
+        const res: AxiosResponse = await NetworkManager.getInstance().getApiRequestMethod(EReqMethods.get)('users')(`get_employee_avatar/${userId}`)();
         if (isSuccessRequest(res)) {
             const foundEmployee = Rbac.getInstance().company.getEmployeeById(userId)
             if(!foundEmployee){

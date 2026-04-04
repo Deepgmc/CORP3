@@ -8,10 +8,13 @@ export default class Dictionary {
 
     private data: dictDataType[] = []
     private storageManager = new StorageManager(localStorage)
+    private $nm: NetworkManager
 
     constructor(
         public readonly serverPath: string, // 'company/dictionary/units'
-    ) {}
+    ) {
+        this.$nm = NetworkManager.getInstance()
+    }
 
     getData() {
         return this.data
@@ -21,7 +24,7 @@ export default class Dictionary {
         const storageData = this.storageManager.getItem(this.serverPath) as dictDataType[]
         if(!storageData) {
             this.data = await this.loadFromServer()
-            this.storageManager.setItem(this.serverPath, this.data)
+            //this.storageManager.setItem(this.serverPath, this.data)
         } else {
             this.data = storageData
         }
@@ -29,8 +32,8 @@ export default class Dictionary {
     }
 
     private async loadFromServer(): Promise<dictDataType[]> {
-        const res = await NetworkManager.getInstance().getApiRequestMethod(EReqMethods.get)('company')(`dictionary/${this.serverPath}`)()
-        if(typeof res === 'boolean') throw new Error('Loading dictionary error')
+        const res = await this.$nm.getApiRequestMethod(EReqMethods.get)('company')(`dictionary/${this.serverPath}`)()
+        console.log('DICT res:', res)
         if (isSuccessRequest(res)) {
             return res.data
         }

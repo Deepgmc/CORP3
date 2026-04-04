@@ -53,7 +53,8 @@ export class UserController {
         } catch {
             console.log('Ошибка чтения файла аватара userId:', req.user.userId)
         }
-        return {user: res, avatar: avatar}
+        res.avatar = avatar
+        return {user: res}
     }
 
     /**

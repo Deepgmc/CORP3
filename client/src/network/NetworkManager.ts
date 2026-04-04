@@ -1,8 +1,10 @@
 import { jwtStrategy } from '@/auth/strategies/jwt.strategy'
 import axios from 'axios'
 import type { AxiosResponse } from 'axios'
-import type { /*AxiosInstance,*/ Axios, AxiosRequestConfig /*AxiosResponse*/ } from 'axios'
-import { Rbac } from '@/entities/Rbac'
+import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
+import type { Axios, AxiosRequestConfig } from 'axios'
+import { UNKNOWN_ERROR } from '@/utils/constants/texts'
+import { RESPONSE_STATUS_CODES } from '@/utils/constants'
 
 export type HttpClientTypes = Axios
 
@@ -14,10 +16,12 @@ export enum EReqMethods {
     patch  = 'patch',
 }
 
+const notify = useNotify()
+
+
 export default class NetworkManager {
 
     static instance: NetworkManager
-
     private httpClient: HttpClientTypes
 
     static getInstance(): NetworkManager {
@@ -26,7 +30,6 @@ export default class NetworkManager {
     }
 
     private constructor() {
-        //if(NetworkManager.instance) { throw new TypeError('NetworkManager singleton creation only with .getInstance()') }
 
         NetworkManager.instance = this
 
@@ -34,77 +37,48 @@ export default class NetworkManager {
             //baseURL: import.meta.env.DEV ? import.meta.env.VUE_APP_API_URL : 'NEED_PROD_URL',
             baseURL: 'http://localhost:5173/api',
             timeout: 1000,
-            // url: '/user',
-            // method: 'get',
-            // transformRequest: [function (data, headers) {
-            //   Do whatever you want to transform the data
-
-            //   return data;
-            // }],
-            // params: {
-            //   ID: 12345
-            // },
-            // data: {
-            //   firstName: 'Fred'
-            // },
-            // auth: {
-            //   username: 'janedoe',
-            //   password: 's00pers3cret'
-            // },
-            // proxy: {
-            //   protocol: 'https',
-            //   host: '127.0.0.1',
-            //   port: 9000,
-            //   auth: {
-            //     username: 'mikeymike',
-            //     password: 'rapunz3l'
-            //   }
-            // },
-
             //baseURL: 'http://localhost:3050/api',
-            //headers: {'Authorization': 'Bearer XXXXX'},
-            //this.httpClient.defaults.headers.common['Authorization'] = AUTH_TOKEN;
         })
     };
 
-    // $axios.interceptors.request.use(function(config) {
-    //   config.headers['Authorization'] = 'Bearer ' + store.state.token
-    //   return config
-    // })
-
-    private applyAuthorization(userManager: Rbac) {
-        if (userManager._strategy && userManager._strategy.isHasToken()) {
-            this.httpClient.defaults.headers.common['Authorization'] = `Bearer ${jwtStrategy.token}`;
-            return true
-        }
-        return false
+    private applyAuthorization(): void {
+        this.httpClient.defaults.headers.common['Authorization'] = `Bearer ${jwtStrategy.token}`;
     }
 
+    //console.log(`%c NM: authenticated request = ${module}/${action}`, 'background:rgb(27, 122, 35); color: #bfc231; padding: 4px;')
     getApiRequestMethod(method: EReqMethods) {
+        //каррировано, чтоб в каждом модуле подготавливать наборы методов к своему модулю
+        this.applyAuthorization()
         return (module: string) => {
             return (action: string) => {
-                return async (
-                    parameters?: AxiosRequestConfig,
-                    withAuth: boolean = true // нужно ли для запроса посылать токен авторизации или это обычный справочный запрос
-                ): Promise<AxiosResponse | boolean> => {
-                    if (withAuth) {
-                        console.log(`%c NM: authenticated request = ${module}/${action}`, 'background:rgb(27, 122, 35); color: #bfc231; padding: 4px;')
-                        if (!this.applyAuthorization(Rbac.getInstance())) {
-                            console.warn('Apply authorization failed at NetworkManager')
-                            return false
-                        }
-                    } else {
-                        //console.log(`${module}/${action} without auth`)
-                    }
-                    try {
-                        return this.httpClient[method](`${module}/${action}`, parameters)
-                    } catch {
-                        console.warn('NM catch')
-                        return false
-                    }
+                return async (parameters?: AxiosRequestConfig): Promise<AxiosResponse> => {
+                    return this.httpClient[method](`${module}/${action}`, parameters)
+                        .catch((err) => {
+                            return this.handleError(err)
+                        })
                 }
             }
         }
     }
 
+    handleError(err: any) {
+        if(axios.isAxiosError(err)) {
+            return this.handleAxiosError(err)
+        } else {
+            notify.run(UNKNOWN_ERROR, notifyTypes.err)
+        }
+        return err
+    }
+
+    handleAxiosError(err: any) {
+        if(err.response){
+            //"нормальный" ответ сервера, но код ошибки не 200
+            if(err.response.data.statusCode !== RESPONSE_STATUS_CODES.UNAUTHORIZED) {
+                notify.run(this.warnPrefix + err.response.data.message, notifyTypes.err)
+            }
+        }
+        return err
+    }
+
+    private warnPrefix = 'NetworkManager: '
 }

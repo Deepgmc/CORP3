@@ -37,20 +37,6 @@
 
 
 <script setup lang="ts">
-/**
-export default {
-    components: {GridView},
-    setup() {
-        const aaa = ref('Test aa')
-        onMounted(() => {
-            setTimeout(() => {
-                aaa.value = 'dsfdsf'
-            }, 2000)
-        })
-        return {aaa}
-    },
-}
-*/
 import { ref, reactive } from 'vue'
 import type { ILoginUser } from '@/interfaces/User'
 import { getAuthRules } from '@/composables/auth/formValidation'
@@ -89,7 +75,7 @@ async function onSubmit() {
             $userManager.setRouteAfterLogin(router)
         }
     } catch (e: any) {
-        notify.run(e.response.data.message[0], notifyTypes.err)
+        console.warn('onSubmit warn:', e)
     }
 }
 

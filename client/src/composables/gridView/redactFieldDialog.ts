@@ -50,8 +50,7 @@ export function useGVDialog(): gvType {
 
     async function saveNewData (savingData: TSavingSettings): Promise<boolean> {
         const $networkManager = NetworkManager.getInstance()
-        const res: AxiosResponse | boolean = await $networkManager.getApiRequestMethod(EReqMethods.post)(savingData.module)(`gv_${savingData.action}`)({data: savingData}, true)
-        if(typeof res === 'boolean') return false
+        const res: AxiosResponse | boolean = await $networkManager.getApiRequestMethod(EReqMethods.post)(savingData.module)(`gv_${savingData.action}`)({data: savingData})
         return isSuccessRequest(res)
     }
 
