@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CompanyEntity } from './entities/company.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -11,6 +11,8 @@ import { UnitsEntity } from 'src/warehouse/entities/units.entity';
 
 @Injectable()
 export class CompanyService {
+
+    private readonly logger = new Logger('Company service:')
 
     constructor(
         @InjectRepository(CompanyEntity)//тут под капотом делается const userRepository = MyDataSource.getRepository(User)
@@ -44,8 +46,8 @@ export class CompanyService {
         return this.companyRepository.save(company)
     }
 
-    async getFullDepartmentsList(companyId: string): Promise<DepartmentEntity[] | boolean> {
-        if( !Number.isInteger(Number.parseInt(companyId)) ) throw new TypeError('Wrong company id')
+    async getFullDepartmentsList(companyId: number): Promise<DepartmentEntity[] | boolean> {
+        if( !Number.isInteger(companyId) ) throw new TypeError('Wrong company id')
 
         // сумма юзеров рабочая
         //const a = await this.deptRepository
@@ -83,11 +85,10 @@ export class CompanyService {
         return this.positionsRepository.find()
     }
 
-    async getFullEmployeesList(companyId: string): Promise<UsersEntity[] | boolean> {
-        const cId = Number.parseInt(companyId)
-        if(!Number.isInteger(cId)) { throw new TypeError('Wrong company id') }
+    async getFullEmployeesList(companyId: number): Promise<UsersEntity[] | boolean> {
+        if(!Number.isInteger(companyId)) { throw new TypeError('Wrong company id') }
         return this.usersRepository.find({
-            where: {companyId: cId},
+            where: {companyId: companyId},
             relations: ['company', 'skills', 'department', 'position', 'vacations']
         })
     }

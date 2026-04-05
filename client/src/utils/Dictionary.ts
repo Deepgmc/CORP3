@@ -33,7 +33,6 @@ export default class Dictionary {
 
     private async loadFromServer(): Promise<dictDataType[]> {
         const res = await this.$nm.getApiRequestMethod(EReqMethods.get)('company')(`dictionary/${this.serverPath}`)()
-        console.log('DICT res:', res)
         if (isSuccessRequest(res)) {
             return res.data
         }

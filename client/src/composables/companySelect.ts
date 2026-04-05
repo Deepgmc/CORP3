@@ -1,4 +1,5 @@
-import type { ICompany, ICompanySelect, IDepartment, IDeptSelect, IPosition, IPositionSelect } from '@/interfaces/Company'
+import type { ICompany, ICompanySelect, IDepartment, IDeptSelect } from '@/interfaces/Company'
+import type { IPosition, IPositionSelect } from '@/interfaces/User'
 import type NetworkManager from '@/network/NetworkManager'
 import { EReqMethods } from '@/network/NetworkManager'
 import { getSelectOptionsFromDataArray } from '@/utils/helpers/components'
@@ -22,7 +23,7 @@ export function useCompany($networkManager: NetworkManager) {
 
     async function loadAllCompanies(): Promise<boolean> {
         if (!isLoaded) { //загружаем только один раз, это статичные данные
-            const asxiosData = await $networkManager.getApiRequestMethod(EReqMethods.get)('company')('get_all')({}, false)
+            const asxiosData = await $networkManager.getApiRequestMethod(EReqMethods.get)('company')('get_all')({})
             isLoaded = true
             if (typeof asxiosData !== 'boolean') {
                 comOptions.value = getSelectOptionsFromDataArray<ICompany>(asxiosData.data, {
@@ -35,7 +36,7 @@ export function useCompany($networkManager: NetworkManager) {
     }
 
     async function loadCompanyDepartments(companyId: number): Promise<IDepartment[] | boolean> {
-        const asxiosData = await $networkManager.getApiRequestMethod(EReqMethods.get)('company')(`get_departments_of_company/${companyId}`)({}, false)
+        const asxiosData = await $networkManager.getApiRequestMethod(EReqMethods.get)('company')(`get_departments_of_company?cid=${companyId}`)({})
         if (typeof asxiosData !== 'boolean') {
             deptOptions.value = getSelectOptionsFromDataArray<IDepartment>(asxiosData.data, {
                 idField: 'id',
@@ -45,7 +46,7 @@ export function useCompany($networkManager: NetworkManager) {
         return false
     }
     async function loadPositions(): Promise<IPosition[] | boolean> {
-        const asxiosData = await $networkManager.getApiRequestMethod(EReqMethods.get)('company')(`get_positions/`)({}, false)
+        const asxiosData = await $networkManager.getApiRequestMethod(EReqMethods.get)('company')(`get_positions`)({})
         if (typeof asxiosData !== 'boolean') {
             // selectPositionModel
             selectPositionOptions.value = getSelectOptionsFromDataArray<IPosition>(asxiosData.data, {

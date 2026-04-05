@@ -11,8 +11,9 @@ export interface IProduct {
     companyId: ICompany['companyId'] | null,
     name     : string,
     status   : productStatesNames,
-    price    : number,
-    unitId   : number
+    price    : number | undefined,
+    unitId   : number | undefined,
+    count    : number | undefined
 }
 
 export interface INewProduct extends Required<Omit<IProduct, 'id'>> {}
@@ -21,6 +22,7 @@ export const productDummy = {
     name     : '',
     companyId: null,
     status   : productStatesNames.inStock,
-    price    : 0,
-    unitId   : 0
+    price    : undefined,
+    unitId   : undefined,
+    count    : undefined
 }

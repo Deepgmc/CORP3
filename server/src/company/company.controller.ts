@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Logger, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { UpdateResult } from 'typeorm';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateCompanyDTO } from './dto/update-company.dto';
@@ -54,15 +54,17 @@ export class CompanyController {
         return await this.companyService.deleteCompanyDepartment(Number(deptid))
     }
 
-    @Get('get_full_departmets_list/:companyId')
+    @Get('get_full_departmets_list')
     async getFullDepartmentsList(
-        @Param('companyId') companyId: string
+        @Query('cid') companyId: number
     ): Promise<DepartmentEntity[] | boolean> {
-        return await this.companyService.getFullDepartmentsList(companyId)
+        return await this.companyService.getFullDepartmentsList(Number(companyId))
     }
 
-    @Get('get_positions/:companyId')
-    async getPositions(@Param('companyId') companyId: number): Promise<PositionsEntity[]> {
+    @Get('get_positions')
+    async getPositions(
+        @Query('cid') companyId: number
+    ): Promise<PositionsEntity[]> {
         this.logger.warn(`Добавить ограничение на companyId в должностях ${companyId}`)
         return await this.companyService.getPositions()
     }
@@ -72,16 +74,16 @@ export class CompanyController {
         return await this.warehouseService.getAllForCompany(companyId)
     }
 
-    @Get('get_full_employees_list/:companyId')
+    @Get('get_full_employees_list')
     async getFullEmployeesList(
-        @Param('companyId') companyId: string
+        @Query('cid') companyId: number
     ): Promise<UsersEntity[] | boolean> {
-        return await this.companyService.getFullEmployeesList(companyId)
+        return await this.companyService.getFullEmployeesList(Number(companyId))
     }
 
-    @Get('get_departments_of_company/:companyId')
+    @Get('get_departments_of_company')
     async getCompanyDepartments(
-        @Param('companyId') companyId: number
+        @Query('cid') companyId: number
     ): Promise<DepartmentEntity[]> {
         return await this.companyService.getCompanyDepartments(Number(companyId))
     }
@@ -108,7 +110,6 @@ export class CompanyController {
     //!DICTIONARIES
     @Get('dictionary/units')
     async getUnits(): Promise<UnitsEntity[]> {
-        throw new BadRequestException({error: 'BadRequestException', type: 'test', message: 'Неверный тестовый запрос'})
         return await this.companyService.getFullUnits()
     }
 

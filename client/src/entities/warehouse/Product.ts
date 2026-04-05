@@ -44,8 +44,9 @@ export default class Product extends FiniteStateMachine implements IProduct {
     public readonly name: string
     public status: productStatesNames = productStatesNames.inStock
 
-    public price: number
-    public unitId: number
+    public price: number | undefined
+    public unitId: number | undefined
+    public count: number | undefined
 
     public readonly _apiModule = 'warehouse/products'
     private readonly $um = Rbac.getInstance()
@@ -79,6 +80,7 @@ export default class Product extends FiniteStateMachine implements IProduct {
         this.companyId = newProduct.companyId
         this.price = newProduct.price
         this.unitId = newProduct.unitId
+        this.count = newProduct.count
 
         this.initNetwork(this._apiModule)
     }
@@ -100,7 +102,8 @@ export default class Product extends FiniteStateMachine implements IProduct {
             name     : this.name,
             status   : this.status,
             price    : this.price,
-            unitId   : this.unitId
+            unitId   : this.unitId,
+            count    : this.count
         }
     }
 
@@ -126,8 +129,9 @@ export default class Product extends FiniteStateMachine implements IProduct {
     checkProductValid(): boolean {
         return this.name.length > 0
             && this.companyId !== null
-            && this.price > 0
-            && this.unitId > 0
+            && (this.price !== undefined && this.price > 0)
+            && (this.unitId !== undefined && this.unitId > 0)
+            && (this.count !== undefined && this.count > 0)
     }
 }
 

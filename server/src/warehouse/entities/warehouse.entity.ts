@@ -26,6 +26,9 @@ export class WarehouseEntity {
     @Column()
     price: number;
 
+    @Column()
+    count: number;
+
     //! ##############   RELATIONS
 
     @ManyToOne(() => CompanyEntity, { cascade: true })

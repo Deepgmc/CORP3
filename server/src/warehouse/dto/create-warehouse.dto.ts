@@ -49,6 +49,15 @@ export class CreateWarehouseDto {
     @IsNumber()
     price: number
 
+    @ApiProperty({
+        description: 'Количество',
+        required: true,
+        type: Number
+    })
+    @IsNotEmpty({message: 'Не пустое'})
+    @IsNumber()
+    count: number
+
     constructor() {}
 
 }
