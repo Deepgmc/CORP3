@@ -27,7 +27,34 @@ export class CreateDealsDto {
     })
     @IsNotEmpty()
     @IsNumber()
-    partnerCompanyId: number
+    partnerId: number
+
+    @ApiProperty({
+        description: 'Дата подписания сделки',
+        required   : true,
+        type       : Number,
+    })
+    @IsNumber()
+    @IsNotEmpty()
+    reg_date: number
+
+    @ApiProperty({
+        description: 'Дата подписания сделки',
+        required   : true,
+        type       : Number,
+    })
+    @IsNumber()
+    @IsNotEmpty()
+    shipment_date: number
+
+    @ApiProperty({
+        description: 'Скидка по договорённости',
+        required: false,
+        type: Number,
+        default: 0
+    })
+    @IsNumber()
+    discount: number
 
     constructor() {}
 

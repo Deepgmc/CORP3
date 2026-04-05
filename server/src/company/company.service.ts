@@ -8,6 +8,7 @@ import { UsersEntity } from 'src/users/entities/user.entity';
 import { IAddDepartment } from 'src/interfaces/ICompany';
 import { PositionsEntity } from 'src/users/entities/positions.entity';
 import { UnitsEntity } from 'src/warehouse/entities/units.entity';
+import { DealsEntity } from 'src/deals/entities/deals.entity';
 
 @Injectable()
 export class CompanyService {
@@ -29,6 +30,9 @@ export class CompanyService {
 
         @InjectRepository(UnitsEntity)
         private unitsRepository: Repository<UnitsEntity>,
+
+        @InjectRepository(DealsEntity)
+        private dealsRepository: Repository<DealsEntity>,
     ) { }
 
     /**
@@ -46,10 +50,14 @@ export class CompanyService {
         return this.companyRepository.save(company)
     }
 
+    async getAllDeals(companyId: number) {
+        return this.dealsRepository.find({where: {ownerCompanyId: companyId}})
+    }
+
     async getFullDepartmentsList(companyId: number): Promise<DepartmentEntity[] | boolean> {
         if( !Number.isInteger(companyId) ) throw new TypeError('Wrong company id')
 
-        // сумма юзеров рабочая
+        // сумма юзеров
         //const a = await this.deptRepository
         // .createQueryBuilder('departments')
         // .select('dept', 'users')

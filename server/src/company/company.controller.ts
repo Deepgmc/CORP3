@@ -12,6 +12,7 @@ import { IAddDepartment, ICompany } from 'src/interfaces/ICompany';
 import { CompanyService } from './company.service';
 import { WarehouseEntity } from 'src/warehouse/entities/warehouse.entity';
 import { UnitsEntity } from 'src/warehouse/entities/units.entity';
+import { DealsEntity } from 'src/deals/entities/deals.entity';
 
 @Controller('company')
 export class CompanyController {
@@ -69,8 +70,17 @@ export class CompanyController {
         return await this.companyService.getPositions()
     }
 
-    @Get('get_warehouse/:companyId')
-    async getWarehouse(@Param('companyId') companyId: number): Promise<WarehouseEntity[]> {
+    @Get('get_deals')
+    async getDeals(
+        @Query('cid') companyId: number
+    ): Promise<DealsEntity[]> {
+        return await this.companyService.getAllDeals(companyId)
+    }
+
+    @Get('get_warehouse')
+    async getWarehouse(
+        @Query('cid') companyId: number
+    ): Promise<WarehouseEntity[]> {
         return await this.warehouseService.getAllForCompany(companyId)
     }
 
