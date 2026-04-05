@@ -1,36 +1,55 @@
 <template>
     <h4>Склад</h4>
-    <div
-        v-for="product in productsList"
-        :key="product.id"
-    >
-        {{ product.id }} - {{ product.name }}
-    </div>
+    <grid-view-departments
+        v-if="productsList && productsList.length"
+        :gridCols="gridCols"
+        :sortField="gridCols.sortField.bind(gridCols)"
+    ></grid-view-departments>
+
     <add-product-form
         @add-product="addProduct"
         v-model:newProductName="newProductRaw.name"
+        v-model:newProductPrice="newProductRaw.price"
+        v-model:newProductCount="newProductRaw.count"
+        v-model:newProductUnitId="newProductRaw.unitId"
     ></add-product-form>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
-import { productStatesNames, type INewProduct } from '@/interfaces/ProductsDeals';
+import { productDummy, type INewProduct } from '@/interfaces/ProductsDeals';
 import AddProductForm from './AddProductForm.vue';
 import Product from '@/entities/warehouse/Product';
 import { Rbac } from '@/entities/Rbac';
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
+import { GridCols } from '@/composables/gridView/GridColsManager';
+import { warehouseAvailableCols } from '@/composables/gridView/GridColumnOptions';
+import GridViewDepartments from '@/components/grid/GridViewDepartments.vue';
+
 const notify = useNotify()
 const $um = Rbac.getInstance()
 
 const productsList = ref($um.company.warehouse)
+const needFields = ['id', 'name', 'count']
+
+const gridCols = new GridCols(
+    needFields,
+    warehouseAvailableCols,
+    productsList.value,
+    'id',
+    'company',
+    'warehouse',
+    8
+);
 
 function addProduct(): void {
     newProductRaw.companyId = $um.company.companyId
-    if(!checkProductValid()){
+    const newProduct = new Product(newProductRaw)
+    if(!newProduct.checkProductValid()) {
         notify.run('Неверно заполнен продукт', notifyTypes.err)
         return
     }
-    new Product(newProductRaw)
+    newProduct
         .saveModel()
         .then((saveRes) => {
             if(!saveRes.error){
@@ -41,18 +60,9 @@ function addProduct(): void {
         })
 }
 
-const newProductRaw: INewProduct = reactive({
-    name     : '',
-    companyId: null,
-    status   : productStatesNames.inStock
-})
-
-function checkProductValid(){
-    return newProductRaw.name.length > 0 && newProductRaw.companyId !== null
-}
+const newProductRaw: INewProduct = reactive(productDummy)
 
 function formReset() {
-    newProductRaw.name = ''
-    newProductRaw.companyId = null
+    Object.assign(newProductRaw, productDummy)
 }
 </script>

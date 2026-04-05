@@ -98,7 +98,7 @@ const gridCols = new GridCols(
     'company',
     'departments',
     8
-)
+);
 
 /** Форма добавления нового департамента */
 const newDepartment = reactive<IAddDepartment>({

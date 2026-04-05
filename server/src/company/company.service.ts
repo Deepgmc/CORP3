@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CompanyEntity } from './entities/company.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -7,9 +7,13 @@ import { DepartmentEntity } from './entities/departments.entity';
 import { UsersEntity } from 'src/users/entities/user.entity';
 import { IAddDepartment } from 'src/interfaces/ICompany';
 import { PositionsEntity } from 'src/users/entities/positions.entity';
+import { UnitsEntity } from 'src/warehouse/entities/units.entity';
+import { DealsEntity } from 'src/deals/entities/deals.entity';
 
 @Injectable()
 export class CompanyService {
+
+    private readonly logger = new Logger('Company service:')
 
     constructor(
         @InjectRepository(CompanyEntity)//тут под капотом делается const userRepository = MyDataSource.getRepository(User)
@@ -23,6 +27,12 @@ export class CompanyService {
 
         @InjectRepository(PositionsEntity)
         private positionsRepository: Repository<PositionsEntity>,
+
+        @InjectRepository(UnitsEntity)
+        private unitsRepository: Repository<UnitsEntity>,
+
+        @InjectRepository(DealsEntity)
+        private dealsRepository: Repository<DealsEntity>,
     ) { }
 
     /**
@@ -40,10 +50,14 @@ export class CompanyService {
         return this.companyRepository.save(company)
     }
 
-    async getFullDepartmentsList(companyId: string): Promise<DepartmentEntity[] | boolean> {
-        if( !Number.isInteger(Number.parseInt(companyId)) ) throw new TypeError('Wrong company id')
+    async getAllDeals(companyId: number) {
+        return this.dealsRepository.find({where: {ownerCompanyId: companyId}})
+    }
 
-        // сумма юзеров рабочая
+    async getFullDepartmentsList(companyId: number): Promise<DepartmentEntity[] | boolean> {
+        if( !Number.isInteger(companyId) ) throw new TypeError('Wrong company id')
+
+        // сумма юзеров
         //const a = await this.deptRepository
         // .createQueryBuilder('departments')
         // .select('dept', 'users')
@@ -79,11 +93,10 @@ export class CompanyService {
         return this.positionsRepository.find()
     }
 
-    async getFullEmployeesList(companyId: string): Promise<UsersEntity[] | boolean> {
-        const cId = Number.parseInt(companyId)
-        if(!Number.isInteger(cId)) { throw new TypeError('Wrong company id') }
+    async getFullEmployeesList(companyId: number): Promise<UsersEntity[] | boolean> {
+        if(!Number.isInteger(companyId)) { throw new TypeError('Wrong company id') }
         return this.usersRepository.find({
-            where: {companyId: cId},
+            where: {companyId: companyId},
             relations: ['company', 'skills', 'department', 'position', 'vacations']
         })
     }
@@ -119,5 +132,9 @@ export class CompanyService {
             'id': Number(savingData.itemId),
             [savingData.fieldName]: savingData.val
         })
+    }
+
+    async getFullUnits(): Promise<UnitsEntity[]>{
+        return await this.unitsRepository.find()
     }
 }

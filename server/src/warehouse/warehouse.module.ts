@@ -3,6 +3,7 @@ import { WarehouseController } from './warehouse.controller';
 import { WarehouseService } from './warehouse.service';
 import { WarehouseEntity } from './entities/warehouse.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UnitsEntity } from './entities/units.entity';
 
 @Module({
     controllers: [WarehouseController],
@@ -10,6 +11,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     imports: [
         TypeOrmModule.forFeature([
             WarehouseEntity,
+            UnitsEntity
         ]),
     ],
     exports: [WarehouseService]

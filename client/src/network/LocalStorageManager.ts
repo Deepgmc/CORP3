@@ -8,7 +8,7 @@ export class StorageManager {
 
     saveAuthData(data: object){
         try {
-            this._storage.setItem('authData', JSON.stringify(data))
+            this.saveRawData('authData', data)
             return true
         } catch {
             return false
@@ -24,5 +24,23 @@ export class StorageManager {
     removeAuthData(): boolean{
         this._storage.removeItem('authData')
         return true
+    }
+
+    private saveRawData(name: string, data: object) {
+        this._storage.setItem(name, JSON.stringify(data))
+    }
+
+    getDictName(name: string) {
+        return 'dict_' + name
+    }
+
+    public setItem(name: string, data: object){
+        this.saveRawData(this.getDictName(name), data)
+    }
+
+    public getItem(name: string): object | false {
+        const data = this._storage.getItem(this.getDictName(name))
+        if(data !== null) return JSON.parse(data)
+        return false
     }
 }

@@ -161,7 +161,7 @@ export const departmentAvailableCols: ColsConfig = {
     },
 }
 
-//настройки для вывода списка департаментов
+//настройки для вывода списка отпусков
 //ВСЕ доступные поля. Из них йпотом выбираем нужные при выводе конкретной таблицы
 export const vacationAvailableCols: ColsConfig = {
     id: {
@@ -197,6 +197,34 @@ export const vacationAvailableCols: ColsConfig = {
         align     : 'center',
         type      : fieldTypes.text,
         editable  : false,
+    },
+};
+//настройки для вывода списка товаров склада
+//ВСЕ доступные поля. Из них йпотом выбираем нужные при выводе конкретной таблицы
+export const warehouseAvailableCols: ColsConfig = {
+    id: {
+        label   : 'ID',
+        align   : 'center',
+        type    : fieldTypes.number,
+        editable: false,
+        sortFn  : defaultNumSortFn,
+        order   : -1,
+    },
+    name: {
+        label   : 'Название товара',
+        align   : 'left',
+        type    : fieldTypes.text,
+        editable: false,
+        sortFn  : defaultStringSortFn,
+        order   : -1,
+    },
+    count: {
+        label   : 'Количество на складе',
+        align   : 'center',
+        type    : fieldTypes.number,
+        editable: false,
+        sortFn  : defaultNumSortFn,
+        order   : -1,
     },
 };
 

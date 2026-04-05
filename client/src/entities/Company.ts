@@ -1,4 +1,4 @@
-import { departmentDummy, positionDummy, type IAddDepartment, type ICompany, type ICompanyForm, type IDepartment } from "@/interfaces/Company";
+import { departmentDummy, positionDummy, type IAddDepartment, type ICompany, type ICompanyForm, type IDepartment, type IUnit } from "@/interfaces/Company";
 import type { IPosition, IUser } from "@/interfaces/User";
 import type { AxiosResponse } from "axios";
 import { useOrganizationStore } from "@/stores/organizationStore";
@@ -7,7 +7,9 @@ import type { Employee } from "./Employee";
 import type { TResult } from "@/interfaces/Error";
 import Manager from "./Manager";
 import type { Vacation } from "./Vacation";
-import type { IProduct } from "@/interfaces/ProductsDeals";
+import type { IDeal, IProduct } from "@/interfaces/ProductsDeals";
+import Dictionary from "@/utils/Dictionary";
+import { useDictStore } from "@/stores/dictStore";
 
 /**
  * Инстанс компании создаётся при первой загрузке самого юзера - в UserManager -> LoadUserData
@@ -54,33 +56,46 @@ export default class Company extends Manager implements ICompany {
         this._store.setCompany({ companyId, name, address, accountBalance })
 
         this.loadAdditionalCompanyData()
+        this.loadDictionaries()
     }
 
+    /**
+        загружаем связанные данные компании - департаменты, сотрудников и пр.
+    */
     public async loadAdditionalCompanyData() {
-        /**
-          загружаем связанные данные компании - департаменты, сотрудников и пр.
-        */
         Promise.all([
             this.getFullDepartmentsList(),
             this.getFullEmployeesList(),
             this.getFullPositionsList(),
-            this.getWarehouse()
+            this.getWarehouse(),
+            this.getDeals(),
         ])
             .then((res: any) => {
                 const [
                     departments,
                     employees,
                     positions,
-                    warehouse
+                    warehouse,
+                    deals
                 ]:
-                    [IDepartment[], Employee[], IPosition[], IProduct[]]
+                    [IDepartment[], Employee[], IPosition[], IProduct[], IDeal[]]
                  = res;
 
-                this._store.setDepartments(departments)
-                this._store.setEmployees(employees)
-                this._store.setPositions(positions)
-                this._store.setWarehouse(warehouse)
+                this._store.departments = departments
+                this._store.employees = employees
+                this._store.positions = positions
+                this._store.warehouse = warehouse
+                this._store.deals = deals
             })
+    };
+
+    /**
+        загружаем словари статичных данных
+    */
+    public async loadDictionaries() {
+        const unitDict = await new Dictionary('units').initData()
+        const dictStore = useDictStore()
+        dictStore.setUnits(unitDict.getData() as IUnit[])
     }
 
     get companyId() {
@@ -109,6 +124,9 @@ export default class Company extends Manager implements ICompany {
     get warehouse(): IProduct[] {
         return this._store.warehouse
     }
+    get deals(): IDeal[] {
+        return this._store.deals
+    }
 
     async saveCompanyProfile(company: ICompanyForm): Promise<boolean> {
         const res: AxiosResponse = await this._postData('save_company_profile')(company)
@@ -123,7 +141,7 @@ export default class Company extends Manager implements ICompany {
      * @returns IDepartment[]
      */
     async getFullDepartmentsList(): Promise<AxiosResponse> {
-        const deptFullList = await this._getData(`get_full_departmets_list/${this.companyId}`)({}, false)
+        const deptFullList = await this._getData(`get_full_departmets_list?cid=${this.companyId}`)()
         return deptFullList.data
     }
 
@@ -132,7 +150,7 @@ export default class Company extends Manager implements ICompany {
      * @returns IUser[]
      */
     async getFullEmployeesList(): Promise<AxiosResponse> {
-        const employeeList = await this._getData(`get_full_employees_list/${this.companyId}`)({}, false)
+        const employeeList = await this._getData(`get_full_employees_list?cid=${this.companyId}`)()
         return employeeList.data
     }
 
@@ -141,8 +159,17 @@ export default class Company extends Manager implements ICompany {
      * @returns IPosition[]
      */
     async getFullPositionsList(): Promise<AxiosResponse> {
-        const employeeList = await this._getData(`get_positions/${this.companyId}`)({}, false)
+        const employeeList = await this._getData(`get_positions?cid=${this.companyId}`)()
         return employeeList.data
+    }
+
+    /**
+     * Получаем сделки компании с контрагентами
+     * @returns IPosition[]
+     */
+    async getDeals(): Promise<AxiosResponse> {
+        const deals = await this._getData(`get_deals?cid=${this.companyId}`)()
+        return deals.data
     }
 
     /**
@@ -150,7 +177,7 @@ export default class Company extends Manager implements ICompany {
      * @returns IPosition[]
      */
     async getWarehouse(): Promise<AxiosResponse> {
-        const warehouse = await this._getData(`get_warehouse/${this.companyId}`)({}, false)
+        const warehouse = await this._getData(`get_warehouse?cid=${this.companyId}`)()
         return warehouse.data
     }
 
@@ -198,10 +225,10 @@ export default class Company extends Manager implements ICompany {
         this._store.changeUserDepartment(user.userId, departmentFrom, departmentTo)
     }
 
-    async changeEmployeePosition(newPositionId: IPosition['id'], userId: IUser['userId']): Promise<TResult> {
+    async changeEmployeePosition(newPositionId: IPosition['id'], userId: IUser['userId']): Promise<TResult<any>> {
         const employee = this.employees.find((emp: Employee) => emp.userId === userId)
         if(employee){
-            const res: TResult = await employee.changeEmployeePosition(newPositionId, userId)
+            const res = await employee.changeEmployeePosition(newPositionId, userId)
             if(!res.error){
                 this._store.changeEmployeePosition(newPositionId, userId)
             }

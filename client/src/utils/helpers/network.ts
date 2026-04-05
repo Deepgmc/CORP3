@@ -1,4 +1,4 @@
-import { RESPONSE_STATUS_CODES } from "@/constants";
+import { RESPONSE_STATUS_CODES } from "@/utils/constants";
 import type { AxiosResponse } from "axios";
 
 export function isSuccessRequest(result: AxiosResponse){

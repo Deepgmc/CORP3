@@ -4,7 +4,7 @@ import { Employee } from "@/entities/Employee"
 import type { Vacation } from "@/entities/Vacation"
 import { type IDepartment, type ICompany } from "@/interfaces/Company"
 import type { IPosition } from "@/interfaces/User"
-import type { IProduct } from "@/interfaces/ProductsDeals"
+import type { IDeal, IProduct } from "@/interfaces/ProductsDeals"
 
 export const useOrganizationStore = defineStore('organization', () => {
 
@@ -14,23 +14,11 @@ export const useOrganizationStore = defineStore('organization', () => {
     const employees   = ref<Employee[]>([])
     const positions   = ref<IPosition[]>([])
     const warehouse   = ref<IProduct[]>([])
+    const deals       = ref<IDeal[]>([])
 
     function setCompany(newCompany: ICompany): boolean {
         company.value = newCompany
         return true
-    }
-
-    function setDepartments(newDepts: IDepartment[]): void {
-        departments.value = newDepts
-    }
-    function setEmployees(newEmployees: Employee[]): void {
-        employees.value = newEmployees.map((employee: Employee) => new Employee(employee))
-    }
-    function setPositions(newPositions: IPosition[]): void {
-        positions.value = newPositions
-    }
-    function setWarehouse(newProducts: IProduct[]): void {
-        warehouse.value = newProducts
     }
 
     function addNewDepartment(newDept: IDepartment): void {
@@ -95,12 +83,13 @@ export const useOrganizationStore = defineStore('organization', () => {
         departments,
         positions,
         warehouse,
+        deals,
 
         setCompany,
-        setDepartments,
-        setEmployees,
-        setPositions,
-        setWarehouse,
+        // setDepartments,
+        // setEmployees,
+        // setPositions,
+        // setWarehouse,
 
         addNewDepartment,
         deleteDepartment,

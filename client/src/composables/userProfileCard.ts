@@ -28,16 +28,14 @@ export function useUserProfileCard() {
     }
 
     async function loadUserCardData(userId: IUser['userId']): Promise<void> {
-        const res: AxiosResponse | boolean = await NetworkManager.getInstance()
-            .getApiRequestMethod(EReqMethods.get)('users')(`get_employee_avatar/${userId}`)() as AxiosResponse | boolean;
-        if(typeof res === 'boolean'){ return }
+        const res: AxiosResponse = await NetworkManager.getInstance().getApiRequestMethod(EReqMethods.get)('users')(`get_employee_avatar/${userId}`)();
         if (isSuccessRequest(res)) {
             const foundEmployee = Rbac.getInstance().company.getEmployeeById(userId)
             if(!foundEmployee){
                 throw new Error('Не найден сотрудник при открытии карточки сотрудника')
             }
             setCardEmployee(foundEmployee)
-            avatar.value = res.data.avatar
+            if(typeof res !== 'boolean') avatar.value = res.data.avatar
         }
     }
 

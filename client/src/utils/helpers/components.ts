@@ -1,4 +1,4 @@
-import type { IPositionSelect } from "@/interfaces/Company";
+import type { IPositionSelect } from "@/interfaces/User";
 
 interface DataMapping<T> {
   idField   : keyof T;

@@ -4,6 +4,7 @@ import { computed, ref, type ComputedRef, type Ref } from "vue";
 import type { IPosition, IUser, IVacation, TSkill } from "@/interfaces/User";
 import type { TSortFn } from "./GridColumnOptions";
 import { Rbac } from "@/entities/Rbac";
+import type { IProduct } from "@/interfaces/ProductsDeals";
 
 export type TGridColMap = {
     label     ?: string,
@@ -18,7 +19,7 @@ export type TGridColMap = {
 
 export type TColsMap = Map<string, TGridColMap>
 
-export type GridColsData = IDepartment[] | IUser[] | IVacation[]
+export type GridColsData = IDepartment[] | IUser[] | IVacation[] | IProduct[]
 
 export type GridColsDataTypes = GridColsData extends (infer T)[] ? T : never // keyof IDepartmet | keyof IUser  etc...
 

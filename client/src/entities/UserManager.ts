@@ -80,7 +80,7 @@ export class UserManager extends Manager implements IUserManager {
 
     async registerRequest(registerData: TRegisterForm): Promise<TAuthRenponse> {
         if (this._isLogined.isLogined) return { error: true, message: ALREADY_AUTHORISED_MSG }
-        return await this._postData('register')(registerData, false)
+        return await this._postData('register')(registerData)
     }
 
     public getUser(): IUser {

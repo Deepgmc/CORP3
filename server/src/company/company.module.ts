@@ -10,6 +10,8 @@ import { UsersModule } from 'src/users/users.module';
 import { PositionsEntity } from 'src/users/entities/positions.entity';
 import { WarehouseEntity } from 'src/warehouse/entities/warehouse.entity';
 import { WarehouseModule } from 'src/warehouse/warehouse.module';
+import { UnitsEntity } from 'src/warehouse/entities/units.entity';
+import { DealsEntity } from 'src/deals/entities/deals.entity';
 
 @Module({
     controllers: [CompanyController],
@@ -22,7 +24,9 @@ import { WarehouseModule } from 'src/warehouse/warehouse.module';
             DepartmentEntity,
             UsersEntity,
             PositionsEntity,
-            WarehouseEntity
+            WarehouseEntity,
+            UnitsEntity,
+            DealsEntity
         ]),
     ],
     exports: [CompanyService]

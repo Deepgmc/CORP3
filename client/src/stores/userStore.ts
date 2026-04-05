@@ -3,7 +3,6 @@ import { defineStore } from 'pinia'
 import type { IUser, TSkill } from '@/interfaces/User'
 import { jwtStrategy } from '@/auth/strategies/jwt.strategy'
 import NetworkManager, { EReqMethods } from '@/network/NetworkManager'
-import type { AxiosResponse } from 'axios'
 
 export const useUserStore = defineStore('user', () => {
 
@@ -22,12 +21,8 @@ export const useUserStore = defineStore('user', () => {
     const loadUserData = async (): Promise<IUser> => {
         const userId = jwtStrategy.userId
         if(!userId || userId <= 0) return userDummy
-        const res: AxiosResponse | boolean = await NetworkManager.getInstance()
-            .getApiRequestMethod(EReqMethods.get)('user')('get_user_data')({ data: { userId } }) as AxiosResponse | boolean
-        if (typeof res !== 'boolean') {
-            res.data.user.avatar = res.data.avatar
-            if(setUser(res.data.user)) return res.data.user
-        }
+        const res = await NetworkManager.getInstance().getApiRequestMethod(EReqMethods.get)('user')('get_user_data')({ data: {userId} })
+        if(setUser(res.data.user)) return res.data.user
         return userDummy
     }
 

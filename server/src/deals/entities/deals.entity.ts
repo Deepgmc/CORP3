@@ -12,9 +12,26 @@ export class DealsEntity {
 
     @Column()
     ownerId: number;
+    @Column()
+    ownerCompanyId: number;
 
     @Column()
+    partnerId: number;
+    @Column()
     partnerCompanyId: number;
+
+    @Column({//регистрация сделки
+        type: 'bigint',
+    })
+    reg_date: number;
+
+    @Column({//дата отгрузки
+        type: 'bigint',
+    })
+    shipment_date: number;
+
+    @Column()
+    discount: number;
 
     //! ##############   RELATIONS
 
@@ -25,10 +42,24 @@ export class DealsEntity {
     })
     owner: UsersEntity;
 
+    @ManyToOne(() => UsersEntity, { cascade: true })
+    @JoinColumn({
+        name: 'partnerId',
+        referencedColumnName: 'userId'
+    })
+    partner: UsersEntity;
+
+    @ManyToOne(() => CompanyEntity, { cascade: true })
+    @JoinColumn({
+        name: 'ownerCompanyId',
+        referencedColumnName: 'companyId'
+    })
+    ownerCompany: CompanyEntity;
+
     @ManyToOne(() => CompanyEntity, { cascade: true })
     @JoinColumn({
         name: 'partnerCompanyId',
         referencedColumnName: 'companyId'
     })
-    partner: CompanyEntity;
+    partnerCompany: CompanyEntity;
 }

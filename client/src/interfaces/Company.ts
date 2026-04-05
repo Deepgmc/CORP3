@@ -49,3 +49,11 @@ export const positionDummy = {
 }
 
 export interface IAddDepartment extends Pick<IDepartment, 'companyId' | 'name' | 'description' | 'countusers'> {}
+
+
+export interface IUnit {
+    id        : number,
+    name      : string,
+    shortName : string,
+    nameCouple: string,
+}

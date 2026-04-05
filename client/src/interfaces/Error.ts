@@ -1,12 +1,12 @@
-export type TResult = TError | TSuccess
+export type TResult<T> = TError | TSuccess<T>
 
 export interface TError {
     error       : true,
     errorMessage: string
 }
-export interface TSuccess {
+export interface TSuccess<T> {
     error: false,
-    res  : any
+    res  : T
 }
 
 export type TAuthRenponse = {
