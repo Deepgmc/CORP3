@@ -22,6 +22,7 @@ export abstract class Strategy {
     abstract login(loginData: ILoginUser): Promise<any>
 
     abstract isLogined(): Promise<isLoginedResult>
+    abstract logOut(): boolean
 
     setAuthStoragedData(data: TAuthData): boolean {
         return Strategy.storageManager.saveAuthData(data)

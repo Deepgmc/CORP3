@@ -1,19 +1,18 @@
 <script setup lang="ts">
-import { provide } from 'vue'
-import NetworkManager from './network/NetworkManager';
-import { jwtStrategy } from './auth/strategies/jwt.strategy';
-import { useUserStore } from '@/stores/userStore';
-import { Rbac } from './entities/Rbac';
-import { useDictStore } from './stores/dictStore';
+    import { provide } from 'vue';
+    import NetworkManager from './network/NetworkManager';
+    import { jwtStrategy } from './auth/strategies/jwt.strategy';
+    import { useUserStore } from '@/stores/userStore';
+    import { Rbac } from './entities/Rbac';
+    import { useDictStore } from './stores/dictStore';
+    import { nmSym, rbacSym } from './utils/injecttionSymbols';
 
-const $networkManager = NetworkManager.getInstance()
-provide('$networkManager', $networkManager)
+    const $networkManager = NetworkManager.getInstance()
 
-const $userManager = Rbac.getInstance(new jwtStrategy($networkManager), useUserStore())
-provide('$userManager', $userManager)
+    provide<NetworkManager>(nmSym, $networkManager)
+    provide<Rbac>(rbacSym, Rbac.getInstance(new jwtStrategy($networkManager), useUserStore()))
 
-useDictStore()
-
+    useDictStore()
 </script>
 
 <template>

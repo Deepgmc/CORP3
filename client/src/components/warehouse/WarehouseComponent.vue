@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { inject, reactive, ref } from 'vue';
 import { productDummy, type INewProduct } from '@/interfaces/ProductsDeals';
 import AddProductForm from './AddProductForm.vue';
 import Product from '@/entities/warehouse/Product';
@@ -25,11 +25,12 @@ import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
 import { GridCols } from '@/composables/gridView/GridColsManager';
 import { warehouseAvailableCols } from '@/composables/gridView/GridColumnOptions';
 import GridViewDepartments from '@/components/grid/GridViewDepartments.vue';
+import { rbacSym } from '@/utils/injecttionSymbols';
 
 const notify = useNotify()
-const $um = Rbac.getInstance()
+const $userManager = inject<Rbac>(rbacSym) as Rbac
 
-const productsList = ref($um.company.warehouse)
+const productsList = ref($userManager.company.warehouse)
 const needFields = ['id', 'name', 'count']
 
 const gridCols = new GridCols(
@@ -43,7 +44,7 @@ const gridCols = new GridCols(
 );
 
 function addProduct(): void {
-    newProductRaw.companyId = $um.company.companyId
+    newProductRaw.companyId = $userManager.company.companyId
     const newProduct = new Product(newProductRaw)
     if(!newProduct.checkProductValid()) {
         notify.run('Неверно заполнен продукт', notifyTypes.err)

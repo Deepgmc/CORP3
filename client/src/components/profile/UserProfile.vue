@@ -175,7 +175,7 @@
 
 <script setup lang="ts">
 //import "avatar-editor/dist/style.css";
-import { reactive, onBeforeMount, ref, watch } from 'vue'
+import { reactive, onBeforeMount, ref, watch, inject } from 'vue'
 import { Rbac } from '@/entities/Rbac'
 import { convertStrToUnixTimestamp, convertTSToStr } from '@/utils/helpers/dates'
 import type { ICPForm, IUser, TSkill } from '@/interfaces/User'
@@ -187,18 +187,19 @@ import { AvatarEditor } from 'avatar-editor';
 import { v_msg, SAVED_SUCCESS, SAVED_ERROR } from '@/utils/constants/texts.ts'
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
 import type { TResult } from '@/interfaces/Error'
+import { rbacSym } from '@/utils/injecttionSymbols'
 
 
 
 const scaleVal = ref<number>(1)
 const avatarEditorRef = ref<any>(null)
 
-const $um = Rbac.getInstance()
+const $userManager = inject<Rbac>(rbacSym) as Rbac
 const notify = useNotify()
 const userAvatar = ref('')
 
 onBeforeMount(() => {
-    const user = $um.getUser()
+    const user = $userManager.getUser()
     if(user.avatar !== null){
         userAvatar.value = user.avatar
     }
@@ -208,7 +209,6 @@ onBeforeMount(() => {
 const isCPOpen = ref(false)
 
 // Модель формы
-// const dummyCopy: IUser = Object.create(userDummy)
 const form = reactive<IUser>(userDummy)
 const bDateStr = ref<string>()
 
@@ -218,7 +218,7 @@ async function onSubmit(): Promise<void> {
         form.avatar = avatar
     }
 
-    if (await $um.saveUserProfile(form)) {
+    if (await $userManager.saveUserProfile(form)) {
         notify.run(SAVED_SUCCESS, notifyTypes.succ)
     } else {
         notify.run(SAVED_ERROR, notifyTypes.err)
@@ -237,7 +237,7 @@ function assignUserToFormData(user: IUser) {
 }
 
 watch(bDateStr, (newBdate) => {
-    const birth: TResult = convertStrToUnixTimestamp(String(newBdate))
+    const birth: TResult<number> = convertStrToUnixTimestamp(String(newBdate))
     if (birth.error) {
         throw new TypeError('Ошибка получения даты рождения')
     }
@@ -246,11 +246,11 @@ watch(bDateStr, (newBdate) => {
 
 function removeSkill(skillId: TSkill['id']): void {
     if (!Number.isInteger(skillId)) return
-    $um.removeUserSkill(skillId)
+    $userManager.removeUserSkill(skillId)
 }
 
 function addSkill(skillText: string): void {
-    $um.addUserSkill(skillText)
+    $userManager.addUserSkill(skillText)
 }
 
 ///// CHANGE PASSWORD

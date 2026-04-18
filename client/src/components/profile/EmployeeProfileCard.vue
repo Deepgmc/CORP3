@@ -73,7 +73,7 @@
                     </div>
                     <div class="col-4 q-pa-xs flex justify-center items-center">
                         <div class="text-subtitle1 text-grey-10">
-                            <template v-if="!$um.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.EDIT)(R_FIELDS.POSITION)">Должность: {{ positionText }}</template>
+                            <template v-if="!$userManager.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.EDIT)(R_FIELDS.POSITION)">Должность: {{ positionText }}</template>
                             <template v-else>
                                 <q-select
                                     class="profile-card_select full-width"
@@ -126,7 +126,7 @@
             </q-card-section>
 
             <!--Admin controls-->
-            <employee-edit v-if="$um.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.EDIT)(R_FIELDS.ENTIRE)">
+            <employee-edit v-if="$userManager.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.EDIT)(R_FIELDS.ENTIRE)">
                 <template #header>
                     <q-card-section class="bg-warning text-white q-pa-xs" :horizontal="true">
                         <div class="text-h6">Управление струдником</div>
@@ -139,7 +139,7 @@
 
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, inject, ref } from 'vue';
 import { R_ACTIONS, R_ENTITIES, R_FIELDS, Rbac } from '@/entities/Rbac';
 import { useUserProfileCard } from '@/composables/userProfileCard';
 import { genderOptions } from '@/utils/constants/main';
@@ -152,10 +152,11 @@ import type { TResult } from '@/interfaces/Error';
 import UserSkills from '@/components/UserSkills.vue'
 import EmployeeEdit from '@/components/employee/EmployeeEdit.vue';
 import type { IPosition } from '@/interfaces/User';
+import { rbacSym } from '@/utils/injecttionSymbols';
 
 
 const notify = useNotify()
-const $um = Rbac.getInstance()
+const $userManager = inject<Rbac>(rbacSym) as Rbac
 
 const { isUserProfileCardOpened, cardEmployee, avatar } = useUserProfileCard()
 
@@ -165,7 +166,7 @@ const selectPositionModel = ref({
 })
 
 const selectPositionOptions = computed(() => {
-    return getSelectOptionsFromDataArray<IPosition>($um.company.positions, {
+    return getSelectOptionsFromDataArray<IPosition>($userManager.company.positions, {
         idField: 'id',
         labelField: 'position'
     })
@@ -178,7 +179,7 @@ const positionText = computed(() => {
 })
 async function onPositionSelect(): Promise<void> {
     if(!selectPositionModel.value.value) return
-    const res: TResult<any> = await $um.company.changeEmployeePosition(selectPositionModel.value.value, cardEmployee.value.userId)
+    const res: TResult<any> = await $userManager.company.changeEmployeePosition(selectPositionModel.value.value, cardEmployee.value.userId)
     if(res.error) {
         notify.run(res.errorMessage, notifyTypes.err)
         return

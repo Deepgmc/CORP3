@@ -36,13 +36,15 @@ import { SAVED_SUCCESS, v_msg } from '@/utils/constants/texts.ts'
 import type { ICompanyForm } from '@/interfaces/Company';
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
 import { R_ACTIONS, R_ENTITIES, R_FIELDS, Rbac } from '@/entities/Rbac';
+// import { rbacSym } from '@/utils/injecttionSymbols';
 
 const notify = useNotify()
-const $um = Rbac.getInstance()
+//const $userManager = inject<Rbac>(rbacSym) as Rbac
+const $userManager = Rbac.getInstance()
 
-const {companyId, name, address, accountBalance} = $um.company
+const {companyId, name, address, accountBalance} = $userManager.company
 
-const canEdit = $um.can(R_ENTITIES.COMPANY)(R_ACTIONS.EDIT)(R_FIELDS.ENTIRE)
+const canEdit = $userManager.can(R_ENTITIES.COMPANY)(R_ACTIONS.EDIT)(R_FIELDS.ENTIRE)
 const captionLabel = canEdit ? 'Редактировать данные' : 'Просмотр данных'
 
 const companyForm: ICompanyForm = reactive({
@@ -53,7 +55,7 @@ const companyForm: ICompanyForm = reactive({
 })
 
 async function onSubmit() {
-    if (await $um.company.saveCompanyProfile({...companyForm})) {
+    if (await $userManager.company.saveCompanyProfile({...companyForm})) {
         notify.run(SAVED_SUCCESS, notifyTypes.succ)
     }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 
 import { UsersService } from './users.service';
 import { UserId } from './userId.decorator'
@@ -38,9 +38,9 @@ export class UsersController {
         return await this.usersService.saveOneUserField(savingData.data)
     }
 
-    @Get('get_employee_avatar/:userId')
+    @Get('get_employee_avatar')
     async getEmployeeData(
-        @Param('userId') userId: number
+        @Query('uid') userId: number
     ) {
         let avatar = ''
         try {

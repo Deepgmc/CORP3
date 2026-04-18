@@ -40,12 +40,13 @@ import { inject } from 'vue'
 import { R_ACTIONS, R_ENTITIES, R_FIELDS, type Rbac } from '@/entities/Rbac'
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
 import { ACCESS_DENIED } from '@/utils/constants/texts'
+import { rbacSym } from '@/utils/injecttionSymbols'
 
 
 const notify = useNotify()
 defineEmits(['gv_sort'])
 
-const $userManager = inject<Rbac>('$userManager')
+const $userManager = inject<Rbac>(rbacSym) as Rbac
 
 defineProps<{
     gridCols: GridCols,
@@ -54,13 +55,13 @@ defineProps<{
 
 const { openUserCard, loadUserCardData } = useUserProfileCard()
 
-function openEmployeeCard(userId: number | null): void {
+async function openEmployeeCard(userId: number | null): Promise<void> {
     if(userId === null || $userManager === undefined) return
     if(!$userManager.can(R_ENTITIES.EMPLOYEE)(R_ACTIONS.VIEW)(R_FIELDS.ENTIRE)) {
         notify.run(ACCESS_DENIED, notifyTypes.err)
         return
     }
-    loadUserCardData(userId)
+    await loadUserCardData(userId)
         .then(() => {
             openUserCard()
         })

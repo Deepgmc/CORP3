@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 import { Quasar, QForm, QInput, QBtn } from 'quasar'
 import CompanyCard from '@/components/CompanyCard.vue'
 import { Rbac } from '@/entities/Rbac'
@@ -52,8 +52,11 @@ const createWrapper = (rbacMock?: Partial<Rbac>) => {
 
     vi.mocked(Rbac.getInstance).mockReturnValue(mock as Rbac)
 
-    return mount(CompanyCard, {
+    return shallowMount(CompanyCard, {
         global: {
+            provide: {
+                $userManager: {company: companyDummy}
+            },
             plugins: [Quasar],
             components: {
                 QForm,

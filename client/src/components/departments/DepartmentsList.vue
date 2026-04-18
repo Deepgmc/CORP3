@@ -10,7 +10,7 @@
         </div>
     </div>
 
-    <div class="row q-mt-lg" v-if="$um.can(R_ENTITIES.DEPARTMENT)(R_ACTIONS.ADD)(R_FIELDS.ENTIRE)">
+    <div class="row q-mt-lg" v-if="$userManager.can(R_ENTITIES.DEPARTMENT)(R_ACTIONS.ADD)(R_FIELDS.ENTIRE)">
         <div class="col-lg-8 offset-lg-2 col-xs-12">
             <q-form ref="addDepartmentRef" @submit="addDepartment">
                 <fieldset class="fieldset">
@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, type Ref, ref } from 'vue';
+import { computed, inject, reactive, type Ref, ref } from 'vue';
 import GridViewDepartments from '@/components/grid/GridViewDepartments.vue';
 import { dragItem, dropItem } from '@/composables/dnd'
 
@@ -83,12 +83,13 @@ import { v_msg } from '@/utils/constants/texts';
 import type { IAddDepartment, IDepartment } from '@/interfaces/Company';
 import type { IUser } from '@/interfaces/User';
 import { R_ACTIONS, R_ENTITIES, R_FIELDS, Rbac } from '@/entities/Rbac';
+import { rbacSym } from '@/utils/injecttionSymbols';
 
 
-const $um = Rbac.getInstance()
+const $userManager = inject<Rbac>(rbacSym) as Rbac
 
 const needFields = ['id', 'name', 'description', 'countusers']
-const departments = $um.company.departments
+const departments = $userManager.company.departments
 
 const gridCols = new GridCols(
     needFields,
@@ -104,14 +105,14 @@ const gridCols = new GridCols(
 const newDepartment = reactive<IAddDepartment>({
     name       : '',
     description: '',
-    companyId  : $um.company.companyId,
+    companyId  : $userManager.company.companyId,
     countusers : '0'
 })
 
 
 const addDepartmentRef = ref()
 function addDepartment() {
-    $um.company.addNewDepartment(newDepartment)
+    $userManager.company.addNewDepartment(newDepartment)
     .then(() => {
         newDepartment.name = ''
         newDepartment.description = ''
@@ -124,7 +125,7 @@ function addDepartment() {
 
 
 // DND WIDGET
-const employees = $um.company.employees
+const employees = $userManager.company.employees
 /**
  * создаём итерируемый реактивный Map для вывода виджета сотрудников департаментов с перетаскиванием
  */
@@ -136,7 +137,6 @@ const deptsDndList: Ref<Map<IDepartment, IUser[]>> = computed(() => {
     })
     return list
 })
-console.log('deptsDndList:', deptsDndList.value)
 
 
 //перемещаем юзера между департаментами
@@ -152,7 +152,7 @@ function dropUser(event: DragEvent){
 
     employees.forEach((thisEmp: IUser) => {
         if(thisEmp.userId === dragItemId && thisEmp.departmentId === dragFromId) {
-            $um.company.switchUserDepartmets(thisEmp, dragFromId, dropId)
+            $userManager.company.switchUserDepartmets(thisEmp, dragFromId, dropId)
             return true
         }
         return false

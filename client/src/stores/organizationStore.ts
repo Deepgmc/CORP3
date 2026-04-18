@@ -16,6 +16,10 @@ export const useOrganizationStore = defineStore('organization', () => {
     const warehouse   = ref<IProduct[]>([])
     const deals       = ref<IDeal[]>([])
 
+    function setEmployees(newEmployees: Employee[]): void {
+        employees.value = newEmployees.map((employee: Employee) => new Employee(employee))
+    }
+
     function setCompany(newCompany: ICompany): boolean {
         company.value = newCompany
         return true
@@ -87,7 +91,7 @@ export const useOrganizationStore = defineStore('organization', () => {
 
         setCompany,
         // setDepartments,
-        // setEmployees,
+        setEmployees,
         // setPositions,
         // setWarehouse,
 

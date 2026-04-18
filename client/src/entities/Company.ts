@@ -82,7 +82,7 @@ export default class Company extends Manager implements ICompany {
                  = res;
 
                 this._store.departments = departments
-                this._store.employees = employees
+                this._store.setEmployees(employees)
                 this._store.positions = positions
                 this._store.warehouse = warehouse
                 this._store.deals = deals

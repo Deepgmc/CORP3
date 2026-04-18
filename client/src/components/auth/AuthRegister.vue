@@ -125,7 +125,10 @@ import type NetworkManager from '@/network/NetworkManager'
 import { useCompany } from '@/composables/companySelect'
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
 import { Rbac } from '@/entities/Rbac'
-const $networkManager: NetworkManager | undefined = inject<NetworkManager>('$networkManager')
+import { nmSym, rbacSym } from '@/utils/injecttionSymbols'
+
+const $networkManager = inject<NetworkManager>(nmSym) as NetworkManager
+const $userManager = inject<Rbac>(rbacSym) as Rbac
 
 if (!$networkManager) {
     throw new Error('Wrong network manager injection!')
@@ -181,7 +184,7 @@ async function onSubmit(): Promise<boolean> {
 
     //отправка данных на сервер, валидация на сервере, вывод ошибок
     try {
-        const registerRes = await Rbac.getInstance().registerRequest(regUser.value)
+        const registerRes = await $userManager.registerRequest(regUser.value)
         if (registerRes.error) {
             if (registerRes.message) notify.run(registerRes.message, notifyTypes.err)
             return false

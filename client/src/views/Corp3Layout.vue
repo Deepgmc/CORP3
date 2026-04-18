@@ -97,16 +97,17 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { inject, ref } from 'vue'
 import GridViewChangeDialog from '@/components/GridViewChangeDialog.vue'
 import EmployeeProfileCard from '@/components/profile/EmployeeProfileCard.vue'
 import { Rbac } from '@/entities/Rbac'
 import { useUserProfileCard } from '@/composables/userProfileCard'
+import { rbacSym } from '@/utils/injecttionSymbols'
 
 const { isUserProfileCardOpened } = useUserProfileCard()
 
 const router = useRouter()
-const $userManager = Rbac.getInstance()
+const $userManager = inject<Rbac>(rbacSym) as Rbac
 const leftDrawerOpen = ref<boolean>(true)
 const thisUser = $userManager.getUser()
 

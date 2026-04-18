@@ -86,7 +86,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive } from 'vue';
+import { inject, reactive } from 'vue';
 import { Rbac } from '@/entities/Rbac';
 import { Vacation } from '@/entities/Vacation';
 import type { IVacation, TNewVacation } from '@/interfaces/User';
@@ -99,6 +99,7 @@ import { DELETE_ERROR, DELETE_SUCCESS } from '@/utils/constants/texts';
 import EmployeeVacationGraph from './EmployeeVacationGraph.vue';
 
 import GridView from '@/components/grid/GridView.vue';
+import { rbacSym } from '@/utils/injecttionSymbols';
 
 interface IProps {
    userId      : number,
@@ -106,7 +107,7 @@ interface IProps {
    vacationsRaw: IVacation[]
 };
 
-const $um = Rbac.getInstance()
+const $userManager = inject<Rbac>(rbacSym) as Rbac
 const notify = useNotify()
 const props = defineProps<IProps>()
 
@@ -154,7 +155,7 @@ function addVacation(): void {
 }
 
 async function deleteVacation(vacationId: number){
-    const vacationObj = $um.company.getVacationById(props.userId, vacationId)
+    const vacationObj = $userManager.company.getVacationById(props.userId, vacationId)
     if(vacationObj){
         if(await vacationObj.delete()){
             notify.run(DELETE_SUCCESS, notifyTypes.succ)

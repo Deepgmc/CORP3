@@ -28,6 +28,8 @@ import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
 import { CANT_DELETE, DELETE_ERROR } from '@/utils/constants/texts';
 import type { GridCols, GridColsDataTypes } from '@/composables/gridView/GridColsManager';
 import { Rbac } from '@/entities/Rbac';
+import { inject } from 'vue';
+import { rbacSym } from '@/utils/injecttionSymbols';
 
 defineEmits(['gv_sort'])
 
@@ -36,13 +38,15 @@ defineProps<{
     sortField: (column: keyof GridColsDataTypes) => void
 }>()
 
+const $userManager = inject<Rbac>(rbacSym) as Rbac
+
 const notify = useNotify()
 async function deleteDepartment(e: MouseEvent) {
     if (!(e.target instanceof HTMLElement) || typeof e.target.dataset.itemid === 'undefined') return
     const itemId: number = Number.parseInt(e.target.dataset.itemid)
     if (Number.isNaN(itemId)) {
         notify.run(DELETE_ERROR, notifyTypes.err)
-    } else if (!await Rbac.getInstance().company.deleteDepartment(itemId)) {
+    } else if (!await $userManager.company.deleteDepartment(itemId)) {
         notify.run(`${CANT_DELETE}, в департаменте есть сотрудники`, notifyTypes.err)
     }
 }

@@ -8,33 +8,37 @@ import { userDummy } from '@/stores/userStore'
 import { Rbac } from "@/entities/Rbac";
 
 const isUserProfileCardOpened = ref<boolean>(false)
-
 const cardEmployee = ref<Employee>(new Employee(userDummy, true))
-
 const avatar = ref('')
 
 export function useUserProfileCard() {
 
-    function openUserCard() {
-        isUserProfileCardOpened.value = true
+    async function openUserCard() {
+        return new Promise((resolve) => {
+            isUserProfileCardOpened.value = true
+            resolve(true)
+        })
     }
 
     function closeUserCard() {
         isUserProfileCardOpened.value = false
     }
 
-    function setCardEmployee(newCardEmployee: Employee) {
-        cardEmployee.value = newCardEmployee
+    async function setCardEmployee(newCardEmployee: Employee) {
+        return new Promise((resolve) => {
+            cardEmployee.value = newCardEmployee
+            resolve(true)
+        })
     }
 
     async function loadUserCardData(userId: IUser['userId']): Promise<void> {
-        const res: AxiosResponse = await NetworkManager.getInstance().getApiRequestMethod(EReqMethods.get)('users')(`get_employee_avatar/${userId}`)();
+        const res: AxiosResponse = await NetworkManager.getInstance().getApiRequestMethod(EReqMethods.get)('users')(`get_employee_avatar?uid=${userId}`)({});
         if (isSuccessRequest(res)) {
             const foundEmployee = Rbac.getInstance().company.getEmployeeById(userId)
             if(!foundEmployee){
                 throw new Error('Не найден сотрудник при открытии карточки сотрудника')
             }
-            setCardEmployee(foundEmployee)
+            await setCardEmployee(foundEmployee)
             if(typeof res !== 'boolean') avatar.value = res.data.avatar
         }
     }

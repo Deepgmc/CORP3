@@ -37,19 +37,18 @@
 
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, inject } from 'vue'
 import type { ILoginUser } from '@/interfaces/User'
 import { getAuthRules } from '@/composables/auth/formValidation'
-
-const $userManager = Rbac.getInstance()
-
-const $externalResults = reactive({})
 import { useVuelidate, type ErrorObject } from '@vuelidate/core'
 import { useRouter } from 'vue-router'
 import { useNotify } from '@/composables/notifyQuasar'
 import { notifyTypes } from '@/composables/notifyQuasar'
 import { Rbac } from '@/entities/Rbac'
+import { rbacSym } from '@/utils/injecttionSymbols'
 
+const $externalResults = reactive({})
+const $userManager = inject<Rbac>(rbacSym) as Rbac
 
 const isPwd = ref<boolean>(true)
 
