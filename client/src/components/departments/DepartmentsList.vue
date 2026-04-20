@@ -105,7 +105,7 @@ const gridCols = new GridCols(
 const newDepartment = reactive<IAddDepartment>({
     name       : '',
     description: '',
-    companyId  : $userManager.company.companyId,
+    companyId  : $userManager.company.id,
     countusers : '0'
 })
 

@@ -1,7 +1,7 @@
 import type { AxiosResponse } from "axios"
 
 export interface ICompany {
-    companyId     : number,
+    id            : number,
     name          : string,
     address       : string,
     accountBalance: number,
@@ -15,10 +15,10 @@ export interface ICompanyManager extends ICompany {
     departments?: IDepartment[]
 }
 
-export interface ICompanyForm extends Pick<ICompany, 'companyId' | 'name' | 'address'| 'accountBalance'> {}
+export interface ICompanyForm extends Pick<ICompany, 'id' | 'name' | 'address'| 'accountBalance'> {}
 
 export type ICompanySelect<T extends ICompany> = {
-    value: T['companyId'],
+    value: T['id'],
     label: T['name'],
 }
 
@@ -32,7 +32,7 @@ export const departmentDummy = {
 }
 export interface IDepartment {
     id         : number,
-    companyId  : ICompany['companyId'],
+    companyId  : ICompany['id'],
     name       : string,
     description: string,
     countusers : string

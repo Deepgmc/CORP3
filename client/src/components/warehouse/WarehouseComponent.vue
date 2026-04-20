@@ -44,7 +44,7 @@ const gridCols = new GridCols(
 );
 
 function addProduct(): void {
-    newProductRaw.companyId = $userManager.company.companyId
+    newProductRaw.companyId = $userManager.company.id
     const newProduct = new Product(newProductRaw)
     if(!newProduct.checkProductValid()) {
         notify.run('Неверно заполнен продукт', notifyTypes.err)

@@ -20,9 +20,7 @@ export default class Company extends Manager implements ICompany {
 
     protected _apiModule: string = 'company'
 
-    //_store: any
     _store: ReturnType<typeof useOrganizationStore>
-
 
     static getInstance (
         companyData?: ICompany
@@ -33,8 +31,8 @@ export default class Company extends Manager implements ICompany {
         if (typeof companyData === 'undefined') {
             throw new TypeError('No Company instance created. Create with .getInstance + parameters')
         }
-        return new Company(
-            companyData.companyId,
+        return new Company (
+            companyData.id,
             companyData.name,
             companyData.address,
             companyData.accountBalance
@@ -42,7 +40,7 @@ export default class Company extends Manager implements ICompany {
     }
 
     private constructor (
-        companyId     : number,
+        id            : number,
         name          : string,
         address       : string,
         accountBalance: number
@@ -53,11 +51,12 @@ export default class Company extends Manager implements ICompany {
         this.initNetwork(this._apiModule)
 
         this._store = useOrganizationStore()
-        this._store.setCompany({ companyId, name, address, accountBalance })
+        this._store.setCompany({ id, name, address, accountBalance })
 
-        if(companyId > 0){
+        if(id > 0) {
             this.loadAdditionalCompanyData()
             this.loadDictionaries()
+            Company.instance = this
         }
 
     }
@@ -97,14 +96,16 @@ export default class Company extends Manager implements ICompany {
     */
     public async loadDictionaries() {
         const dictStore = useDictStore()
+        //const unitDictionaryObj = await new Dictionary<IUnit>('units')
         const unitDictionary = await new Dictionary<IUnit>('units').initData()
         const companiesDictionary = await new Dictionary<ICompany>('companies').initData()
+
         dictStore.setDictionary<IUnit>(unitDictionary, 'units')
         dictStore.setDictionary<ICompany>(companiesDictionary, 'companies')
     }
 
-    get companyId() {
-        return this._store.company.companyId
+    get id() {
+        return this._store.company.id
     }
     get name() {
         return this._store.company.name
@@ -146,7 +147,7 @@ export default class Company extends Manager implements ICompany {
      * @returns IDepartment[]
      */
     async getFullDepartmentsList(): Promise<AxiosResponse> {
-        const deptFullList = await this._getData(`get_full_departmets_list?cid=${this.companyId}`)()
+        const deptFullList = await this._getData(`get_full_departmets_list?cid=${this.id}`)()
         return deptFullList.data
     }
 
@@ -155,7 +156,7 @@ export default class Company extends Manager implements ICompany {
      * @returns IUser[]
      */
     async getFullEmployeesList(): Promise<AxiosResponse> {
-        const employeeList = await this._getData(`get_full_employees_list?cid=${this.companyId}`)()
+        const employeeList = await this._getData(`get_full_employees_list?cid=${this.id}`)()
         return employeeList.data
     }
 
@@ -164,7 +165,7 @@ export default class Company extends Manager implements ICompany {
      * @returns IPosition[]
      */
     async getFullPositionsList(): Promise<AxiosResponse> {
-        const employeeList = await this._getData(`get_positions?cid=${this.companyId}`)()
+        const employeeList = await this._getData(`get_positions?cid=${this.id}`)()
         return employeeList.data
     }
 
@@ -173,7 +174,7 @@ export default class Company extends Manager implements ICompany {
      * @returns IPosition[]
      */
     async getDeals(): Promise<AxiosResponse> {
-        const deals = await this._getData(`get_deals?cid=${this.companyId}`)()
+        const deals = await this._getData(`get_deals?cid=${this.id}`)()
         return deals.data
     }
 
@@ -182,7 +183,7 @@ export default class Company extends Manager implements ICompany {
      * @returns IPosition[]
      */
     async getWarehouse(): Promise<AxiosResponse> {
-        const warehouse = await this._getData(`get_warehouse?cid=${this.companyId}`)()
+        const warehouse = await this._getData(`get_warehouse?cid=${this.id}`)()
         return warehouse.data
     }
 
@@ -289,7 +290,7 @@ export default class Company extends Manager implements ICompany {
     }
 
     isMyCompany(checkingId: number){
-        return this.companyId === checkingId
+        return this.id === checkingId
     }
 
     async loadCompanyOwnerUser(companyId: number): Promise<Employee | undefined> {

@@ -52,14 +52,14 @@ export class DealsEntity {
     @ManyToOne(() => CompanyEntity, { cascade: true })
     @JoinColumn({
         name: 'ownerCompanyId',
-        referencedColumnName: 'companyId'
+        referencedColumnName: 'id'
     })
     ownerCompany: CompanyEntity;
 
     @ManyToOne(() => CompanyEntity, { cascade: true })
     @JoinColumn({
         name: 'partnerCompanyId',
-        referencedColumnName: 'companyId'
+        referencedColumnName: 'id'
     })
     partnerCompany: CompanyEntity;
 }

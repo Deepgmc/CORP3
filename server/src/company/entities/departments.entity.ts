@@ -5,33 +5,33 @@ import { UsersEntity } from 'src/users/entities/user.entity';
 
 @Entity('department')
 export class DepartmentEntity {
-    @PrimaryGeneratedColumn('increment', { //uuid для генерации большого ключа
+    @PrimaryGeneratedColumn('increment', {
         comment: 'Department autoincrement id'
     })
-    readonly id: number;
+    readonly id!: number;
 
     @Column()
-    companyId: number;
+    companyId!: number;
 
     @Column()
-    name: string;
+    name!: string;
 
     @Column()
-    description: string;
+    description!: string;
 
     //! ##############   RELATIONS
 
     @ManyToOne(() => CompanyEntity, { cascade: true })
     @JoinColumn({
         name: 'companyId',
-        referencedColumnName: 'companyId'
+        referencedColumnName: 'id'
     })
-    company: CompanyEntity;
+    company!: CompanyEntity;
 
     @OneToMany(() => UsersEntity, (users) => users.department)
     @JoinColumn({
         name: 'id',
         referencedColumnName: 'departmentId'
     })
-    users: UsersEntity[]
+    users!: UsersEntity[];
 }

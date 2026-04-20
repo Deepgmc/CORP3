@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
 import type Dictionary from '@/utils/Dictionary';
+import type { ICompany, IUnit } from '@/interfaces/Company';
 
 export const useDictStore = defineStore('dictionaries', {
     state: () => ({
-        units: {} as any,
-        companies: {} as any
+        units: {} as Dictionary<IUnit>,
+        companies: {} as Dictionary<ICompany>
     }),
     getters: {},
     actions: {

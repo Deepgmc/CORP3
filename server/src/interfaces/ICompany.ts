@@ -1,5 +1,5 @@
 export interface ICompany {
-    companyId     : number,
+    id            : number,
     name          : string,
     address       : string,
     accountBalance: number
@@ -10,9 +10,9 @@ export type ICompanyEntity = ICompany
 
 export interface IDepartment {
     id         : number,
-    companyId  : ICompany['companyId'],
+    companyId  : ICompany['id'],
     name       : string,
     description: string
 }
 
-export interface IAddDepartment extends Pick<IDepartment, 'companyId' | 'name' | 'description'> {}
+export interface IAddDepartment extends Pick<IDepartment, 'id' | 'name' | 'description'> {}

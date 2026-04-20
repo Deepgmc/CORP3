@@ -76,10 +76,10 @@ const newProductCount = defineModel<number>('newProductCount')
 const newProductUnitId = defineModel<number>('newProductUnitId')
 const emit = defineEmits(['add-product'])
 
-const dictStore = useDictStore()
+const {units} = useDictStore()
 
 const unitOptions = computed(() =>{
-    return getSelectOptionsFromDataArray<IUnit>(dictStore.units, {
+    return getSelectOptionsFromDataArray<IUnit>(units.getData(), {
         idField: 'id',
         labelField: 'name'
     })

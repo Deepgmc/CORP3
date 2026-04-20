@@ -28,7 +28,7 @@
     const modelCompanyId = defineModel<number>('modelCompanyId')
     const { companies } = useDictStore()
     const selectOptions = getSelectOptionsFromDataArray<ICompany>(companies.getData(), {
-            idField: 'companyId',
+            idField   : 'id',
             labelField: 'name'
         });
 </script>

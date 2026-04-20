@@ -10,7 +10,7 @@ export class CompanyEntity implements ICompanyEntity {
     @PrimaryGeneratedColumn('increment', {
         comment: 'Company autoincrement id'
     })
-    readonly companyId: number;
+    readonly id: number;
 
     @Column()
     name: string;

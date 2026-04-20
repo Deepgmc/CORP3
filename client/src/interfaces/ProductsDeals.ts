@@ -33,7 +33,7 @@ export const enum productStatesNames {
 
 export interface IProduct {
     id       : number,
-    companyId: ICompany['companyId'] | null,
+    companyId: ICompany['id'] | null,
     name     : string,
     status   : productStatesNames,
     price    : number | undefined,

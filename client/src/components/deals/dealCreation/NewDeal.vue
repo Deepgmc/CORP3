@@ -41,11 +41,13 @@
 
     <q-separator class="q-ma-lg"></q-separator>
 
-    <div>partnerCompanyId: {{ deal.partnerCompanyId }}</div>
-    <div>partnerId: {{ deal.partnerId }}</div>
-    <div>currentStep: {{ currentStep }}</div>
-    <div>ownerCompanyId: {{ deal.ownerCompanyId }}</div>
-    <div>ownerId: {{ deal.ownerId }}</div>
+<pre>
+partnerCompanyId: {{ deal.partnerCompanyId }}
+partnerId: {{ deal.partnerId }}
+currentStep: {{ currentStep }}
+ownerCompanyId: {{ deal.ownerCompanyId }}
+ownerId: {{ deal.ownerId }}
+</pre>
 </template>
 
 <script setup lang="ts">
@@ -58,7 +60,7 @@
 
     const $userManager = inject<Rbac>(rbacSym) as Rbac
     const user = $userManager.getUser()
-    const deal = ref(new Deal(user.userId, user.company.companyId))
+    const deal = ref(new Deal(user.userId, user.company.id))
     const currentStep = ref(deal.value.getStep(1))
 
     if(!user.companyId || currentStep.value === undefined){
@@ -104,6 +106,6 @@
 
 <style scoped lang="scss">
     .new-deal-container {
-        height: auto;
+        height: 400px;
     }
 </style>

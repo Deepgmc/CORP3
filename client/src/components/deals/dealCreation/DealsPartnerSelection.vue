@@ -64,8 +64,8 @@
         const owner: Employee | undefined = await $userManager.company.loadCompanyOwnerUser(selectedCompanyId)
         if(owner && owner.userId > 0) {
             partnerId.value = owner.userId
-            console.log('companiesDict.companies:', companiesDict)
-            selectedCompany.value = companiesDict
+            console.log('companiesDict.companies:', selectedCompany.value)
+            console.log('companiesDict:', companiesDict)
         } else {
             emit('reset-partner-company')
             notify.run('Ошибка определения владельца компании', notifyTypes.err)

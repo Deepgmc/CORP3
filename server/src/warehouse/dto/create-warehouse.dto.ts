@@ -22,6 +22,15 @@ export class CreateWarehouseDto {
     name: string
 
     @ApiProperty({
+        description: 'Компания',
+        required: true,
+        type: Number
+    })
+    @IsNotEmpty({message: 'Не пустое'})
+    @IsNumber()
+    companyId: number
+
+    @ApiProperty({
         description: 'Ед. измерения товара',
         required: true,
         type: Number

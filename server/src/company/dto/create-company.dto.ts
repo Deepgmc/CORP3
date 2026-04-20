@@ -11,7 +11,7 @@ export class CreateCompanyDto implements ICompany {
         type: Number
     })
     @IsNotEmpty()
-    companyId: number
+    id: number
 
     @ApiProperty({
         description: 'Название компании',

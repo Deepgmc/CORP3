@@ -34,7 +34,7 @@ export class WarehouseEntity {
     @ManyToOne(() => CompanyEntity, { cascade: true })
     @JoinColumn({
         name: 'companyId',
-        referencedColumnName: 'companyId'
+        referencedColumnName: 'id'
     })
     company: CompanyEntity;
 
