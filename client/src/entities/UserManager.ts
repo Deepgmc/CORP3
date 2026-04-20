@@ -7,6 +7,7 @@ import type { isLoginedResult } from '../auth/strategies/Strategy'
 import { ALREADY_AUTHORISED_MSG } from '@/utils/constants/texts.ts'
 import Company from '@/entities/Company'
 import Manager from './Manager'
+import { companyDummy } from '@/stores/organizationStore'
 
 
 export class UserManager extends Manager implements IUserManager {
@@ -21,13 +22,14 @@ export class UserManager extends Manager implements IUserManager {
 
     protected _apiModule: string = 'user'
 
-    public company!: Company // Инстанс объекта компании
+    public company: Company // Инстанс объекта компании
 
     public constructor (
         strategy?: IUserManager['_strategy'],
         userStore?: any
     ) {
         super()
+        this.company = Company.getInstance(companyDummy)
         if (strategy) this._strategy = strategy
         this._userStore = userStore
         this.initNetwork(this._apiModule)
@@ -36,7 +38,7 @@ export class UserManager extends Manager implements IUserManager {
     // загрузка данных юзера при старте системы
     async loadInitData() {
         const createdUser: IUser = await this._userStore.loadUserData()
-        if (createdUser.company === null || this.company) return
+        if (createdUser.company === null) return
         //юзер загружен, цепляем к нему его компанию
         this.company = Company.getInstance(createdUser.company)
     }

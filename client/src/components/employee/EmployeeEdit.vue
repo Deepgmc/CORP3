@@ -42,7 +42,7 @@
                             <state-icon
                                 v-for="transitionTo in cardEmployee.state.transitions"
                                 :key="transitionTo.name"
-                                :state="employeeStates[transitionTo.name]"
+                                :state="employeeStates[transitionTo.name as keyof typeof employeeStates]"
                                 :transition="transitionTo"
                                 size="md"
                                 type="button"
@@ -76,36 +76,36 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { employeeStates } from '@/entities/Employee';
-import { useUserProfileCard } from '@/composables/userProfileCard';
-import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
+    import { ref } from 'vue';
+    import { employeeStates } from '@/entities/Employee';
+    import { useUserProfileCard } from '@/composables/userProfileCard';
+    import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
 
-import StateIcon from '@/components/employee/StateIcon.vue';
-import EmployeeEditVacation from './EmployeeEditVacation.vue';
-import EmployeeEditSalary from './EmployeeEditSalary.vue';
-import { SAVED_SUCCESS } from '@/utils/constants/texts';
+    import StateIcon from '@/components/employee/StateIcon.vue';
+    import EmployeeEditVacation from './EmployeeEditVacation.vue';
+    import EmployeeEditSalary from './EmployeeEditSalary.vue';
+    import { SAVED_SUCCESS } from '@/utils/constants/texts';
 
-const { cardEmployee } = useUserProfileCard()
-const notify = useNotify()
+    const { cardEmployee } = useUserProfileCard()
+    const notify = useNotify()
 
-const tab = ref('salary') //начально открытая вкладка
-const splitterModel = ref(15)
+    const tab = ref('salary') //начально открытая вкладка
+    const splitterModel = ref(15)
 
-function dispatchAction(action: string){
-    cardEmployee.value.dispatch(action, false)
-}
+    function dispatchAction(action: string){
+        cardEmployee.value.dispatch(action, false)
+    }
 
-function setSalary(newSalaryAmount: number) {
-    cardEmployee.value.setNewSalary(newSalaryAmount)
-        .then((result) => {
-            if(!result.error){
-                notify.run(SAVED_SUCCESS, notifyTypes.succ)
-            } else {
-                notify.run(result.errorMessage, notifyTypes.err)
-            }
-        })
-}
+    function setSalary(newSalaryAmount: number) {
+        cardEmployee.value.setNewSalary(newSalaryAmount)
+            .then((result) => {
+                if(!result.error){
+                    notify.run(SAVED_SUCCESS, notifyTypes.succ)
+                } else {
+                    notify.run(result.errorMessage, notifyTypes.err)
+                }
+            })
+    }
 </script>
 
 <style lang="scss" scoped>

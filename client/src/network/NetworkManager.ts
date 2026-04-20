@@ -35,9 +35,9 @@ export default class NetworkManager {
 
         this.httpClient = axios.create({
             //baseURL: import.meta.env.DEV ? import.meta.env.VUE_APP_API_URL : 'NEED_PROD_URL',
-            baseURL: 'http://localhost:5173/api',
             timeout: 1000,
-            //baseURL: 'http://localhost:3050/api',
+            baseURL: 'http://localhost:5173/api',
+            //baseURL: 'http://192.168.1.128:3050/api',
         })
     };
 

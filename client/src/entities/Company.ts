@@ -3,7 +3,7 @@ import type { IPosition, IUser } from "@/interfaces/User";
 import type { AxiosResponse } from "axios";
 import { useOrganizationStore } from "@/stores/organizationStore";
 import { isSuccessRequest } from "@/utils/helpers/network";
-import type { Employee } from "./Employee";
+import { Employee } from "./Employee";
 import type { TResult } from "@/interfaces/Error";
 import Manager from "./Manager";
 import type { Vacation } from "./Vacation";
@@ -55,8 +55,11 @@ export default class Company extends Manager implements ICompany {
         this._store = useOrganizationStore()
         this._store.setCompany({ companyId, name, address, accountBalance })
 
-        this.loadAdditionalCompanyData()
-        this.loadDictionaries()
+        if(companyId > 0){
+            this.loadAdditionalCompanyData()
+            this.loadDictionaries()
+        }
+
     }
 
     /**
@@ -93,9 +96,11 @@ export default class Company extends Manager implements ICompany {
         загружаем словари статичных данных
     */
     public async loadDictionaries() {
-        const unitDict = await new Dictionary('units').initData()
         const dictStore = useDictStore()
-        dictStore.setUnits(unitDict.getData() as IUnit[])
+        const unitDictionary = await new Dictionary<IUnit>('units').initData()
+        const companiesDictionary = await new Dictionary<ICompany>('companies').initData()
+        dictStore.setDictionary<IUnit>(unitDictionary, 'units')
+        dictStore.setDictionary<ICompany>(companiesDictionary, 'companies')
     }
 
     get companyId() {
@@ -276,9 +281,22 @@ export default class Company extends Manager implements ICompany {
     addNewProduct(product: IProduct): boolean {
         return this._store.addNewProduct(product)
     }
+
     deleteProduct(product: IProduct): boolean {
         console.log('NO DELETE IMPLEMENTATION:', product)
         return false
         //return this._store.deleteProduct(product)
+    }
+
+    isMyCompany(checkingId: number){
+        return this.companyId === checkingId
+    }
+
+    async loadCompanyOwnerUser(companyId: number): Promise<Employee | undefined> {
+        const res = await this._getData(`get_company_owner?cid=${companyId}`)({})
+        if(isSuccessRequest(res)) {
+            return new Employee(res.data)
+        }
+        return undefined
     }
 }

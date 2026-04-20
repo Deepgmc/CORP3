@@ -89,6 +89,16 @@ export class CompanyService {
         return this.deptRepository.find({where: {companyId: companyId}})
     }
 
+    async getCompanyOwner(companyId: number): Promise<UsersEntity | null> {
+        return await this.usersRepository.findOne({
+            where: {
+                companyId: companyId,
+                isDirector: true
+            },
+            relations: ['company', 'skills', 'department', 'position', 'vacations']
+        })
+    }
+
     async getPositions() {
         return this.positionsRepository.find()
     }

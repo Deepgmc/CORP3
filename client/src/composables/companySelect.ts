@@ -1,9 +1,11 @@
+import { Employee } from '@/entities/Employee'
 import type { ICompany, ICompanySelect, IDepartment, IDeptSelect } from '@/interfaces/Company'
-import type { IPosition, IPositionSelect } from '@/interfaces/User'
+import type { IPosition, ISelectData } from '@/interfaces/User'
 import type NetworkManager from '@/network/NetworkManager'
 import { EReqMethods } from '@/network/NetworkManager'
 import { getSelectOptionsFromDataArray } from '@/utils/helpers/components'
-import { ref } from 'vue'
+import { isSuccessRequest } from '@/utils/helpers/network'
+import { onMounted, ref } from 'vue'
 
 export type optionsResult = {
     value: number,
@@ -13,13 +15,13 @@ export type optionsResult = {
 export function useCompany($networkManager: NetworkManager) {
 
     let isLoaded = false
-    const comOptions = ref<IPositionSelect[]>()
-    const deptOptions = ref<IPositionSelect[]>()
-    const selectPositionOptions = ref<IPositionSelect[]>()
     const emptyDummy = { label: '', value: 0 }
+    const comOptions = ref<ISelectData[]>()
+    const deptOptions = ref<ISelectData[]>()
+    const selectPositionOptions = ref<ISelectData[]>()
     const selectRefModel = ref<ICompanySelect<ICompany>>(emptyDummy)
     const selectDeptModel = ref<IDeptSelect>(emptyDummy)
-    const selectPositionModel = ref<IPositionSelect>(emptyDummy)
+    const selectPositionModel = ref<ISelectData>(emptyDummy)
 
     async function loadAllCompanies(): Promise<boolean> {
         if (!isLoaded) { //загружаем только один раз, это статичные данные
@@ -48,13 +50,20 @@ export function useCompany($networkManager: NetworkManager) {
     async function loadPositions(): Promise<IPosition[] | boolean> {
         const asxiosData = await $networkManager.getApiRequestMethod(EReqMethods.get)('company')(`get_positions`)({})
         if (typeof asxiosData !== 'boolean') {
-            // selectPositionModel
             selectPositionOptions.value = getSelectOptionsFromDataArray<IPosition>(asxiosData.data, {
                 idField: 'id',
                 labelField: 'position'
             })
         }
         return false
+    }
+
+    async function loadCompanyOwnerUser(companyId: number): Promise<Employee | undefined> {
+        const res = await $networkManager.getApiRequestMethod(EReqMethods.get)('company')(`get_company_owner?cid=${companyId}`)({})
+        if(isSuccessRequest(res)) {
+            return new Employee(res.data)
+        }
+        return undefined
     }
 
     function filterFn(val: string, update: any, /*_abort: any*/) {
@@ -72,6 +81,10 @@ export function useCompany($networkManager: NetworkManager) {
         selectRefModel.value = emptyDummy
     }
 
+    onMounted(() => {
+        loadAllCompanies()
+    })
+
     return {
         selectRefModel,
         selectDeptModel,
@@ -84,5 +97,6 @@ export function useCompany($networkManager: NetworkManager) {
         loadCompanyDepartments,
         loadPositions,
         resetCompanySelection,
+        loadCompanyOwnerUser
     }
 }

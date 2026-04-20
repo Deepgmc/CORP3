@@ -1,16 +1,30 @@
 import type { ICompany } from './Company';
 
+/**
+* DEALS
+* */
 export interface IDeal {
-    dealId          : number,
-    ownerId         : number,
-    ownerCompanyId  : number,
-    partnerId       : number,
-    partnerCompanyId: number,
-    reg_date        : number,
-    shipment_date   : number,
-    discount        : number,
+    dealId           ?: number,
+    partnerId        ?: number,
+    partnerCompanyId ?: number,
+    reg_date         ?: number,
+    shipment_date    ?: number,
+    discount          : number,
+    ownerId           : number,
+    ownerCompanyId    : number,
 }
 
+export interface dealCreationStep {
+    readonly id  : string,
+        order    : number,
+        label    : string,
+        isSuccess: boolean
+}
+
+
+/**
+* PRODUCTS
+* */
 export const enum productStatesNames {
     inStock = 'inStock',
     selled  = 'selled',

@@ -84,6 +84,13 @@ export class CompanyController {
         return await this.warehouseService.getAllForCompany(companyId)
     }
 
+    @Get('get_company_owner')
+    async getCompanyOwner(
+        @Query('cid') companyId: number
+    ): Promise<UsersEntity | null> {
+        return await this.companyService.getCompanyOwner(companyId)
+    }
+
     @Get('get_full_employees_list')
     async getFullEmployeesList(
         @Query('cid') companyId: number
@@ -121,6 +128,10 @@ export class CompanyController {
     @Get('dictionary/units')
     async getUnits(): Promise<UnitsEntity[]> {
         return await this.companyService.getFullUnits()
+    }
+    @Get('dictionary/companies')
+    async getCompanies(): Promise<CompanyEntity[]> {
+        return await this.companyService.findAll()
     }
 
 }

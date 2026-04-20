@@ -25,7 +25,7 @@ export interface IUser {
     accountBalance: number,
 
     //! RELATIONS
-    company   : ICompany | null,
+    company   : ICompany,
     skills    : TSkill[],
     department: IDepartment | null,
     position  : IPosition | null,
@@ -64,7 +64,7 @@ export interface IPosition {
     id      : number,
     position: string
 }
-export interface IPositionSelect {
+export interface ISelectData {
     value: number,
     label: string
 }

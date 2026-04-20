@@ -1,35 +1,17 @@
-// import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { IUnit } from '@/interfaces/Company'
+import type Dictionary from '@/utils/Dictionary';
 
 export const useDictStore = defineStore('dictionaries', {
     state: () => ({
-        units: []
+        units: {} as any,
+        companies: {} as any
     }),
-    getters: {
-        getUnitById(state){
-            return (unitID: number) => state.units.find((unit: IUnit) => unit.id === unitID);
-        }
-    },
+    getters: {},
     actions: {
-        setUnits(newUnits: IUnit[]): void {
-            this.units = newUnits
+        setDictionary<T extends {id: number}>(dictionary: Dictionary<T>, name: string) {
+            if(this[name]){
+                this[name] = dictionary
+            }
         }
     }
-})
-    // const units = ref<IUnit[]>([])
-
-    // function setUnits(newUnits: IUnit[]): void {
-    //     units.value = newUnits
-    // }
-
-    // const getUnitById = computed(() => {
-
-    // })
-
-    // return {
-    //     units,
-
-    //     setUnits
-    // }
-// })
+});

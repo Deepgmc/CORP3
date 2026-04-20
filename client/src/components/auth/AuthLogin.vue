@@ -1,7 +1,7 @@
 <template>
     <div class="q-pa-md">
         <q-form
-            @submit="onSubmit"
+            @submit.prevent="onSubmit"
             @reset="onReset"
         >
             <q-input
@@ -74,6 +74,7 @@ async function onSubmit() {
             $userManager.setRouteAfterLogin(router)
         }
     } catch (e: any) {
+        notify.run(e, notifyTypes.err)
         console.warn('onSubmit warn:', e)
     }
 }

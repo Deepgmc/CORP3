@@ -1,6 +1,6 @@
 <template>
     <div class="q-pa-md">
-        <q-form @submit="onSubmit" @reset="onReset">
+        <q-form @submit.prevent="onSubmit" @reset="onReset">
             <q-input v-model="regUser.username" label="Логин *" :error="$v.username.$error"
                      :error-message="getErrorForField('username')" @blur="setBlur('username')" />
 
@@ -27,7 +27,8 @@
 
             <div class="row">
                 <div :class="{ 'col-8': isCompanySelected, 'col-12': !isCompanySelected }">
-                    <q-select filled
+                    <q-select
+                        filled
                         v-model="selectRefModel"
                         :options="selectOptions"
                         use-input
@@ -115,7 +116,7 @@
 
 
 <script setup lang="ts">
-import { ref, reactive, inject, onMounted, computed } from 'vue'
+import { ref, reactive, inject, computed } from 'vue'
 
 import type { TRegisterForm } from '@/interfaces/User'
 import { getAuthRules } from '@/composables/auth/formValidation'
@@ -144,7 +145,7 @@ const {
     selectDeptOptions,
     selectPositionOptions,
     filterFn,
-    loadAllCompanies,
+    // loadAllCompanies,
     resetCompanySelection,
     loadCompanyDepartments,
     loadPositions,
@@ -167,10 +168,11 @@ const regUser = ref<TRegisterForm>({
     positionId     : null,
 })
 
-onMounted(() => {
-    //загружаем список компаний при инициализации
-    loadAllCompanies()
-})
+// onMounted(() => {
+//     //! возможно вернуть!
+//     //загружаем список компаний при инициализации
+//     loadAllCompanies()
+// })
 
 const rules = getAuthRules(['username', 'password', 'passwordConfirm', 'email', 'passEqual', 'companyId', 'departmentId'])
 const $v = useVuelidate(rules, regUser, { $externalResults: $externalResults })

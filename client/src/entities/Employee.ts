@@ -8,6 +8,7 @@ import { Vacation } from "./Vacation";
 import { labelVacationIsMedical } from "@/utils/constants/main";
 import { isAffected, isSuccessRequest } from "@/utils/helpers/network";
 import { SAVED_SUCCESS, UNKNOWN_ERROR } from "@/utils/constants/texts";
+import { companyDummy } from "@/stores/organizationStore";
 
 export interface ITransition {
     [key: string]: {
@@ -80,11 +81,11 @@ export class Employee extends FiniteStateMachine implements IUser {
     public     isDirector   : boolean   = false
     public     avatar       : string    = ''
 
-    company     : ICompany | null       = null
-    skills      : TSkill[]              = []
-    department  : IDepartment | null    = null
-    position    : IPosition | null      = null
-    vacations   : IVacation[]           = []
+    company    : ICompany           = companyDummy
+    skills     : TSkill[]           = []
+    department : IDepartment | null = null
+    position   : IPosition | null   = null
+    vacations  : IVacation[]        = []
 
     public salaryAmount: number | null  = null
     public accountBalance: number = 0
@@ -146,6 +147,7 @@ export class Employee extends FiniteStateMachine implements IUser {
     }
 
     private deserializeIncomeUser(incomeUser: IUser): IUser {
+        if(!incomeUser.vacations) return incomeUser
         incomeUser.vacations = incomeUser.vacations
             .map(vac => {
                 return new Vacation(vac)
