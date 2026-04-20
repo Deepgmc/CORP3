@@ -5,9 +5,6 @@
         :options="selectOptions"
         emit-value
         map-options
-        use-input
-        hide-selected
-        fill-input
         input-debounce="0"
         label="Выберите компанию"
     >

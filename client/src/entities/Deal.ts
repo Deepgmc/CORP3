@@ -3,12 +3,12 @@ import Manager from "./Manager";
 
 export class Deal extends Manager implements IDeal {
 
-    dealId           ?: number
-    partnerId        ?: number
-    partnerCompanyId ?: number = 0
-    reg_date         ?: number
-    shipment_date    ?: number
-    discount          : number = 0
+    dealId          ?: number
+    partnerId       ?: number
+    partnerCompanyId?: number
+    reg_date        ?: number
+    shipment_date   ?: number
+    discount         : number = 0
 
     readonly steps: dealCreationStep[] = [
         {
@@ -61,8 +61,8 @@ export class Deal extends Manager implements IDeal {
     resetPartnerCompany(){
         const partnerStep = this.getStep('partnerSelection')
         if(partnerStep) {
-            this.partnerCompanyId = 0
-            this.partnerId = 0
+            this.partnerCompanyId = undefined
+            this.partnerId = undefined
             partnerStep.isSuccess = false
         }
     }
