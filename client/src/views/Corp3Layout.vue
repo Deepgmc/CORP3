@@ -82,7 +82,7 @@
     <q-page-container>
         <q-page class="q-pa-xs">
             <div class="row justify-center">
-                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 card_block">
+                <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10 card_block">
                     <router-view />
                 </div>
             </div>

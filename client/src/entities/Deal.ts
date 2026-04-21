@@ -1,14 +1,20 @@
 import type { dealCreationStep, IDeal } from "@/interfaces/ProductsDeals";
 import Manager from "./Manager";
+import type { ICompany } from "@/interfaces/Company";
+import type { Employee } from "./Employee";
 
 export class Deal extends Manager implements IDeal {
 
-    dealId          ?: number
-    partnerId       ?: number
-    partnerCompanyId?: number
-    reg_date        ?: number
-    shipment_date   ?: number
-    discount         : number = 0
+    dealId ?: number
+
+    partnerId           ?: number = 4
+    partnerCompanyId    ?: number = 2
+    selectedPartner     ?: ICompany
+    selectedPartnerOwner?: Employee
+
+    reg_date     ?: number
+    shipment_date?: number
+    discount      : number = 0
 
     readonly steps: dealCreationStep[] = [
         {
@@ -23,9 +29,13 @@ export class Deal extends Manager implements IDeal {
             label    : 'Выбор товара',
             isSuccess: false
         },
-    ]
-
-    //readonly creationSteps: Set<dealCreationStep> = new Set<dealCreationStep>(this.stepsRaw)
+        {
+            id       : 'taxLawSelection',
+            order    : 3,
+            label    : 'Документы, финансовые вопросы',
+            isSuccess: false
+        },
+    ];
 
     //ищем щаг по порядковому номеру или id
     public getStep(id: string): dealCreationStep | undefined
@@ -61,15 +71,19 @@ export class Deal extends Manager implements IDeal {
     resetPartnerCompany(){
         const partnerStep = this.getStep('partnerSelection')
         if(partnerStep) {
-            this.partnerCompanyId = undefined
-            this.partnerId = undefined
-            partnerStep.isSuccess = false
+            this.partnerCompanyId     = undefined
+            this.partnerId            = undefined
+            this.selectedPartner      = undefined
+            this.selectedPartnerOwner = undefined
+            partnerStep.isSuccess     = false
         }
     }
 
-    setPartnerSelectedSuccess(){
+    setPartnerSelectedSuccess(selectedPartner: ICompany, selectedPartnerOwner: Employee){
         const partnerStep = this.getStep('partnerSelection')
         if(partnerStep) {
+            this.selectedPartner = selectedPartner
+            this.selectedPartnerOwner = selectedPartnerOwner
             partnerStep.isSuccess = true
         }
     }

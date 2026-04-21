@@ -52,7 +52,7 @@
                 @drop="dropUser($event)"
                 @dragenter.prevent=""
                 @dragover.prevent=""
-                :data-deptid="dept[0].id"
+                :data-drop_id="dept[0].id"
             >
                 <p>{{ dept[0].name }}</p>
             </div>
@@ -63,7 +63,7 @@
                     draggable="true"
                     class="GT_user"
                     :data-deptid="dept[0].id"
-                    @dragstart="dragItem($event, empl)"
+                    @dragstart="dragItem($event, empl.userId, dept[0].id)"
                 >
                     <div>{{ empl.username }}</div><div>{{ empl.firstName }} {{ empl.lastName }}</div>
                 </div><!--employees v-for-->
@@ -75,7 +75,7 @@
 <script setup lang="ts">
 import { computed, inject, reactive, type Ref, ref } from 'vue';
 import GridViewDepartments from '@/components/grid/GridViewDepartments.vue';
-import { dragItem, dropItem } from '@/composables/dnd'
+import { dragItem, dropItem, type TDropResult } from '@/utils/helpers/dnd'
 
 import { GridCols } from '@/composables/gridView/GridColsManager';
 import { departmentAvailableCols } from '@/composables/gridView/GridColumnOptions';
@@ -142,16 +142,17 @@ const deptsDndList: Ref<Map<IDepartment, IUser[]>> = computed(() => {
 //перемещаем юзера между департаментами
 function dropUser(event: DragEvent){
     //непосредственно днд обрабатываем тут
-    const dropResult = dropItem(event)
+    const dropResult: TDropResult = dropItem(event)
 
     //а работу с данными проводим дальше
     if(typeof dropResult === 'boolean') {
         return dropResult
     }
-    const {dropId, dragItemId, dragFromId} = dropResult
+    const {dropId, draggingItemId, dragFromId} = dropResult
 
     employees.forEach((thisEmp: IUser) => {
-        if(thisEmp.userId === dragItemId && thisEmp.departmentId === dragFromId) {
+        if(thisEmp.userId === draggingItemId && thisEmp.departmentId === dragFromId) {
+            if(!dropId) throw new Error('No drop container id')
             $userManager.company.switchUserDepartmets(thisEmp, dragFromId, dropId)
             return true
         }

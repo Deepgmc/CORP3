@@ -4,7 +4,7 @@
         v-model="slide"
         animated
         control-type="unelevated"
-        class="new-deal-container bg-green text-white rounded-borders"
+        class="new-deal-container bg-green rounded-borders"
     >
         <q-carousel-slide name="partnerSelection" class="no-wrap">
             <deals-partner-selection
@@ -17,7 +17,10 @@
         </q-carousel-slide>
 
         <q-carousel-slide name="productSelection" class="no-wrap">
-            <deals-warehouse-selection></deals-warehouse-selection>
+            <deals-warehouse-selection
+                :caption="currentStep?.label"
+                :deal="deal"
+            ></deals-warehouse-selection>
         </q-carousel-slide>
     </q-carousel>
 
@@ -25,7 +28,7 @@
         color="deep-orange"
         class="q-mt-sm"
         v-if="showPrevButton"
-        @click="goPrev"
+        @click="changeStep(-1)"
     >
         Назад
     </q-btn>
@@ -34,7 +37,7 @@
         color="deep-orange"
         class="q-mt-sm"
         v-if="showNextButton"
-        @click="goNext"
+        @click="changeStep(+1)"
     >
         Далее
     </q-btn>
@@ -57,11 +60,13 @@ ownerId: {{ deal.ownerId }}
     import { rbacSym } from '@/utils/injecttionSymbols';
     import DealsPartnerSelection from './DealsPartnerSelection.vue';
     import DealsWarehouseSelection from './DealsWarehouseSelection.vue';
+    import type { Employee } from '@/entities/Employee';
+    import type { ICompany } from '@/interfaces/Company';
 
     const $userManager = inject<Rbac>(rbacSym) as Rbac
     const user = $userManager.getUser()
     const deal = ref(new Deal(user.userId, user.company.id))
-    const currentStep = ref(deal.value.getStep(1))
+    const currentStep = ref(deal.value.getStep(2))
 
     if(!user.companyId || currentStep.value === undefined){
         throw new Error('Unexpected error')
@@ -76,26 +81,17 @@ ownerId: {{ deal.ownerId }}
 
     const slide = ref<string>(currentStep.value.id)
 
-    function goNext(){
+    function changeStep(increment: number){
         if(currentStep.value === undefined) return
-        const nextStep = deal.value.getStep(currentStep.value.order + 1)
+        const nextStep = deal.value.getStep(currentStep.value.order + increment)
         if(nextStep === undefined) return
 
         slide.value = nextStep.id
         currentStep.value = nextStep
     }
 
-    function goPrev(){
-        if(currentStep.value === undefined) return
-        const nextStep = deal.value.getStep(currentStep.value.order - 1)
-        if(nextStep === undefined) return
-
-        slide.value = nextStep.id
-        currentStep.value = nextStep
-    }
-
-    function partnerSelected(){
-        deal.value.setPartnerSelectedSuccess()
+    function partnerSelected(selectedPartner: ICompany, selectedPartnerOwner: Employee){
+        deal.value.setPartnerSelectedSuccess(selectedPartner, selectedPartnerOwner)
     }
 
     function resetPartnerCopmpany(){
@@ -106,6 +102,6 @@ ownerId: {{ deal.ownerId }}
 
 <style scoped lang="scss">
     .new-deal-container {
-        height: 400px;
+        height: 600px;
     }
 </style>

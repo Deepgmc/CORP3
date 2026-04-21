@@ -1,6 +1,6 @@
 <template>
     <div class="col-6">
-        <h5>{{ props.caption || '' }}</h5>
+        <span class="text-h5">{{ props.caption || '' }}</span>
 
         <company-selection-component
             v-model="modelCompanyId"
@@ -38,16 +38,37 @@
     const selectedPartner = ref<ICompany>()
     const selectedPartnerOwner = ref<Employee>()
 
+    /**
+    * TEMPORARY
+    */
+    setTimeout(() => {
+        new Promise((resolve) => {
+            $userManager.company.loadCompanyOwnerUser(2)
+            .then((res) => {
+                selectedPartnerOwner.value = res
+                resolve(true)
+            })
+        })
+    }, 0)
+    /**
+    * TEMPORARY
+    */
+
+
+
+
+
+
     //всё ли в порядке при выборе компании. показываем выбранную и кнопку перехода на следующую стадию
     const isSelectedSuccess = computed(() => {
         return partnerId.value && partnerId.value > 0 && modelCompanyId.value && modelCompanyId.value > 0
     })
 
-    watch(isSelectedSuccess, () => {
-        if(isSelectedSuccess.value) {
-            emit('partner-selected-success')
-        }
-    })
+    // watch(isSelectedSuccess, () => {
+    //     if(isSelectedSuccess.value) {
+    //         emit('partner-selected-success')
+    //     }
+    // })
 
     //ищем владельца компании при её выборе
     watch(modelCompanyId, () => {
@@ -66,6 +87,7 @@
             partnerId.value = owner.userId
             selectedPartner.value = companiesDict.getItemById(selectedCompanyId)
             selectedPartnerOwner.value = owner
+            emit('partner-selected-success', {selectedPartner, selectedPartnerOwner})
         } else {
             emit('reset-partner-company')
             notify.run('Ошибка определения владельца компании', notifyTypes.err)
