@@ -1,4 +1,6 @@
+import type { Reactive } from 'vue';
 import type { ICompany } from './Company';
+import type Product from '@/entities/warehouse/Product';
 
 /**
 * DEALS
@@ -12,6 +14,10 @@ export interface IDeal {
     discount          : number,
     ownerId           : number,
     ownerCompanyId    : number,
+
+    deferredWarehouse: Reactive<Product[]>,
+    pushToDeferredWarehouse: (newProduct: Product) => boolean,
+    removeDeferredProduct: (id: number) => number | false,
 }
 
 export interface dealCreationStep {
@@ -38,10 +44,10 @@ export interface IProduct {
     status   : productStatesNames,
     price    : number | undefined,
     unitId   : number | undefined,
-    count    : number | undefined
+    count    : number
 }
 
-export interface INewProduct extends Required<Omit<IProduct, 'id'>> {}
+export interface INewProduct extends Required<IProduct> {}
 
 export const productDummy = {
     name     : '',

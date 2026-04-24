@@ -20,6 +20,7 @@
             <deals-warehouse-selection
                 :caption="currentStep?.label"
                 :deal="deal"
+                @add-product-to-deferred="pushToDeferredWarehouse"
             ></deals-warehouse-selection>
         </q-carousel-slide>
     </q-carousel>
@@ -62,6 +63,7 @@ ownerId: {{ deal.ownerId }}
     import DealsWarehouseSelection from './DealsWarehouseSelection.vue';
     import type { Employee } from '@/entities/Employee';
     import type { ICompany } from '@/interfaces/Company';
+    import type Product from '@/entities/warehouse/Product';
 
     const $userManager = inject<Rbac>(rbacSym) as Rbac
     const user = $userManager.getUser()
@@ -81,13 +83,17 @@ ownerId: {{ deal.ownerId }}
 
     const slide = ref<string>(currentStep.value.id)
 
-    function changeStep(increment: number){
+    function changeStep(increment: number) {
         if(currentStep.value === undefined) return
         const nextStep = deal.value.getStep(currentStep.value.order + increment)
         if(nextStep === undefined) return
 
         slide.value = nextStep.id
         currentStep.value = nextStep
+    }
+
+    function pushToDeferredWarehouse(newProduct: Product) {
+        deal.value.pushToDeferredWarehouse(newProduct)
     }
 
     function partnerSelected(selectedPartner: ICompany, selectedPartnerOwner: Employee){

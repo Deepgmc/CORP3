@@ -2,6 +2,8 @@ import type { dealCreationStep, IDeal } from "@/interfaces/ProductsDeals";
 import Manager from "./Manager";
 import type { ICompany } from "@/interfaces/Company";
 import type { Employee } from "./Employee";
+import type Product from "./warehouse/Product";
+import { reactive, type Reactive } from "vue";
 
 export class Deal extends Manager implements IDeal {
 
@@ -15,6 +17,8 @@ export class Deal extends Manager implements IDeal {
     reg_date     ?: number
     shipment_date?: number
     discount      : number = 0
+
+    public deferredWarehouse: Reactive<Product[]> = reactive<Product[]>([])
 
     readonly steps: dealCreationStep[] = [
         {
@@ -66,6 +70,20 @@ export class Deal extends Manager implements IDeal {
         super()
         this.ownerId = ownerId
         this.ownerCompanyId = ownerCompanyId
+    }
+
+    pushToDeferredWarehouse(newProduct: Product) {
+        this.deferredWarehouse.push(newProduct)
+        return true
+    }
+
+    /** удаляет из сделки добавленный к отгрузке товар, возвращает количество */
+    removeDeferredProduct(id: number): number | false {
+        const productIndex = this.deferredWarehouse.findIndex((product) => product.id === id)
+        const removingProductQuantity = this.deferredWarehouse[productIndex]?.count
+        if(productIndex === -1 || !removingProductQuantity) return false
+        this.deferredWarehouse.splice(productIndex, 1)
+        return removingProductQuantity
     }
 
     resetPartnerCompany(){

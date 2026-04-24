@@ -10,20 +10,8 @@ export function dragItem (
 
     event.dataTransfer.effectAllowed = 'move'
     event.dataTransfer.dropEffect = 'move'
-    console.log('dragFromId:', dragFromId)
-    console.log('draggingId:', draggingItemId)
     event.dataTransfer.setData('dragFromId', String(dragFromId))
     event.dataTransfer.setData('draggingItemId', String(draggingItemId))
-
-    // switch(type){
-    //     case 'departments':
-    //         event.dataTransfer.setData('dragDeptId', String(eventTarget.dataset.deptid))
-    //     break;
-    //     case 'deal_creation':
-
-    //     break;
-    // }
-
     return true
 }
 

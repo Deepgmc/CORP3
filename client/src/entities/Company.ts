@@ -10,6 +10,7 @@ import type { Vacation } from "./Vacation";
 import type { IDeal, IProduct } from "@/interfaces/ProductsDeals";
 import Dictionary from "@/utils/Dictionary";
 import { useDictStore } from "@/stores/dictStore";
+import Product from "./warehouse/Product";
 
 /**
  * Инстанс компании создаётся при первой загрузке самого юзера - в UserManager -> LoadUserData
@@ -80,7 +81,7 @@ export default class Company extends Manager implements ICompany {
                     warehouse,
                     deals
                 ]:
-                    [IDepartment[], Employee[], IPosition[], IProduct[], IDeal[]]
+                    [IDepartment[], Employee[], IPosition[], Product[], IDeal[]]
                  = res;
 
                 this._store.departments = departments
@@ -127,8 +128,8 @@ export default class Company extends Manager implements ICompany {
     get positions(): IPosition[] {
         return this._store.positions
     }
-    get warehouse(): IProduct[] {
-        return this._store.warehouse
+    get warehouse(): Product[] {
+        return this._store.warehouse as Product[]
     }
     get deals(): IDeal[] {
         return this._store.deals
@@ -184,7 +185,9 @@ export default class Company extends Manager implements ICompany {
      */
     async getWarehouse(): Promise<AxiosResponse> {
         const warehouse = await this._getData(`get_warehouse?cid=${this.id}`)()
-        return warehouse.data
+        return warehouse.data.map((pRaw: Product) => {
+            return new Product(pRaw)
+        })
     }
 
     /**
@@ -279,7 +282,7 @@ export default class Company extends Manager implements ICompany {
         return false
     }
 
-    addNewProduct(product: IProduct): boolean {
+    addNewProduct(product: Product): boolean {
         return this._store.addNewProduct(product)
     }
 

@@ -1,9 +1,11 @@
 import type { TResult } from '@/interfaces/Error';
+import { Rbac } from '../Rbac';
 import type { INewProduct, IProduct } from '@/interfaces/ProductsDeals';
 import { productStatesNames } from '@/interfaces/ProductsDeals';
 import { UNKNOWN_ERROR } from '@/utils/constants/texts';
 import { FiniteStateMachine, type ITransition, type TState } from '@/utils/FiniteStateMachine';
-import { Rbac } from '../Rbac';
+import Dictionary, { getUnitLabel } from '@/utils/Dictionary';
+import type { IUnit } from '@/interfaces/Company';
 
 export const productStates: Record<productStatesNames, TState> = {
     [productStatesNames.inStock]: {
@@ -46,7 +48,7 @@ export default class Product extends FiniteStateMachine implements IProduct {
 
     public price: number | undefined
     public unitId: number | undefined
-    public count: number | undefined
+    public count: number //количество
 
     public readonly _apiModule = 'warehouse/products'
     private readonly $um = Rbac.getInstance()
@@ -75,12 +77,13 @@ export default class Product extends FiniteStateMachine implements IProduct {
         }
         super(productStates[productStatesNames.inStock], FSMTransitions)
 
-        this.name = newProduct.name
-        this.status = newProduct.status
+        this.id        = newProduct.id
+        this.name      = newProduct.name
+        this.status    = newProduct.status
         this.companyId = newProduct.companyId
-        this.price = newProduct.price
-        this.unitId = newProduct.unitId
-        this.count = newProduct.count
+        this.price     = newProduct.price
+        this.unitId    = newProduct.unitId
+        this.count     = newProduct.count
 
         this.initNetwork(this._apiModule)
     }
@@ -126,12 +129,32 @@ export default class Product extends FiniteStateMachine implements IProduct {
         return false
     }
 
+    /** проверяем, есть ли нужное количество на складе */
+    checkIsRequestedQuantityValid(qReqest: number) {
+        return this.count && this.count >= qReqest
+    }
+
+    decreaseQuantity(val: number): void {
+        if(
+            this.count &&
+            this.checkIsRequestedQuantityValid(val)
+        ) this.count -= val
+    }
+
+    increaseQuantity(val: number): void {
+        this.count += val
+    }
+
     checkProductValid(): boolean {
         return this.name.length > 0
             && this.companyId !== null
             && (this.price !== undefined && this.price > 0)
             && (this.unitId !== undefined && this.unitId > 0)
             && (this.count !== undefined && this.count > 0)
+    }
+
+    getTextWithUnit(unitsDict: Dictionary<IUnit>){
+        return `${this.name} (${this.count} ${getUnitLabel(this.unitId, unitsDict as Dictionary<IUnit>)})`
     }
 }
 
