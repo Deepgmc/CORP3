@@ -3,7 +3,7 @@ import Manager from "./Manager";
 import type { ICompany } from "@/interfaces/Company";
 import type { Employee } from "./Employee";
 import type Product from "./warehouse/Product";
-import { reactive, type Reactive } from "vue";
+import { computed, reactive, type Reactive } from "vue";
 
 export class Deal extends Manager implements IDeal {
 
@@ -73,8 +73,18 @@ export class Deal extends Manager implements IDeal {
     }
 
     pushToDeferredWarehouse(newProduct: Product) {
-        this.deferredWarehouse.push(newProduct)
-        return true
+        const alreadyDeferredProductIndex = this.deferredWarehouse.findIndex((product) => product.id === newProduct.id)
+        // если этот товар еще не добавляли, то добавим его в массив к отгрузке
+        if(alreadyDeferredProductIndex === -1) {
+            this.deferredWarehouse.push(newProduct)
+            return true
+        }
+        // если этот товар уже добавляли - просто добавим количество
+        if(typeof this.deferredWarehouse[alreadyDeferredProductIndex] !== 'undefined') {
+            this.deferredWarehouse[alreadyDeferredProductIndex].count += +newProduct.count
+            return true
+        }
+        return false
     }
 
     /** удаляет из сделки добавленный к отгрузке товар, возвращает количество */
@@ -105,4 +115,11 @@ export class Deal extends Manager implements IDeal {
             partnerStep.isSuccess = true
         }
     }
+
+    public deferredTransactionAmount = computed<number>(() => {
+        return this.deferredWarehouse.reduce((acc, item) => {
+            if(!item.unitId || !item.price) return acc
+            return acc + item.getCost()
+        }, 0)
+    })
 }

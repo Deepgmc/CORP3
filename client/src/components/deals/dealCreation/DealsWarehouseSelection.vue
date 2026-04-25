@@ -49,7 +49,7 @@
                 @dragenter.prevent=""
                 @dragover.prevent=""
             >
-                Перетащите материалы сюда
+                Товары к отгрузке перетащите сюда
             </div>
         </div>
     </div>
@@ -91,11 +91,11 @@
 </div>
 
 <div class="row">
-    <div class="col-12 col-md-4 offset-md-4 pointer">Drop product quantity: {{ dropProductQuantity }}</div>
+    <div class="col-12 col-md-4 offset-md-4 pointer">Сумма сделки: {{ props.deal.deferredTransactionAmount }}</div>
 </div>
 
 
- <q-dialog v-model="dropProductPrompt" persistent>
+<q-dialog v-model="dropProductPrompt" persistent>
     <q-card style="min-width: 350px">
         <q-card-section>
             <div class="text-h6">Количество к поставке</div>
@@ -188,7 +188,7 @@
         //обновить список поставки
         //проделать тоже самое при сохранении сделки - уже на сервере (возможно)
 
-        emit('add-product-to-deferred', new Product({...draggingProduct.value, count: dropProductQuantity.value}))
+        emit('add-product-to-deferred', new Product({...draggingProduct.value, count: +dropProductQuantity.value}))
         draggingProduct.value.decreaseQuantity(dropProductQuantity.value)
         resetDragging()
     }

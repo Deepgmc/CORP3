@@ -1,4 +1,4 @@
-import type { Reactive } from 'vue';
+import type { ComputedRef, Reactive } from 'vue';
 import type { ICompany } from './Company';
 import type Product from '@/entities/warehouse/Product';
 
@@ -18,6 +18,8 @@ export interface IDeal {
     deferredWarehouse: Reactive<Product[]>,
     pushToDeferredWarehouse: (newProduct: Product) => boolean,
     removeDeferredProduct: (id: number) => number | false,
+
+    deferredTransactionAmount: ComputedRef<number>,
 }
 
 export interface dealCreationStep {

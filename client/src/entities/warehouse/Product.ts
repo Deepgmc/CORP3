@@ -153,8 +153,13 @@ export default class Product extends FiniteStateMachine implements IProduct {
             && (this.count !== undefined && this.count > 0)
     }
 
-    getTextWithUnit(unitsDict: Dictionary<IUnit>){
+    getTextWithUnit(unitsDict: Dictionary<IUnit>) {
         return `${this.name} (${this.count} ${getUnitLabel(this.unitId, unitsDict as Dictionary<IUnit>)})`
+    }
+
+    getCost(): number {
+        if(!this.price) return 0
+        return this.count * this.price
     }
 }
 

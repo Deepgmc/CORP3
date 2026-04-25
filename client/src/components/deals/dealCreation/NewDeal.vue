@@ -67,8 +67,8 @@ ownerId: {{ deal.ownerId }}
 
     const $userManager = inject<Rbac>(rbacSym) as Rbac
     const user = $userManager.getUser()
-    const deal = ref(new Deal(user.userId, user.company.id))
-    const currentStep = ref(deal.value.getStep(2))
+    const deal = new Deal(user.userId, user.company.id)
+    const currentStep = ref(deal.getStep(2))
 
     if(!user.companyId || currentStep.value === undefined){
         throw new Error('Unexpected error')
@@ -85,7 +85,7 @@ ownerId: {{ deal.ownerId }}
 
     function changeStep(increment: number) {
         if(currentStep.value === undefined) return
-        const nextStep = deal.value.getStep(currentStep.value.order + increment)
+        const nextStep = deal.getStep(currentStep.value.order + increment)
         if(nextStep === undefined) return
 
         slide.value = nextStep.id
@@ -93,15 +93,15 @@ ownerId: {{ deal.ownerId }}
     }
 
     function pushToDeferredWarehouse(newProduct: Product) {
-        deal.value.pushToDeferredWarehouse(newProduct)
+        deal.pushToDeferredWarehouse(newProduct)
     }
 
     function partnerSelected(selectedPartner: ICompany, selectedPartnerOwner: Employee){
-        deal.value.setPartnerSelectedSuccess(selectedPartner, selectedPartnerOwner)
+        deal.setPartnerSelectedSuccess(selectedPartner, selectedPartnerOwner)
     }
 
     function resetPartnerCopmpany(){
-        deal.value.resetPartnerCompany()
+        deal.resetPartnerCompany()
     }
 
 </script>
