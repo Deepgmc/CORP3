@@ -7,6 +7,7 @@ export const DELETE_ERROR           = 'Ошибка удаления'
 export const PASS_SAVED_SUCCESS     = 'Пароль успешно изменён'
 export const ACCESS_DENIED          = 'Нет прав на данное действие'
 export const UNKNOWN_ERROR          = 'Неизвестная ошибка'
+export const INCORRECT_ID           = 'Неверно передан ID'
 
 
 export const v_msg = {

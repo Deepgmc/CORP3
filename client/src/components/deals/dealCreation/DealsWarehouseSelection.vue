@@ -138,7 +138,7 @@
     import type { IUnit } from '@/interfaces/Company';
     import Product from '@/entities/warehouse/Product';
     import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
-    import { UNKNOWN_ERROR } from '@/utils/constants/texts';
+    import { INCORRECT_ID, UNKNOWN_ERROR } from '@/utils/constants/texts';
     const notify = useNotify()
     const dropProductPrompt = ref(false)
     const dropProductQuantity = ref<number>()
@@ -166,15 +166,14 @@
     const partnerCompany = companiesDict.getItemById(props.deal.partnerCompanyId)
 
     function dropProduct(event: DragEvent): void {
-        //непосредственно днд обрабатываем тут
         const dropResult: TDropResult = dropItem(event)
-        if(typeof dropResult === 'boolean') {
-            throw new Error('Error dnd')
+        if (typeof dropResult === 'boolean' || !dropResult.draggingItemId || dropResult.draggingItemId <= 0) {
+            notify.run(INCORRECT_ID, notifyTypes.err)
+            return
         }
         draggingItemId.value = dropResult.draggingItemId
         dropProductPrompt.value = true
-
-    };
+    }
 
     /** Подтверждаем переносимый в сделку товар, устанавливаем количество */
     function submitQuantity(): void {
@@ -219,10 +218,6 @@
         }
     }
 
-    .center_container {
-        display: flex;
-    }
-
     .center_row {
         flex: 1;
         min-height: 100%;
@@ -230,7 +225,38 @@
         align-items: center;
         justify-content: center;
     }
+
+
+
+    .center_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    min-height: 200px;
+
     .block_dnd {
-        border: 2px dotted lightgrey
+        width: 100%;
+        max-width: 320px;
+        padding: 24px;
+        border: 2px dashed #027be3;
+        border-radius: 16px;
+        background-color: #f9f9ff;
+        color: #555;
+        font-size: 14px;
+        text-align: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 8px rgba(2, 123, 227, 0.6);
+
+        &:hover {
+            background-color: #ebf5ff;
+            box-shadow: 0 8px 8px rgba(1, 72, 134, 0.8);
+            transform: translateY(-2px);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
     }
+}
 </style>

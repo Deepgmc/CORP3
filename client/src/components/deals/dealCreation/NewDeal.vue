@@ -23,6 +23,10 @@
                 @add-product-to-deferred="pushToDeferredWarehouse"
             ></deals-warehouse-selection>
         </q-carousel-slide>
+
+        <q-carousel-slide name="taxLawSelection" class="no-wrap">
+                {{ currentStep?.label }}
+        </q-carousel-slide>
     </q-carousel>
 
     <q-btn
@@ -48,9 +52,11 @@
 <pre>
 partnerCompanyId: {{ deal.partnerCompanyId }}
 partnerId: {{ deal.partnerId }}
-currentStep: {{ currentStep }}
 ownerCompanyId: {{ deal.ownerCompanyId }}
 ownerId: {{ deal.ownerId }}
+
+<br>
+currentStep: {{ currentStep }}
 </pre>
 </template>
 
@@ -67,8 +73,9 @@ ownerId: {{ deal.ownerId }}
 
     const $userManager = inject<Rbac>(rbacSym) as Rbac
     const user = $userManager.getUser()
-    const deal = new Deal(user.userId, user.company.id)
-    const currentStep = ref(deal.getStep(2))
+    const deal = ref(new Deal(user.userId, user.company.id))
+
+    const currentStep = ref(deal.value.getStep(1))
 
     if(!user.companyId || currentStep.value === undefined){
         throw new Error('Unexpected error')
@@ -85,7 +92,7 @@ ownerId: {{ deal.ownerId }}
 
     function changeStep(increment: number) {
         if(currentStep.value === undefined) return
-        const nextStep = deal.getStep(currentStep.value.order + increment)
+        const nextStep = deal.value.getStep(currentStep.value.order + increment)
         if(nextStep === undefined) return
 
         slide.value = nextStep.id
@@ -93,15 +100,16 @@ ownerId: {{ deal.ownerId }}
     }
 
     function pushToDeferredWarehouse(newProduct: Product) {
-        deal.pushToDeferredWarehouse(newProduct)
+        deal.value.pushToDeferredWarehouse(newProduct)
+        deal.value.setWarehouseSelectedSuccess()
     }
 
-    function partnerSelected(selectedPartner: ICompany, selectedPartnerOwner: Employee){
-        deal.setPartnerSelectedSuccess(selectedPartner, selectedPartnerOwner)
+    function partnerSelected(selectedPartner: ICompany, selectedPartnerOwner: Employee) {
+        deal.value.setPartnerSelectedSuccess(selectedPartner, selectedPartnerOwner)
     }
 
     function resetPartnerCopmpany(){
-        deal.resetPartnerCompany()
+        deal.value.resetPartnerCompany()
     }
 
 </script>

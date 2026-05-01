@@ -9,10 +9,10 @@ export class Deal extends Manager implements IDeal {
 
     dealId ?: number
 
-    partnerId           ?: number = 4
-    partnerCompanyId    ?: number = 2
-    selectedPartner     ?: ICompany
-    selectedPartnerOwner?: Employee
+    partnerId           ?: number //ид контрагента-человека
+    partnerCompanyId    ?: number //ид контрагента-компании
+    selectedPartner     ?: ICompany //выбранная компания контрагента
+    selectedPartnerOwner?: Employee //выбранный сотрудник контрагента
 
     reg_date     ?: number
     shipment_date?: number
@@ -113,6 +113,13 @@ export class Deal extends Manager implements IDeal {
             this.selectedPartner = selectedPartner
             this.selectedPartnerOwner = selectedPartnerOwner
             partnerStep.isSuccess = true
+        }
+    }
+
+    setWarehouseSelectedSuccess(){
+        const warehouseStep = this.getStep('productSelection')
+        if(warehouseStep) {
+            warehouseStep.isSuccess = true
         }
     }
 
