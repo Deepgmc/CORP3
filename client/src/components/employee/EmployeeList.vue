@@ -8,11 +8,11 @@
 </template>
 
 <script setup lang="ts">
+import { inject } from 'vue';
 import GridViewEmployees from '@/components/grid/GridViewEmployees.vue';
 import { employeeAvailableCols } from '@/composables/gridView/GridColumnOptions';
 import { GridCols } from '@/composables/gridView/GridColsManager';
 import { Rbac } from '@/entities/Rbac';
-import { inject } from 'vue';
 import { rbacSym } from '@/utils/injecttionSymbols';
 
 const $userManager = inject<Rbac>(rbacSym) as Rbac

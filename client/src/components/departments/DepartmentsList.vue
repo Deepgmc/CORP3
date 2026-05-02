@@ -124,7 +124,7 @@ function addDepartment() {
 
 
 
-// DND WIDGET
+// DND
 const employees = $userManager.company.employees
 /**
  * создаём итерируемый реактивный Map для вывода виджета сотрудников департаментов с перетаскиванием

@@ -10,6 +10,7 @@
             <deals-partner-selection
                 v-model:partnerId="deal.partnerId"
                 v-model:partnerCompanyId="deal.partnerCompanyId"
+                :deal="deal"
                 :caption="currentStep?.label"
                 @reset-partner-company="resetPartnerCopmpany"
                 @partner-selected-success="partnerSelected"
@@ -25,13 +26,16 @@
         </q-carousel-slide>
 
         <q-carousel-slide name="taxLawSelection" class="no-wrap">
-                {{ currentStep?.label }}
+            <deals-payment-selection
+                :caption="currentStep?.label"
+                :deal="deal"
+            ></deals-payment-selection>
         </q-carousel-slide>
     </q-carousel>
 
     <q-btn
         color="deep-orange"
-        class="q-mt-sm"
+        class="q-mt-sm q-mr-sm"
         v-if="showPrevButton"
         @click="changeStep(-1)"
     >
@@ -47,6 +51,10 @@
         Далее
     </q-btn>
 
+    <div>
+        <q-btn v-if="deal.isDealSuccess()" class="q-mt-sm" color="primary">Оформить сделку</q-btn>
+    </div>
+
     <q-separator class="q-ma-lg"></q-separator>
 
 <pre>
@@ -57,23 +65,26 @@ ownerId: {{ deal.ownerId }}
 
 <br>
 currentStep: {{ currentStep }}
+<br>
+deal.selectedPartnerOwner: {{ deal.selectedPartnerOwner }}
 </pre>
 </template>
 
 <script setup lang="ts">
-    import { computed, inject, ref } from 'vue'
+    import { computed, inject, ref, type Ref } from 'vue'
     import { Deal } from '@/entities/Deal';
     import type { Rbac } from '@/entities/Rbac';
     import { rbacSym } from '@/utils/injecttionSymbols';
     import DealsPartnerSelection from './DealsPartnerSelection.vue';
     import DealsWarehouseSelection from './DealsWarehouseSelection.vue';
+    import DealsPaymentSelection from './DealsPaymentSelection.vue';
     import type { Employee } from '@/entities/Employee';
     import type { ICompany } from '@/interfaces/Company';
     import type Product from '@/entities/warehouse/Product';
 
     const $userManager = inject<Rbac>(rbacSym) as Rbac
     const user = $userManager.getUser()
-    const deal = ref(new Deal(user.userId, user.company.id))
+    const deal = ref(new Deal(user.userId, user.company.id)) as Ref<Deal>
 
     const currentStep = ref(deal.value.getStep(1))
 
@@ -85,7 +96,7 @@ currentStep: {{ currentStep }}
         return currentStep.value && currentStep.value.order > 1
     })
     const showNextButton = computed(() => {
-        return currentStep.value && currentStep.value.isSuccess
+        return currentStep.value && currentStep.value.isSuccess && currentStep.value.order < deal.value.steps.length
     })
 
     const slide = ref<string>(currentStep.value.id)

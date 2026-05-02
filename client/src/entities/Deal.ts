@@ -1,9 +1,9 @@
+import { reactive, type Reactive } from "vue";
 import type { dealCreationStep, IDeal } from "@/interfaces/ProductsDeals";
 import Manager from "./Manager";
 import type { ICompany } from "@/interfaces/Company";
 import type { Employee } from "./Employee";
 import type Product from "./warehouse/Product";
-import { computed, reactive, type Reactive } from "vue";
 
 export class Deal extends Manager implements IDeal {
 
@@ -123,10 +123,14 @@ export class Deal extends Manager implements IDeal {
         }
     }
 
-    public deferredTransactionAmount = computed<number>(() => {
+    public deferredTransactionAmount(): number {
         return this.deferredWarehouse.reduce((acc, item) => {
             if(!item.unitId || !item.price) return acc
             return acc + item.getCost()
         }, 0)
-    })
+    }
+
+    public isDealSuccess(): boolean {
+        return this.steps.every((step) => step.isSuccess)
+    }
 }

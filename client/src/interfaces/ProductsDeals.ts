@@ -1,6 +1,7 @@
-import type { ComputedRef, Reactive } from 'vue';
+import type { Reactive } from 'vue';
 import type { ICompany } from './Company';
 import type Product from '@/entities/warehouse/Product';
+import type { Employee } from '@/entities/Employee';
 
 /**
 * DEALS
@@ -15,11 +16,16 @@ export interface IDeal {
     ownerId           : number,
     ownerCompanyId    : number,
 
+    selectedPartner     ?: ICompany,
+    selectedPartnerOwner?: Employee,
+
     deferredWarehouse: Reactive<Product[]>,
     pushToDeferredWarehouse: (newProduct: Product) => boolean,
     removeDeferredProduct: (id: number) => number | false,
 
-    deferredTransactionAmount: ComputedRef<number>,
+    deferredTransactionAmount: () => number,
+
+    isDealSuccess: () => boolean,
 }
 
 export interface dealCreationStep {
@@ -49,7 +55,7 @@ export interface IProduct {
     count    : number
 }
 
-export interface INewProduct extends Required<IProduct> {}
+export interface INewProduct extends Partial<IProduct> {}
 
 export const productDummy = {
     name     : '',

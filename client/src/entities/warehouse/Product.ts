@@ -77,13 +77,13 @@ export default class Product extends FiniteStateMachine implements IProduct {
         }
         super(productStates[productStatesNames.inStock], FSMTransitions)
 
-        this.id        = newProduct.id
-        this.name      = newProduct.name
-        this.status    = newProduct.status
-        this.companyId = newProduct.companyId
+        this.id        = newProduct.id ?? 0
+        this.name      = newProduct.name ?? ''
+        this.status    = newProduct.status ?? productStatesNames.inStock
+        this.companyId = newProduct.companyId ?? null
         this.price     = newProduct.price
         this.unitId    = newProduct.unitId
-        this.count     = newProduct.count
+        this.count     = newProduct.count ?? 0
 
         this.initNetwork(this._apiModule)
     }

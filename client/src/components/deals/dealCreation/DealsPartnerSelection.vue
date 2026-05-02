@@ -10,22 +10,25 @@
             <q-bar>
                 <q-btn dense flat icon="account_circle" />
                 <div class="text-weight-bold">Контакт контрагента:</div>
-                <div class="cursor-pointer gt-md">{{ selectedPartnerOwner?.firstName }} {{ selectedPartnerOwner?.lastName }}</div>
+                <div class="gt-md">
+                    {{ deal.selectedPartnerOwner?.firstName }}
+                    {{ deal.selectedPartnerOwner?.lastName }}
+                    {{ deal.selectedPartnerOwner?.username }} ({{ deal.selectedPartnerOwner?.userId }})
+                </div>
             </q-bar>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-
-    import { computed, inject, ref, watch } from 'vue'
+    import { computed, inject, watch } from 'vue'
     import type { Rbac } from '@/entities/Rbac'
     import { rbacSym } from '@/utils/injecttionSymbols'
     import type { Employee } from '@/entities/Employee'
     import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
     import CompanySelectionComponent from '@/components/CompanySelectionComponent.vue'
     import { useDictStore } from '@/stores/dictStore'
-    import type { ICompany } from '@/interfaces/Company'
+    import type { Deal } from '@/entities/Deal'
 
     const $userManager = inject<Rbac>(rbacSym) as Rbac
     const notify = useNotify()
@@ -33,15 +36,15 @@
 
     const partnerCompanyId = defineModel<number>('partnerCompanyId')
     const partnerId = defineModel<number>('partnerId')
-    const props = defineProps<{caption?: string}>()
+    const props = defineProps<{
+        caption?: string,
+        deal: Deal,
+    }>()
     const emit = defineEmits(['reset-partner-company', 'partner-selected-success'])
-
-    const selectedPartner = ref<ICompany>()
-    const selectedPartnerOwner = ref<Employee>()
 
     //всё ли в порядке при выборе компании. показываем выбранную и кнопку перехода на следующую стадию
     const isSelectedSuccess = computed(() => {
-        return partnerId.value && partnerId.value > 0 && partnerCompanyId.value && partnerCompanyId.value > 0
+        return props.deal.selectedPartner && props.deal.selectedPartnerOwner
     })
 
     //ищем владельца компании при её выборе
@@ -59,9 +62,7 @@
         const owner: Employee | undefined = await $userManager.company.loadCompanyOwnerUser(selectedCompanyId)
         if(owner && owner.userId > 0) {
             partnerId.value = owner.userId
-            selectedPartner.value = companiesDict.getItemById(selectedCompanyId)
-            selectedPartnerOwner.value = owner
-            emit('partner-selected-success', selectedPartner.value, selectedPartnerOwner.value)
+            emit('partner-selected-success', companiesDict.getItemById(selectedCompanyId), owner)
         } else {
             emit('reset-partner-company')
             notify.run('Ошибка определения владельца компании', notifyTypes.err)

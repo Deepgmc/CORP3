@@ -14,7 +14,6 @@
                         <div class="text-h6 text-weight-medium q-mb-md">
                             {{ ownerCompany?.name || 'Название компании' }}
                         </div>
-                        <div class="text-caption q-mb-sm">Товары на складе</div>
                         <q-list dense padding class="rounded-borders">
                             <q-item
                                 v-for="item in myWarehouse"
@@ -91,7 +90,7 @@
 </div>
 
 <div class="row">
-    <div class="col-12 col-md-4 offset-md-4 pointer">Сумма сделки: {{ props.deal.deferredTransactionAmount }}</div>
+    <div class="col-12 col-md-4 offset-md-4 pointer">Сумма сделки: {{ props.deal.deferredTransactionAmount() }}</div>
 </div>
 
 
@@ -139,6 +138,8 @@
     import Product from '@/entities/warehouse/Product';
     import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
     import { INCORRECT_ID, UNKNOWN_ERROR } from '@/utils/constants/texts';
+
+
     const notify = useNotify()
     const dropProductPrompt = ref(false)
     const dropProductQuantity = ref<number>()
