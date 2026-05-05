@@ -24,7 +24,7 @@
     <!-- Транспортные отчисления -->
     <div class="row items-center q-py-sm">
         <div class="col-6 col-md-3 text-grey-8">Транспортные отчисления ({{ transportTax }}%)</div>
-        <div class="col-6 col-md-3 text-orange text-right">
+        <div class="col-6 col-md-3 text-negative text-right">
             -{{ formatCurrency(calculateTax(props.deal.deferredTransactionAmount(), transportTax)) }}
         </div>
     </div>
@@ -66,23 +66,24 @@
     </div>
 
     <div class="row justify-center q-mt-xl">
-      <q-btn
+        <q-btn
             unelevated
             color="primary"
-            icon-right="check"
-            label="Подтвердить и продолжить"
+            label="Подтвердить"
             @click="successTaxStep"
             size="md"
             style="min-width: 240px;"
-      />
+        />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Deal } from '@/entities/Deal';
 import { computed, ref } from 'vue';
+import type { Deal } from '@/entities/Deal';
+import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
 
+const notify = useNotify()
 const props = defineProps<{
   caption?: string;
   deal: Deal;
@@ -116,15 +117,17 @@ function formatCurrency(value: number): string {
     }).format(value);
 }
 
-function onDiscountChange() {
+function onDiscountChange(): void {
     if (discount.value < 0) discount.value = 0;
 }
 
-function successTaxStep() {
-    const thisStep = props.deal.getStep('taxLawSelection');
-    if (thisStep) {
-        thisStep.isSuccess = true;
+function successTaxStep(): boolean {
+    if(finalAmount.value <= 0) {
+        notify.run('Сделка не может быть отрицательной. Проверьте скидки и товары', notifyTypes.err)
+        return false
     }
+    return props.deal.successTaxStep(discount.value, isNeedDocument.value)
+
 }
 </script>
 

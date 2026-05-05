@@ -7,25 +7,35 @@ import type { Employee } from '@/entities/Employee';
 * DEALS
 * */
 export interface IDeal {
-    dealId           ?: number,
-    partnerId        ?: number,
-    partnerCompanyId ?: number,
-    reg_date         ?: number,
-    shipment_date    ?: number,
-    discount          : number,
-    ownerId           : number,
-    ownerCompanyId    : number,
+    dealId          ?: number,
+    partnerId       ?: number,
+    partnerCompanyId?: number,
+    reg_date        ?: string,
+    shipment_date   ?: string,
+    discount         : number,
+    isNeedDocument   : boolean,
+    ownerId          : number,
+    ownerCompanyId   : number,
+
+    deferredWarehouse: Reactive<Product[]>,
 
     selectedPartner     ?: ICompany,
     selectedPartnerOwner?: Employee,
 
-    deferredWarehouse: Reactive<Product[]>,
-    pushToDeferredWarehouse: (newProduct: Product) => boolean,
-    removeDeferredProduct: (id: number) => number | false,
+    pushToDeferredWarehouse      : (newProduct: Product) => boolean,
+    removeDeferredProduct        : (id: number) => number | false,
+    deferredTransactionAmount    : () => number,
+    isDealSuccess                : () => boolean,
+    isShipmentDateSuccess        : () => boolean,
+    checkWarehouseSelectedSuccess: () => boolean,
+    setNewShipmentDate           : (newDate: string) => void,
+}
 
-    deferredTransactionAmount: () => number,
-
-    isDealSuccess: () => boolean,
+export interface IDealModel extends Omit<IDeal, 'pushToDeferredWarehouse' | 'removeDeferredProduct' | 'deferredTransactionAmount' | 'isDealSuccess' | 'selectedPartner' | 'selectedPartnerOwner' | 'isShipmentDateSuccess' | 'checkWarehouseSelectedSuccess' | 'setNewShipmentDate' | 'deferredWarehouse'> {
+    deferredWarehouseTransfer: {
+        id: number,
+        count: number
+    }[]
 }
 
 export interface dealCreationStep {

@@ -1,5 +1,6 @@
-import { Controller, Get, Logger } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post } from '@nestjs/common';
 import { DealsService } from './deals.service';
+import { CreateDealsDto } from './dto/create-deals.dto';
 
 @Controller('deals')
 export class DealsController {
@@ -15,5 +16,16 @@ export class DealsController {
         const deals = await this.dealsService.findAll();
         this.logger.debug('find all deals')
         return deals;
+    }
+
+    @Post('save_deal')
+    async saveDeal(
+        @Body() newDealDTO: CreateDealsDto
+    ): Promise<any> {
+        console.log('newDealDTO:', newDealDTO)
+
+        /**
+        ВАЛИДАЦИЯ СОХРАНЕНИЕ СДЕЛКИ ТУТ
+        */
     }
 }

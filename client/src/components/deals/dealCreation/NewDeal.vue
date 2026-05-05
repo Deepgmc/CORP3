@@ -52,7 +52,15 @@
     </q-btn>
 
     <div>
-        <q-btn v-if="deal.isDealSuccess()" class="q-mt-sm" color="primary">Оформить сделку</q-btn>
+        <q-btn
+            v-if="deal.isDealSuccess()"
+            @click="deal.save()"
+            class="q-mt-sm"
+            color="primary"
+            icon-right="handshake"
+        >
+            Оформить сделку
+        </q-btn>
     </div>
 
     <q-separator class="q-ma-lg"></q-separator>
@@ -112,7 +120,7 @@ deal.selectedPartnerOwner: {{ deal.selectedPartnerOwner }}
 
     function pushToDeferredWarehouse(newProduct: Product) {
         deal.value.pushToDeferredWarehouse(newProduct)
-        deal.value.setWarehouseSelectedSuccess()
+        deal.value.checkWarehouseSelectedSuccess()
     }
 
     function partnerSelected(selectedPartner: ICompany, selectedPartnerOwner: Employee) {

@@ -1,11 +1,13 @@
 import { reactive, type Reactive } from "vue";
-import type { dealCreationStep, IDeal } from "@/interfaces/ProductsDeals";
+import type { dealCreationStep, IDeal, IDealModel } from "@/interfaces/ProductsDeals";
 import Manager from "./Manager";
 import type { ICompany } from "@/interfaces/Company";
 import type { Employee } from "./Employee";
 import type Product from "./warehouse/Product";
 
 export class Deal extends Manager implements IDeal {
+
+    _apiModule = 'deals'
 
     dealId ?: number
 
@@ -14,9 +16,10 @@ export class Deal extends Manager implements IDeal {
     selectedPartner     ?: ICompany //выбранная компания контрагента
     selectedPartnerOwner?: Employee //выбранный сотрудник контрагента
 
-    reg_date     ?: number
-    shipment_date?: number
+    reg_date     ?: string = new Date().toLocaleDateString()
+    shipment_date?: string
     discount      : number = 0
+    isNeedDocument: boolean = false
 
     public deferredWarehouse: Reactive<Product[]> = reactive<Product[]>([])
 
@@ -70,6 +73,8 @@ export class Deal extends Manager implements IDeal {
         super()
         this.ownerId = ownerId
         this.ownerCompanyId = ownerCompanyId
+
+        this.initNetwork(this._apiModule)
     }
 
     pushToDeferredWarehouse(newProduct: Product) {
@@ -116,11 +121,36 @@ export class Deal extends Manager implements IDeal {
         }
     }
 
-    setWarehouseSelectedSuccess(){
+    checkWarehouseSelectedSuccess(): boolean {
+        if(this.isShipmentDateSuccess() && this.isDeferredWarehouseFilled()) {
+            this.setWarehouseSelectedStatus()
+            return true
+        }
+        this.setWarehouseSelectedStatus(true)
+        return false
+    }
+
+    /**
+     * Ставим статус заполнения шага "склад"
+     * @param isFail передаём, если статус надо выставить в "склад заполнен неверно"
+     */
+    private setWarehouseSelectedStatus(isFail = false): void {
         const warehouseStep = this.getStep('productSelection')
         if(warehouseStep) {
-            warehouseStep.isSuccess = true
+            warehouseStep.isSuccess = isFail ? false : true
         }
+    }
+
+    private isDeferredWarehouseFilled(): boolean {
+        return this.deferredWarehouse.length > 0
+    }
+
+    public setNewShipmentDate(newDate: string): void {
+        this.shipment_date = newDate
+    }
+
+    isShipmentDateSuccess(): boolean {
+        return !!this.shipment_date && this.shipment_date.length > 3
     }
 
     public deferredTransactionAmount(): number {
@@ -132,5 +162,43 @@ export class Deal extends Manager implements IDeal {
 
     public isDealSuccess(): boolean {
         return this.steps.every((step) => step.isSuccess)
+    }
+
+    public successTaxStep(discount: number, isNeedDocument: boolean): boolean {
+        this.discount = discount
+        this.isNeedDocument = isNeedDocument
+        const thisStep = this.getStep('taxLawSelection');
+        if (thisStep) {
+            thisStep.isSuccess = true;
+        }
+        return true
+    }
+
+    protected getModel(): IDealModel {
+        return {
+            dealId           : this.dealId,
+            reg_date         : this.reg_date,
+            shipment_date    : this.shipment_date,
+            discount         : this.discount,
+            isNeedDocument   : this.isNeedDocument,
+
+            partnerId        : this.partnerId,
+            partnerCompanyId : this.partnerCompanyId,
+            ownerId          : this.ownerId,
+            ownerCompanyId   : this.ownerCompanyId,
+
+            deferredWarehouseTransfer: this.deferredWarehouse.map((product) => {
+                return {id: product.id, count: product.count}
+            }),
+        }
+    }
+
+    async save() {
+        try {
+            const res = await this._postData('save_deal')(this.getModel())
+            console.log('res:', res)
+        } catch (e) {
+            console.log('e:', e)
+        }
     }
 }
