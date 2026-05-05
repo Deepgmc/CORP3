@@ -127,6 +127,6 @@ deal.selectedPartnerOwner: {{ deal.selectedPartnerOwner }}
 
 <style scoped lang="scss">
     .new-deal-container {
-        height: 600px;
+        height: auto;
     }
 </style>

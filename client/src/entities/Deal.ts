@@ -107,7 +107,7 @@ export class Deal extends Manager implements IDeal {
         }
     }
 
-    setPartnerSelectedSuccess(selectedPartner: ICompany, selectedPartnerOwner: Employee){
+    setPartnerSelectedSuccess(selectedPartner: ICompany, selectedPartnerOwner: Employee) {
         const partnerStep = this.getStep('partnerSelection')
         if(partnerStep) {
             this.selectedPartner = selectedPartner

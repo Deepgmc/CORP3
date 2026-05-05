@@ -132,7 +132,7 @@ export default class Company extends Manager implements ICompany {
         return this._store.warehouse as Product[]
     }
     get deals(): IDeal[] {
-        return this._store.deals
+        return this._store.deals as IDeal[]
     }
 
     async saveCompanyProfile(company: ICompanyForm): Promise<boolean> {
