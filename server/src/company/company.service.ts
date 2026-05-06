@@ -113,7 +113,6 @@ export class CompanyService {
 
     async addNewCompanyDepartment(newDepartment: IAddDepartment): Promise<number | boolean> {
         const newDept = this.deptRepository.create(newDepartment)
-        console.log('newDept:', newDept)
         const res = await this.deptRepository.insert(newDept)
         if(!res) throw new Error('Ошибка добавления департамента')
         return res.raw.insertId

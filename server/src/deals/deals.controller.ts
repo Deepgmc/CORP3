@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Logger, Post } from '@nestjs/common';
 import { DealsService } from './deals.service';
-import { CreateDealsDto } from './dto/create-deals.dto';
+import { INewDeal } from 'src/interfaces/Deal';
 
 @Controller('deals')
 export class DealsController {
@@ -20,12 +20,8 @@ export class DealsController {
 
     @Post('save_deal')
     async saveDeal(
-        @Body() newDealDTO: CreateDealsDto
+        @Body() newDeal: INewDeal,
     ): Promise<any> {
-        console.log('newDealDTO:', newDealDTO)
-
-        /**
-        ВАЛИДАЦИЯ СОХРАНЕНИЕ СДЕЛКИ ТУТ
-        */
+        return this.dealsService.processDeal(newDeal)
     }
 }

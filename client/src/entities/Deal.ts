@@ -4,6 +4,9 @@ import Manager from "./Manager";
 import type { ICompany } from "@/interfaces/Company";
 import type { Employee } from "./Employee";
 import type Product from "./warehouse/Product";
+import { convertStrToUnixTimestamp } from "@/utils/helpers/dates";
+import { isSuccessRequest } from "@/utils/helpers/network";
+import type { TResult } from "@/interfaces/Error";
 
 export class Deal extends Manager implements IDeal {
 
@@ -16,10 +19,10 @@ export class Deal extends Manager implements IDeal {
     selectedPartner     ?: ICompany //выбранная компания контрагента
     selectedPartnerOwner?: Employee //выбранный сотрудник контрагента
 
-    reg_date     ?: string = new Date().toLocaleDateString()
-    shipment_date?: string
-    discount      : number = 0
-    isNeedDocument: boolean = false
+    reg_date      ?: string = Date.now().toString()
+    shipment_date ?: string
+    discount       : number = 0
+    isNeedDocument : boolean = false
 
     public deferredWarehouse: Reactive<Product[]> = reactive<Product[]>([])
 
@@ -146,7 +149,12 @@ export class Deal extends Manager implements IDeal {
     }
 
     public setNewShipmentDate(newDate: string): void {
-        this.shipment_date = newDate
+        const convertedDate = convertStrToUnixTimestamp(newDate)
+        if(convertedDate.error) {
+            console.error('Wrong shipment date', convertedDate.error)
+        } else {
+            this.shipment_date = String(convertedDate.res)
+        }
     }
 
     isShipmentDateSuccess(): boolean {
@@ -193,12 +201,17 @@ export class Deal extends Manager implements IDeal {
         }
     }
 
-    async save() {
+    async save(): Promise<TResult<number>> {
         try {
             const res = await this._postData('save_deal')(this.getModel())
-            console.log('res:', res)
+            if(isSuccessRequest(res)) {
+                const createdDealId = res.data
+                return { error: false, res: createdDealId }
+            }
+            return { error: true, errorMessage: 'Не удалось создать поставку' }
         } catch (e) {
             console.log('e:', e)
+            return { error: true, errorMessage: 'Не удалось создать поставку' }
         }
     }
 }
