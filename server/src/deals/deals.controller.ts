@@ -1,5 +1,6 @@
-import { Controller, Get, Logger } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post } from '@nestjs/common';
 import { DealsService } from './deals.service';
+import { INewDeal } from 'src/interfaces/Deal';
 
 @Controller('deals')
 export class DealsController {
@@ -15,5 +16,12 @@ export class DealsController {
         const deals = await this.dealsService.findAll();
         this.logger.debug('find all deals')
         return deals;
+    }
+
+    @Post('save_deal')
+    async saveDeal(
+        @Body() newDeal: INewDeal,
+    ): Promise<any> {
+        return this.dealsService.processDeal(newDeal)
     }
 }

@@ -5,7 +5,7 @@
             <div class="column">
                 <div class="row justify-around items-center">
                     <!-- company id (readonly) -->
-                    <div>ID: <span>{{ companyForm.companyId }}</span></div>
+                    <div>ID: <span>{{ companyForm.id }}</span></div>
                     <div>Внутренний баланс компании: <span v-marker v-splitNumber="companyForm.accountBalance"></span> руб.</div>
                 </div>
 
@@ -36,19 +36,17 @@ import { SAVED_SUCCESS, v_msg } from '@/utils/constants/texts.ts'
 import type { ICompanyForm } from '@/interfaces/Company';
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
 import { R_ACTIONS, R_ENTITIES, R_FIELDS, Rbac } from '@/entities/Rbac';
-// import { rbacSym } from '@/utils/injecttionSymbols';
 
 const notify = useNotify()
-//const $userManager = inject<Rbac>(rbacSym) as Rbac
 const $userManager = Rbac.getInstance()
 
-const {companyId, name, address, accountBalance} = $userManager.company
+const {id, name, address, accountBalance} = $userManager.company
 
 const canEdit = $userManager.can(R_ENTITIES.COMPANY)(R_ACTIONS.EDIT)(R_FIELDS.ENTIRE)
 const captionLabel = canEdit ? 'Редактировать данные' : 'Просмотр данных'
 
 const companyForm: ICompanyForm = reactive({
-    companyId,
+    id,
     name,
     address,
     accountBalance

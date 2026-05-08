@@ -1,8 +1,7 @@
 import { StorageManager } from '@/network/LocalStorageManager'
 import NetworkManager, { EReqMethods } from '@/network/NetworkManager'
 import { isSuccessRequest } from './helpers/network'
-
-//type dictDataType = {id: number}
+import type { IUnit } from '@/interfaces/Company'
 
 export default class Dictionary<T extends {id: number}> {
 
@@ -20,7 +19,7 @@ export default class Dictionary<T extends {id: number}> {
         return this.data
     }
 
-    getItemById(id: number) {
+    getItemById(id: number): T | undefined {
         return this.getData().find((item: T) => item.id === id)
     }
 
@@ -43,4 +42,9 @@ export default class Dictionary<T extends {id: number}> {
         return []
     }
 
+}
+/** helpers */
+export function getUnitLabel(unitId: number | undefined, unitsDict: Dictionary<IUnit>): string {
+    if(unitId === undefined) return 'ед. изм.'
+    return unitsDict.getItemById(unitId)?.shortName || ''
 }

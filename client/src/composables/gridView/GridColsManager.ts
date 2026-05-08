@@ -1,4 +1,5 @@
 import type { IDepartment } from "@/interfaces/Company";
+import type { IDeal } from "@/interfaces/ProductsDeals";
 import { convertTSToStr, getAgeFromTS } from "@/utils/helpers/dates";
 import { computed, ref, type ComputedRef, type Ref } from "vue";
 import type { IPosition, IUser, IVacation, TSkill } from "@/interfaces/User";
@@ -19,7 +20,7 @@ export type TGridColMap = {
 
 export type TColsMap = Map<string, TGridColMap>
 
-export type GridColsData = IDepartment[] | IUser[] | IVacation[] | IProduct[]
+export type GridColsData = IDepartment[] | IUser[] | IVacation[] | IProduct[] | IDeal[]
 
 export type GridColsDataTypes = GridColsData extends (infer T)[] ? T : never // keyof IDepartmet | keyof IUser  etc...
 
@@ -199,6 +200,9 @@ export class GridCols {
             break;
             case 'reg_date':
                 item['reg_dateValue'] = convertTSToStr(item.reg_date)
+            break;
+            case 'shipment_date':
+                item['shipment_dateValue'] = convertTSToStr(item.shipment_date)
             break;
             case 'departmentId':
                 if(item.departmentId !== null){

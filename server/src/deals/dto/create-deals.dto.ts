@@ -39,7 +39,7 @@ export class CreateDealsDto {
     reg_date: number
 
     @ApiProperty({
-        description: 'Дата подписания сделки',
+        description: 'Дата отгрузки товара',
         required   : true,
         type       : Number,
     })

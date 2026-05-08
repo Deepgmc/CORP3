@@ -64,11 +64,12 @@ export class Vacation extends Manager implements IVacation {
         }
     }
 
-    async saveModel(): Promise<TResult> {
+    async saveModel(): Promise<TResult<{id: number}>> {
         const modelSaveRes = await super.saveModel()
         if(!modelSaveRes.error) {
             this.id = modelSaveRes.res.id
-            return { error: false, res: this.$um.company.addNewEmployeeVacation(this) }
+            this.$um.company.addNewEmployeeVacation(this)
+            return { error: false, res: {id: this.id} }
         }
         return { error: true, errorMessage: UNKNOWN_ERROR }
     }

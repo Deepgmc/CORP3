@@ -180,6 +180,14 @@ export class ManagerRole extends Role {
                 R_FIELDS.ENTIRE
             ]
         },
+        [R_ENTITIES.COMPANY]: {
+            [R_ACTIONS.VIEW]: [
+                R_FIELDS.ENTIRE
+            ],
+            [R_ACTIONS.EDIT]: [
+                R_FIELDS.ENTIRE
+            ]
+        },
         [R_ENTITIES.USER]: {
             [R_ACTIONS.EDIT]: [
                 R_FIELDS.HIRE,

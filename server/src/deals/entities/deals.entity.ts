@@ -6,7 +6,7 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 't
 export class DealsEntity {
 
     @PrimaryGeneratedColumn('increment', {
-        comment: 'Product autoincrement id'
+        comment: 'Deal autoincrement id'
     })
     readonly dealId: number;
 
@@ -32,6 +32,9 @@ export class DealsEntity {
 
     @Column()
     discount: number;
+
+    @Column()
+    isNeedDocument: boolean;
 
     //! ##############   RELATIONS
 
