@@ -11,6 +11,7 @@ import type { IDeal, IProduct } from "@/interfaces/ProductsDeals";
 import Dictionary from "@/utils/Dictionary";
 import { useDictStore } from "@/stores/dictStore";
 import Product from "./warehouse/Product";
+import type { Deal } from "./Deal";
 
 /**
  * Инстанс компании создаётся при первой загрузке самого юзера - в UserManager -> LoadUserData
@@ -284,6 +285,10 @@ export default class Company extends Manager implements ICompany {
 
     addNewProduct(product: Product): boolean {
         return this._store.addNewProduct(product)
+    }
+
+    addNewDeal(deal: Deal): boolean {
+        return this._store.addNewDeal(deal)
     }
 
     deleteProduct(product: IProduct): boolean {

@@ -8,12 +8,14 @@ import { convertStrToUnixTimestamp } from "@/utils/helpers/dates";
 import { isSuccessRequest } from "@/utils/helpers/network";
 import type { TResult } from "@/interfaces/Error";
 import { SHIPMENT_ERROR } from "@/utils/constants/texts";
+import { Rbac } from "./Rbac";
 
 export class Deal extends Manager implements IDeal {
 
     _apiModule = 'deals'
 
     dealId ?: number
+    private readonly $um = Rbac.getInstance()
 
     partnerId           ?: number //ид контрагента-человека
     partnerCompanyId    ?: number //ид контрагента-компании
@@ -24,6 +26,7 @@ export class Deal extends Manager implements IDeal {
     shipment_date ?: string
     discount       : number = 0
     isNeedDocument : boolean = false
+    isOver         : boolean = false //завершено ли создание сделки
 
     public deferredWarehouse: Reactive<Product[]> = reactive<Product[]>([])
 
@@ -170,7 +173,7 @@ export class Deal extends Manager implements IDeal {
     }
 
     public isDealSuccess(): boolean {
-        return this.steps.every((step) => step.isSuccess)
+        return this.steps.every((step) => step.isSuccess) && !this.isOver
     }
 
     public successTaxStep(discount: number, isNeedDocument: boolean): boolean {
@@ -207,6 +210,16 @@ export class Deal extends Manager implements IDeal {
             const res = await this._postData('save_deal')(this.getModel())
             if(isSuccessRequest(res)) {
                 const createdDealId = res.data
+                if(Number.isInteger(createdDealId)) {
+                    this.dealId = createdDealId
+                    //добавим сделку в стор pinia organization -> deals
+                    if(this.$um.company.addNewDeal(this)) {
+                        this.isOver = true
+                    }
+                    // this.$store.dispatch('organization/addDeal', {
+                    //     dealId: createdDealId
+                    // }
+                }
                 return { error: false, res: createdDealId }
             }
             return { error: true, errorMessage: SHIPMENT_ERROR }

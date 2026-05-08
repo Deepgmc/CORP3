@@ -201,6 +201,77 @@ export const vacationAvailableCols: ColsConfig = {
 };
 //настройки для вывода списка товаров склада
 //ВСЕ доступные поля. Из них йпотом выбираем нужные при выводе конкретной таблицы
+export const dealAvailableCols: ColsConfig = {
+    dealId: {
+        label   : 'ID Сделки',
+        align   : 'center',
+        type    : fieldTypes.number,
+        editable: false,
+        sortFn  : defaultNumSortFn,
+        order   : -1,
+    },
+    partnerId: {
+        label   : 'ID Партнёра',
+        align   : 'center',
+        type    : fieldTypes.number,
+        editable: false,
+        sortFn  : defaultNumSortFn,
+        order   : -1,
+    },
+    partnerCompanyId: {
+        label   : 'ID Компании партнёра',
+        align   : 'center',
+        type    : fieldTypes.number,
+        editable: false,
+        sortFn  : defaultNumSortFn,
+        order   : -1,
+    },
+    reg_date: {
+        label     : 'Дата регистрации',
+        switchData: true,
+        align     : 'center',
+        type      : fieldTypes.text,
+        editable  : false,
+    },
+    shipment_date: {
+        label     : 'Дата отгрузки',
+        switchData: true,
+        align     : 'center',
+        type      : fieldTypes.text,
+        editable  : false,
+    },
+    discount: {
+        label   : 'Скидка (руб)',
+        align   : 'center',
+        type    : fieldTypes.number,
+        editable: false,
+        sortFn  : defaultNumSortFn,
+        order   : -1,
+    },
+    // isNeedDocument: {
+    //     label   : 'Требуется документ',
+    //     align   : 'center',
+    //     type    : fieldTypes.widget,
+    //     editable: false,
+    // },
+    ownerId: {
+        label   : 'ID Владельца',
+        align   : 'center',
+        type    : fieldTypes.number,
+        editable: false,
+        sortFn  : defaultNumSortFn,
+        order   : -1,
+    },
+    ownerCompanyId: {
+        label   : 'ID Компании владельца',
+        align   : 'center',
+        type    : fieldTypes.number,
+        editable: false,
+        sortFn  : defaultNumSortFn,
+        order   : -1,
+    },
+};
+
 export const warehouseAvailableCols: ColsConfig = {
     id: {
         label   : 'ID',

@@ -6,6 +6,7 @@ import { type IDepartment, type ICompany } from "@/interfaces/Company"
 import type { IPosition } from "@/interfaces/User"
 import type { IDeal } from "@/interfaces/ProductsDeals"
 import type Product from "@/entities/warehouse/Product"
+import type { Deal } from "@/entities/Deal"
 
 export const useOrganizationStore = defineStore('organization', () => {
 
@@ -38,6 +39,10 @@ export const useOrganizationStore = defineStore('organization', () => {
 
     function addNewProduct(newProduct: Product): boolean {
         return !!warehouse.value.push(newProduct)
+    }
+
+    function addNewDeal(newDeal: Deal): boolean {
+        return !!deals.value.push(newDeal)
     }
 
     // при смене департамента у сотрудника - меняем сумму сотрудников в списке департаментов
@@ -100,6 +105,7 @@ export const useOrganizationStore = defineStore('organization', () => {
         deleteDepartment,
         changeUserDepartment,
         addNewProduct,
+        addNewDeal,
 
         changeEmployeePosition,
         getVacationById,
