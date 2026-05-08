@@ -8,6 +8,7 @@ export const PASS_SAVED_SUCCESS     = 'Пароль успешно изменё�
 export const ACCESS_DENIED          = 'Нет прав на данное действие'
 export const UNKNOWN_ERROR          = 'Неизвестная ошибка'
 export const INCORRECT_ID           = 'Неверно передан ID'
+export const SHIPMENT_ERROR         = 'Не удалось создать поставку'
 
 
 export const v_msg = {

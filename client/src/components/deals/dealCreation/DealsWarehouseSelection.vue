@@ -114,10 +114,6 @@
     </div>
 </div>
 
-<!-- <div class="row">
-    <div class="col-12 col-md-4 offset-md-4 pointer">Сумма сделки: {{ props.deal.deferredTransactionAmount() }}</div>
-</div> -->
-
 
 <q-dialog v-model="dropProductPrompt" persistent>
     <q-card style="min-width: 350px">

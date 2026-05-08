@@ -54,7 +54,7 @@
     <div>
         <q-btn
             v-if="deal.isDealSuccess()"
-            @click="deal.save()"
+            @click="processDeal"
             class="q-mt-sm"
             color="primary"
             icon-right="handshake"
@@ -65,7 +65,7 @@
 
     <q-separator class="q-ma-lg"></q-separator>
 
-<pre>
+<!--<pre>
 partnerCompanyId: {{ deal.partnerCompanyId }}
 partnerId: {{ deal.partnerId }}
 ownerCompanyId: {{ deal.ownerCompanyId }}
@@ -75,7 +75,7 @@ ownerId: {{ deal.ownerId }}
 currentStep: {{ currentStep }}
 <br>
 deal.selectedPartnerOwner: {{ deal.selectedPartnerOwner }}
-</pre>
+</pre>-->
 </template>
 
 <script setup lang="ts">
@@ -89,10 +89,14 @@ deal.selectedPartnerOwner: {{ deal.selectedPartnerOwner }}
     import type { Employee } from '@/entities/Employee';
     import type { ICompany } from '@/interfaces/Company';
     import type Product from '@/entities/warehouse/Product';
+    import { SAVED_SUCCESS } from '@/utils/constants/texts';
+    import { notifyTypes, useNotify } from '@/composables/notifyQuasar';
 
     const $userManager = inject<Rbac>(rbacSym) as Rbac
     const user = $userManager.getUser()
     const deal = ref(new Deal(user.userId, user.company.id)) as Ref<Deal>
+
+    const notify = useNotify()
 
     const currentStep = ref(deal.value.getStep(1))
 
@@ -129,6 +133,17 @@ deal.selectedPartnerOwner: {{ deal.selectedPartnerOwner }}
 
     function resetPartnerCopmpany(){
         deal.value.resetPartnerCompany()
+    }
+
+    async function processDeal() {
+        const processResult = await deal.value.save()
+        if(!processResult.error){
+            const dealId = processResult.res
+            notify.run(SAVED_SUCCESS, notifyTypes.succ)
+            console.log('Saved deal id:', dealId)
+        } else {
+            notify.run(processResult.errorMessage, notifyTypes.err)
+        }
     }
 
 </script>

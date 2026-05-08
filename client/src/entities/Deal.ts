@@ -7,6 +7,7 @@ import type Product from "./warehouse/Product";
 import { convertStrToUnixTimestamp } from "@/utils/helpers/dates";
 import { isSuccessRequest } from "@/utils/helpers/network";
 import type { TResult } from "@/interfaces/Error";
+import { SHIPMENT_ERROR } from "@/utils/constants/texts";
 
 export class Deal extends Manager implements IDeal {
 
@@ -208,10 +209,10 @@ export class Deal extends Manager implements IDeal {
                 const createdDealId = res.data
                 return { error: false, res: createdDealId }
             }
-            return { error: true, errorMessage: 'Не удалось создать поставку' }
+            return { error: true, errorMessage: SHIPMENT_ERROR }
         } catch (e) {
-            console.log('e:', e)
-            return { error: true, errorMessage: 'Не удалось создать поставку' }
+            console.log('error:', e)
+            return { error: true, errorMessage: SHIPMENT_ERROR }
         }
     }
 }
