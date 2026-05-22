@@ -82,6 +82,7 @@
 import { computed, ref } from 'vue';
 import type { Deal } from '@/entities/Deal';
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
+import { calculateTax, formatCurrency } from '@/utils/helpers/currency';
 
 const notify = useNotify()
 const props = defineProps<{
@@ -101,21 +102,6 @@ const finalAmount = computed(() => {
     const transport = calculateTax(base, transportTax)
     return base - discount.value - nds - transport
 });
-
-// Вспомогательная функция для расчёта налога
-function calculateTax(amount: number, rate: number): number {
-    return Math.round(amount * rate / 100)
-}
-
-// Форматирование числа в валюту
-function formatCurrency(value: number): string {
-    return new Intl.NumberFormat('ru-RU', {
-        style: 'currency',
-        currency: 'RUB',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-    }).format(value);
-}
 
 function onDiscountChange(): void {
     if (discount.value < 0) discount.value = 0;

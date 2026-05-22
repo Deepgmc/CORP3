@@ -37,8 +37,7 @@ const $userManager = inject<Rbac>(rbacSym) as Rbac;
 const deals = $userManager.company.deals
 
 // Define required columns for deals grid
-const requiredDealCols = ref(['dealId', 'reg_date', 'shipment_date', 'discount']);
-
+const requiredDealCols = ref(['partnerId', 'partnerCompanyId', 'reg_date', 'shipment_date', 'discount']);
 // Create grid columns configuration for deals
 const gridCols = new GridCols(
     requiredDealCols.value,

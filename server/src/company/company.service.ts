@@ -51,7 +51,10 @@ export class CompanyService {
     }
 
     async getAllDeals(companyId: number) {
-        return this.dealsRepository.find({where: {ownerCompanyId: companyId}})
+        return this.dealsRepository.find({
+            where: { ownerCompanyId: companyId },
+            relations: ['partner']
+        })
     }
 
     async getFullDepartmentsList(companyId: number): Promise<DepartmentEntity[] | boolean> {

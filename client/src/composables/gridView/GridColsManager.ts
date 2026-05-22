@@ -7,6 +7,8 @@ import type { TSortFn } from "./GridColumnOptions";
 import { Rbac } from "@/entities/Rbac";
 import type { IProduct } from "@/interfaces/ProductsDeals";
 
+import { useDictStore } from '@/stores/dictStore'
+
 export type TGridColMap = {
     label     ?: string,
     switchData?: boolean,                       //нужно ли видоизменять данные (id менять на названия или переформатировать данные)
@@ -186,7 +188,7 @@ export class GridCols {
         })
     }
 
-    switchGridValue(item: any, field: string){
+    switchGridValue(item: any, field: string) {
         switch(field){
             case 'companyId':
                 if(item.companyId !== null){
@@ -238,6 +240,13 @@ export class GridCols {
                 const thisDept: IDepartment = this.$userManager.company.getDepartmentById(item.departmentId)
                 const thisPosition: IPosition = this.$userManager.company.getPositionById(item.positionId)
                 item[`${field}Value`] = `${thisPosition.position} (${thisDept.name})`
+            break;
+            case 'partnerCompanyId':
+                const { companies: companiesDict } = useDictStore()
+                item[`${field}Value`] = companiesDict.getItemById(item[field])?.name
+            break;
+            case 'partnerId':
+                item[`${field}Value`] = item.partner.username
             break;
         }
     }
