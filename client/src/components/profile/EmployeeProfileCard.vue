@@ -65,7 +65,7 @@
                     <div class="col-3 q-pa-xs flex justify-center items-center">
                         <q-icon name="business" class="text-primary" />
                         <span class="text-body1 q-ml-md">{{ cardEmployee.company?.name }}</span>
-                        <span v-if="cardEmployee.isManager()" class="subcaption q-ml-xs q-mt-xs">(руководитель)</span>
+                        <span v-if="isManager" class="subcaption q-ml-xs q-mt-xs">(руководитель)</span>
                     </div>
                     <div class="col-3 q-pa-xs flex justify-center items-center">
                         <q-icon name="work" class="text-primary q-ml-md" />
@@ -160,6 +160,8 @@ const $userManager = inject<Rbac>(rbacSym) as Rbac
 
 const { isUserProfileCardOpened, cardEmployee, avatar } = useUserProfileCard()
 
+const isManager = cardEmployee.value.isManager()
+
 const selectPositionModel = ref({
     label: cardEmployee.value?.position?.position,
     value: cardEmployee.value?.position?.id
@@ -192,7 +194,7 @@ async function onPositionSelect(): Promise<void> {
 
 <style lang="scss" scoped>
 .employee-card {
-    max-width: 70%;
+    min-width: 70%;
     min-height: 400px;
     max-height: auto;
     .profile-card_select {
