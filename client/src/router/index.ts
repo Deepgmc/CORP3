@@ -51,12 +51,6 @@ const routes: Array<RouteRecordRaw> = [
                 component: () => import('@/views/pages/WarehouseView.vue'),
             },
 
-            {
-                path: 'stats', // страница статистики
-                name: 'stats',
-                component: () => import('@/views/pages/StatsView.vue'),
-            },
-
             //   { ДЛЯ ПРИМЕРА
             //     path: 'admin',
             //     name: 'admin',

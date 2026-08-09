@@ -28,10 +28,12 @@
             </div>
         </q-form>
     </div>
+    <stats-component></stats-component>
 </template>
 
 <script setup lang="ts">
 import { reactive } from 'vue';
+import StatsComponent from './StatsComponent.vue';
 import { SAVED_SUCCESS, v_msg } from '@/utils/constants/texts.ts'
 import type { ICompanyForm } from '@/interfaces/Company';
 import { notifyTypes, useNotify } from '@/composables/notifyQuasar'
